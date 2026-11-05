@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gitara Kursu — İdarəetmə</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --site-primary: #253b35;
@@ -13,19 +12,25 @@
   --site-on-secondary: #28342f;
   --site-background: #f4f3ef;
   --site-on-background: #202923;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
   color-scheme: light dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Inter, sans-serif; background: var(--site-background); color: var(--site-on-background); }
-#app { min-height: 100vh; width: 100%; }
-:root { --surface: #ffffff; --surface-2: #f7f8f5; --line: #e5e8e2; --muted: #748078; --green: #315b49; --red: #b84e46; --amber: #a8752e; --shadow: 0 10px 30px rgba(28,42,33,.06); }
+body { margin: 0; font-family: var(--site-font-body); background: var(--site-background); color: var(--site-on-background); }
+#app { min-height: 100vh; width: 100%; border-radius: 0; background-color: light-dark(var(--site-background), #171d1a); color: light-dark(var(--site-on-background), #edf1ed); }
+:root { --surface: light-dark(#ffffff, #222b26); --surface-2: light-dark(#f7f8f5, #29332d); --line: light-dark(#e5e8e2, #39443d); --muted: light-dark(#748078, #a8b3aa); --green: light-dark(#315b49, #9bc5aa); --green-ink: light-dark(#ffffff, #16251c); --red: light-dark(#b84e46, #f09a91); --amber: light-dark(#a8752e, #e8bd72); --shadow: 0 10px 30px rgba(28,42,33,.06); }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 .layout { display: grid; grid-template-columns: 248px minmax(0,1fr); min-height: 100vh; }
-aside { background: var(--site-primary); color: var(--site-on-primary); padding: 25px 16px; display: flex; flex-direction: column; gap: 28px; }
+aside { background: var(--site-primary); color: var(--site-on-primary); padding: calc(25px * var(--site-spacing-scale)) 16px; display: flex; flex-direction: column; gap: 28px; }
 .brand { display:flex; align-items:center; gap:12px; padding: 0 10px; }
-.brand-mark { width:40px; height:40px; border-radius: 13px; display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
-.brand strong { display:block; font-size:15px; }
+.brand-mark { width:40px; height:40px; border-radius: calc(13px * var(--site-radius-scale)); display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
+.brand strong { display:block; font-family:var(--site-font-heading); font-size:calc(15px * var(--site-heading-scale)); letter-spacing:-.3px; }
 .brand small { display:block; opacity:.66; font-size:11px; margin-top:3px; }
 .nav-label { color:rgba(255,255,255,.48); text-transform:uppercase; letter-spacing:1.2px; font-size:10px; padding:0 12px; margin-bottom:8px; }
 nav { display:grid; gap:5px; }
@@ -37,348 +42,21 @@ nav { display:grid; gap:5px; }
 main { min-width:0; padding: 30px clamp(18px,3.5vw,48px) 50px; }
 .topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:30px; }
 .eyebrow { color:var(--muted); font-size:12px; margin-bottom:6px; }
-h1 { font-size:clamp(24px,3vw,31px); letter-spacing:-1px; margin:0; font-weight:720; }
+h1 { font-family:var(--site-font-heading); font-size:calc(clamp(24px,3vw,31px) * var(--site-heading-scale)); letter-spacing:-1px; margin:0; font-weight:720; }
 .top-actions { display:flex; gap:9px; align-items:center; }
 .date-chip { color:var(--muted); font-size:12px; background:var(--surface); border:1px solid var(--line); padding:10px 13px; border-radius:10px; }
 .primary-btn,.secondary-btn,.danger-btn { border:0; border-radius:10px; padding:10px 14px; font-weight:650; font-size:12px; }
 .primary-btn { background:var(--site-primary); color:var(--site-on-primary); }
 .secondary-btn { background:var(--surface); color:var(--site-on-background); border:1px solid var(--line); }
-.danger-btn { background:#fff0ee; color:var(--red); }
+.danger-btn { background:light-dark(#fff0ee,#432a28); color:var(--red); }
+.primary-btn:hover { filter:brightness(1.12); }
 .page { display:none; }
 .page.active { display:block; }
 .section-head { display:flex; justify-content:space-between; align-items:end; gap:12px; margin:4px 0 18px; }
-.section-head h2 { font-size:18px; margin:0; }
+.section-head h2 { font-size:18px; margin:0; letter-spacing:-.4px; }
 .section-head p { margin:5px 0 0; color:var(--muted); font-size:12px; }
 .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:23px; }
-.stat { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:17px; box-shadow:var(--shadow); }
+.stat { background:var(--surface); border:1px solid var(--line); border-radius:calc(15px * var(--site-radius-scale)); padding:17px; box-shadow:var(--shadow); }
 .stat-top { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:11px; }
-.stat-value { font-size:25px; font-weight:750; letter-spacing:-.8px; margin-top:12px; }
-.stat-foot { color:var(--muted); font-size:10px; margin-top:4px; }
-.panel { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:18px; box-shadow:var(--shadow); min-width:0; margin-bottom:16px; }
-.panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
-.panel-head h3 { margin:0; font-size:14px; }
-.muted { color:var(--muted); }
-.empty { text-align:center; padding:34px 15px; color:var(--muted); font-size:12px; }
-.empty-icon { font-size:25px; margin-bottom:9px; }
-.toolbar { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:14px; }
-.search { flex:1; min-width:180px; }
-input,select,textarea { width:100%; background:var(--surface); color:var(--site-on-background); border:1px solid var(--line); border-radius:9px; padding:10px 11px; outline:none; font-size:12px; }
-.table-wrap { overflow:auto; border:1px solid var(--line); border-radius:11px; }
-table { width:100%; border-collapse:collapse; min-width:650px; }
-th { text-align:left; background:var(--surface-2); color:var(--muted); font-size:10px; font-weight:650; padding:11px 12px; }
-td { padding:12px; border-top:1px solid var(--line); font-size:11px; }
-td b { font-size:11px; }
-.actions { display:flex; gap:6px; }
-.mini-btn { border:1px solid var(--line); background:var(--surface); color:var(--site-on-background); border-radius:7px; padding:6px 8px; font-size:10px; }
-.week-grid { display:grid; grid-template-columns:repeat(7,minmax(105px,1fr)); gap:9px; overflow:auto; padding-bottom:5px; }
-.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:190px; padding:10px; }
-.day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
-.day-title { font-size:11px; font-weight:750; margin-bottom:3px; }
-.day-date { color:var(--muted); font-size:10px; margin-bottom:12px; }
-.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px; margin-bottom:7px; }
-.lesson-card b { display:block; font-size:10px; }
-.lesson-card small { display:block; color:var(--muted); font-size:9px; margin-top:4px; }
-.lesson-card button { border:0; background:transparent; padding:5px 0 0; color:var(--green); font-size:9px; }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.field { display:grid; gap:6px; }
-.field label { font-size:11px; font-weight:650; color:var(--muted); }
-.field.full { grid-column:1/-1; }
-.modal-backdrop { position:fixed; inset:0; background:rgba(8,15,11,.48); display:none; align-items:center; justify-content:center; padding:16px; z-index:10; }
-.modal-backdrop.open { display:flex; }
-.modal { width:min(560px,100%); max-height:90vh; overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:17px; padding:21px; box-shadow:0 25px 80px rgba(0,0,0,.2); }
-.modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-.modal-head h3 { margin:0; font-size:17px; }
-.close { border:0; background:var(--surface-2); color:var(--site-on-background); width:30px;height:30px;border-radius:9px;font-size:17px; }
-.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
-.pill { display:inline-flex; align-items:center; border-radius:30px; padding:5px 8px; font-size:10px; font-weight:650; background:var(--surface-2); color:var(--muted); }
-.pill.paid,.pill.present { background:#e6f3e9; color:#34764b; }
-.pill.due,.pill.absent { background:#fff0e3; color:var(--amber); }
-.pkg-status { background: #eef7f2; color: #315b49; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; }
-@media(max-width:900px) { .layout{grid-template-columns:76px minmax(0,1fr)} aside{padding:22px 10px}.brand-copy,.nav-text,.side-note{display:none}.nav-btn{justify-content:center;padding:13px 8px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr} }
-</style>
-</head>
-<body>
-<div id="app">
-<div class="layout">
-<aside>
-  <div class="brand"><div class="brand-mark">♬</div><div class="brand-copy"><strong>Gitara Kursu</strong><small>Xırdalan · İdarəetmə</small></div></div>
-  <nav>
-    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span><span class="nav-text">İcmal</span></button>
-    <button class="nav-btn" data-page="students"><span class="nav-icon">♙</span><span class="nav-text">Tələbələr</span></button>
-    <button class="nav-btn" data-page="schedule"><span class="nav-icon">▦</span><span class="nav-text">Cədvəl</span></button>
-    <button class="nav-btn" data-page="attendance"><span class="nav-icon">✓</span><span class="nav-text">Davamiyyət</span></button>
-    <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span class="nav-text">Ödənişlər</span></button>
-    <button class="nav-btn" data-page="statistics"><span class="nav-icon">▤</span><span class="nav-text">Statistika</span></button>
-  </nav>
-  <div class="side-note"><b>Xatırlatma</b>Məlumatlar yadda saxlanılır və sinxronlaşır.</div>
-</aside>
-<main>
-  <header class="topbar"><div><div class="eyebrow" id="todayLabel">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
-
-  <section class="page active" id="dashboard">
-    <div class="stats">
-      <div class="stat"><div class="stat-top">Aktiv tələbələr</div><div class="stat-value" id="statStudents">0</div></div>
-      <div class="stat"><div class="stat-top">Bu ay gəlir</div><div class="stat-value" id="statIncome">0 ₼</div></div>
-      <div class="stat"><div class="stat-top">Bu gün dərslər</div><div class="stat-value" id="statLessons">0</div></div>
-      <div class="stat"><div class="stat-top">Gözlənilən</div><div class="stat-value" id="statDue">0</div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h3>Tələbələrin Paket Vəziyyəti</h3></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>TƏLƏBƏ</th><th>PAKET HƏCMİ</th><th>KEÇİRİLƏN</th><th>QALAN DƏRS</th></tr></thead>
-          <tbody id="dashPackageBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section class="page" id="students">
-    <div class="section-head"><div><h2>Tələbələr</h2></div><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>PAKET DƏRSİ</th><th>AYLIQ ÖDƏNİŞ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
-  </section>
-
-  <section class="page" id="schedule">
-    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
-    <div class="week-grid" id="weekGrid"></div>
-  </section>
-
-  <section class="page" id="attendance">
-    <div class="section-head"><div><h2>Davamiyyət</h2></div><button class="primary-btn" id="addAttendance">＋ Davamiyyət qeyd et</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
-  </section>
-
-  <section class="page" id="payments">
-    <div class="section-head"><div><h2>Ödənişlər</h2></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>MƏBLƏĞ</th><th>AY</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
-  </section>
-
-  <section class="page" id="statistics">
-    <div class="section-head"><div><h2>Statistika</h2></div></div>
-    <div class="stats"><div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value" id="totalIncome">0 ₼</div></div></div>
-  </section>
-</main>
-</div>
-</div>
-
-<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Yeni qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
-
-<script>
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
-
-let supabaseClient = null;
-try { if (SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL") supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
-
-let data = {students:[], lessons:[], payments:[], attendance:[]};
-
-async function loadData() {
-  try {
-    if (supabaseClient) {
-      let { data: res } = await supabaseClient.from('course_data').select('content').eq('id', 'main').single();
-      if (res && res.content) data = res.content;
-    } else {
-      data = JSON.parse(localStorage.getItem('gitara_manager_v5')) || data;
-    }
-  } catch(e) {
-    data = JSON.parse(localStorage.getItem('gitara_manager_v5')) || data;
-  }
-  renderAll();
-}
-
-async function saveData() {
-  renderAll();
-  try {
-    if (supabaseClient) {
-      await supabaseClient.from('course_data').upsert({ id: 'main', content: data });
-    } else {
-      localStorage.setItem('gitara_manager_v5', JSON.stringify(data));
-    }
-  } catch(e) {
-    localStorage.setItem('gitara_manager_v5', JSON.stringify(data));
-  }
-}
-
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id===id));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
-}
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-document.getElementById('quickAdd').onclick=()=> { showPage('students'); addStudentForm(); };
-
-function openModal(title, fields, onSave) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalFields').innerHTML = fields;
-  window.modalSave = onSave;
-  document.getElementById('modalBackdrop').classList.add('open');
-}
-function closeModal() { document.getElementById('modalBackdrop').classList.remove('open'); }
-document.getElementById('closeModal').onclick = closeModal;
-document.getElementById('cancelModal').onclick = closeModal;
-document.getElementById('modalForm').onsubmit = (e) => {
-  e.preventDefault();
-  if(window.modalSave) { window.modalSave(Object.fromEntries(new FormData(e.target))); closeModal(); }
-};
-
-function addStudentForm(s=null) {
-  const item = s || {};
-  openModal(s ? 'Tələbəyə düzəliş et' : 'Yeni tələbə', `
-    <div class="form-grid">
-      <div class="field"><label>Ad və soyad</label><input name="name" value="${item.name||''}" required></div>
-      <div class="field"><label>Telefon</label><input name="phone" value="${item.phone||''}"></div>
-      <div class="field"><label>Paket Dərs Sayı</label><input name="packageSize" type="number" value="${item.packageSize||8}" required></div>
-      <div class="field"><label>Aylıq ödəniş (AZN)</label><input name="fee" type="number" value="${item.fee||''}" required></div>
-    </div>
-  `, v => {
-    v.packageSize = Number(v.packageSize) || 8;
-    v.fee = Number(v.fee) || 0;
-    if(s) Object.assign(s, v);
-    else data.students.push({...v, id: crypto.randomUUID(), status: 'Aktiv'});
-    saveData();
-  });
-}
-document.getElementById('addStudent').onclick = () => addStudentForm();
-
-function deleteItem(type, id) {
-  if(confirm('Silmək istədiyinizə əminsiniz?')) {
-    data[type] = data[type].filter(x => x.id !== id);
-    saveData();
-  }
-}
-
-function addAttendanceForm() {
-  if(!data.students.length) { alert('Əvvəlcə tələbə əlavə edin!'); return; }
-  const opts = data.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  openModal('Davamiyyət qeyd et', `
-    <div class="form-grid">
-      <div class="field"><label>Tələbə</label><select name="studentId">${opts}</select></div>
-      <div class="field"><label>Tarix</label><input type="date" name="date" value="${new Date().toISOString().slice(0,10)}" required></div>
-      <div class="field"><label>Status</label><select name="status"><option>İştirak edib</option><option>İştirak etməyib</option></select></div>
-    </div>
-  `, v => {
-    data.attendance.push({...v, id: crypto.randomUUID()});
-    saveData();
-  });
-}
-document.getElementById('addAttendance').onclick = () => addAttendanceForm();
-
-function addPaymentForm() {
-  if(!data.students.length) { alert('Əvvəlcə tələbə əlavə edin!'); return; }
-  const opts = data.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  openModal('Ödəniş əlavə et', `
-    <div class="form-grid">
-      <div class="field"><label>Tələbə</label><select name="studentId">${opts}</select></div>
-      <div class="field"><label>Məbləğ (AZN)</label><input name="amount" type="number" required></div>
-      <div class="field"><label>Tarix</label><input type="date" name="date" value="${new Date().toISOString().slice(0,10)}" required></div>
-      <div class="field"><label>Ay</label><input type="month" name="month" value="${new Date().toISOString().slice(0,7)}" required></div>
-    </div>
-  `, v => {
-    v.amount = Number(v.amount) || 0;
-    data.payments.push({...v, id: crypto.randomUUID()});
-    saveData();
-  });
-}
-document.getElementById('addPayment').onclick = () => addPaymentForm();
-
-function addLessonForm() {
-  if(!data.students.length) { alert('Əvvəlcə tələbə əlavə edin!'); return; }
-  const opts = data.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
-  const dayOpts = days.map((d,i)=>`<option value="${i}">${d}</option>`).join('');
-  openModal('Cədvələ dərs əlavə et', `
-    <div class="form-grid">
-      <div class="field"><label>Tələbə</label><select name="studentId">${opts}</select></div>
-      <div class="field"><label>Gün</label><select name="day">${dayOpts}</select></div>
-      <div class="field"><label>Saat</label><input type="time" name="time" value="10:00" required></div>
-    </div>
-  `, v => {
-    data.lessons.push({...v, id: crypto.randomUUID()});
-    saveData();
-  });
-}
-document.getElementById('addLesson').onclick = () => addLessonForm();
-
-function renderAll() {
-  // Tələbələr
-  document.getElementById('studentsBody').innerHTML = data.students.length ? data.students.map(s=>`
-    <tr>
-      <td><b>${s.name}</b></td>
-      <td>${s.phone||'—'}</td>
-      <td>${s.packageSize||8} dərs</td>
-      <td>${s.fee||0} ₼</td>
-      <td><span class="pill paid">${s.status||'Aktiv'}</span></td>
-      <td>
-        <div class="actions">
-          <button class="mini-btn" onclick='addStudentForm(${JSON.stringify(s)})'>Düzəliş</button>
-          <button class="mini-btn" style="color:var(--red)" onclick="deleteItem('students', '${s.id}')">Sil</button>
-        </div>
-      </td>
-    </tr>
-  `).join('') : `<tr><td colspan="6" class="empty">Hələ tələbə yoxdur.</td></tr>`;
-
-  // Paket izləmə (Dashboard və paketlər)
-  const pkgRows = data.students.map(s => {
-    const attended = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak edib').length;
-    const pkgSize = Number(s.packageSize) || 8;
-    const currentAttended = attended % pkgSize;
-    const remaining = pkgSize - currentAttended;
-    return `
-      <tr>
-        <td><b>${s.name}</b></td>
-        <td>${pkgSize} dərslik paket</td>
-        <td>${currentAttended} dərs keçilib</td>
-        <td><span class="pkg-status">${pkgSize} dərsdən ${remaining}-i qalıb</span></td>
-      </tr>
-    `;
-  }).join('');
-  document.getElementById('dashPackageBody').innerHTML = pkgRows || `<tr><td colspan="4" class="empty">Aktiv paket yoxdur.</td></tr>`;
-
-  // Davamiyyət
-  document.getElementById('attendanceBody').innerHTML = data.attendance.length ? data.attendance.map(a=> {
-    const st = data.students.find(s=>s.id===a.studentId);
-    return `
-      <tr>
-        <td>${a.date}</td>
-        <td><b>${st?.name||'Naməlum'}</b></td>
-        <td><span class="pill">${a.status}</span></td>
-        <td><button class="mini-btn" style="color:var(--red)" onclick="deleteItem('attendance', '${a.id}')">Sil</button></td>
-      </tr>
-    `;
-  }).join('') : `<tr><td colspan="4" class="empty">Davamiyyət qeydi yoxdur.</td></tr>`;
-
-  // Ödənişlər
-  document.getElementById('paymentsBody').innerHTML = data.payments.length ? data.payments.map(p=> {
-    const st = data.students.find(s=>s.id===p.studentId);
-    return `
-      <tr>
-        <td>${p.date}</td>
-        <td><b>${st?.name||'Naməlum'}</b></td>
-        <td><b>${p.amount} ₼</b></td>
-        <td>${p.month||'—'}</td>
-        <td><button class="mini-btn" style="color:var(--red)" onclick="deleteItem('payments', '${p.id}')">Sil</button></td>
-      </tr>
-    `;
-  }).join('') : `<tr><td colspan="5" class="empty">Ödəniş qeydi yoxdur.</td></tr>`;
-
-  // Cədvəl
-  const daysArr = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
-  document.getElementById('weekGrid').innerHTML = daysArr.map((d,i)=>{
-    const lessons = data.lessons.filter(l=>Number(l.day)===i);
-    return `<div class="day-col"><div class="day-title">${d}</div>${lessons.map(l=>{
-      const st = data.students.find(s=>s.id===l.studentId);
-      return `<div class="lesson-card"><b>${l.time} · ${st?.name||''}</b><button onclick="deleteItem('lessons', '${l.id}')">Sil</button></div>`;
-    }).join('') || '<div class="muted" style="font-size:10px">Dərs yoxdur</div>'}</div>`;
-  }).join('');
-
-  // Stat
-  document.getElementById('statStudents').textContent = data.students.length;
-  const totalInc = data.payments.reduce((a,b)=>a+b.amount,0);
-  document.getElementById('statIncome').textContent = totalInc + ' ₼';
-  document.getElementById('totalIncome').textContent = totalInc + ' ₼';
-  document.getElementById('statLessons').textContent = data.lessons.length;
-}
-
-loadData();
-</script>
-</body>
-</html>
+.stat-icon { width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:var(--surface-2);font-size:15px; }
+.stat-value
