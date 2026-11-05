@@ -3,186 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gitara Kursu — İdarəetmə & Canlı Sinxronizasiya</title>
+<title>Gitara Kursu — İdarəetmə</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --site-primary: #1e332e;
-  --site-on-primary: #ffffff;
-  --site-background: #121816;
-  --site-on-background: #ffffff;
-  --surface: #1b2622;
-  --surface-2: #24332e;
-  --line: #2e423b;
-  --muted: #a3b8b0;
-  --green: #4ade80;
-  --red: #f87171;
-  --shadow: 0 10px 30px rgba(0,0,0,.3);
+  --bg: #0b0f0e;
+  --surface: #131a17;
+  --surface-2: #1b2420;
+  --border: #26352f;
+  --text: #ffffff;
+  --muted: #94a3b8;
+  --green: #22c55e;
+  --red: #ef4444;
 }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--site-background); color: var(--site-on-background); }
-#app { min-height: 100vh; width: 100%; background-color: var(--site-background); color: var(--site-on-background); }
-button, input, select, textarea { font: inherit; color: #ffffff; }
-button { cursor: pointer; }
-.layout { display: grid; grid-template-columns: 248px minmax(0,1fr); min-height: 100vh; }
-aside { background: var(--site-primary); color: var(--site-on-primary); padding: 25px 16px; display: flex; flex-direction: column; gap: 28px; border-right: 1px solid var(--line); }
-.brand { display:flex; align-items:center; gap:12px; padding: 0 10px; }
-.brand-mark { width:40px; height:40px; border-radius: 13px; display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
-.brand strong { display:block; font-size:15px; color: #ffffff; }
-.brand small { display:block; opacity:.8; font-size:11px; margin-top:3px; color: #cbd5e1; }
-.nav-label { color:#94a3b8; text-transform:uppercase; letter-spacing:1.2px; font-size:10px; padding:0 12px; margin-bottom:8px; }
-nav { display:grid; gap:5px; }
-.nav-btn { border:0; color:#e2e8f0; background:transparent; text-align:left; padding:12px 13px; border-radius:10px; display:flex; align-items:center; gap:12px; font-size:13px; transition:.15s; }
-.nav-btn:hover,.nav-btn.active { background:rgba(255,255,255,.15); color:white; font-weight: 600; }
-.nav-icon { width:19px; text-align:center; font-size:16px; }
-.side-note { margin-top:auto; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:13px; padding:14px; font-size:12px; line-height:1.55; color:#cbd5e1; }
-.side-note b { color:white; display:block; margin-bottom:4px; }
-main { min-width:0; padding: 30px clamp(18px,3.5vw,48px) 50px; }
-.topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:30px; }
-.eyebrow { color:var(--muted); font-size:12px; margin-bottom:6px; }
-h1 { font-size:clamp(24px,3vw,31px); letter-spacing:-1px; margin:0; font-weight:720; color: #ffffff; }
-.top-actions { display:flex; gap:9px; align-items:center; }
-.date-chip { color:#cbd5e1; font-size:12px; background:var(--surface); border:1px solid var(--line); padding:10px 13px; border-radius:10px; }
-.primary-btn,.secondary-btn { border:0; border-radius:10px; padding:10px 14px; font-weight:650; font-size:12px; }
-.primary-btn { background:#315b49; color:#ffffff; border: 1px solid #4ade80; }
-.secondary-btn { background:var(--surface); color:#ffffff; border:1px solid var(--line); }
-.page { display:none; }
-.page.active { display:block; }
-.section-head { display:flex; justify-content:space-between; align-items:end; gap:12px; margin:4px 0 18px; }
-.section-head h2 { font-size:18px; margin:0; color: #ffffff; }
-.section-head p { margin:5px 0 0; color:var(--muted); font-size:12px; }
-.stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:23px; }
-.stat { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:17px; box-shadow:var(--shadow); }
-.stat-top { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:11px; }
-.stat-value { font-size:25px; font-weight:750; letter-spacing:-.8px; margin-top:12px; color: #ffffff; }
-.panel { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:18px; box-shadow:var(--shadow); min-width:0; margin-bottom:16px; }
-.panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
-.panel-head h3 { margin:0; font-size:14px; color: #ffffff; }
-.toolbar { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:14px; }
-.search { flex:1; min-width:180px; }
-input,select,textarea { width:100%; background:var(--surface-2); color:#ffffff; border:1px solid var(--line); border-radius:9px; padding:10px 11px; outline:none; font-size:12px; }
-option { background: var(--surface); color: #ffffff; }
-.table-wrap { overflow:auto; border:1px solid var(--line); border-radius:11px; }
-table { width:100%; border-collapse:collapse; min-width:650px; }
-th { text-align:left; background:var(--surface-2); color:var(--muted); font-size:10px; font-weight:650; padding:11px 12px; }
-td { padding:12px; border-top:1px solid var(--line); font-size:11px; color: #e2e8f0; }
-td b { color: #ffffff; }
-.pill { display:inline-flex; align-items:center; border-radius:30px; padding:5px 8px; font-size:10px; font-weight:650; background:var(--surface-2); color:#cbd5e1; }
-.pill.paid,.pill.present { background:#14532d; color:#4ade80; }
-.mini-btn { border:1px solid var(--line); background:var(--surface-2); color:#ffffff; border-radius:7px; padding:6px 8px; font-size:10px; }
-.week-grid { display:grid; grid-template-columns:repeat(7,minmax(105px,1fr)); gap:9px; overflow:auto; padding-bottom:5px; }
-.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:190px; padding:10px; }
-.day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
-.day-title { font-size:11px; font-weight:750; margin-bottom:3px; color: #ffffff; }
-.day-date { color:var(--muted); font-size:10px; margin-bottom:12px; }
-.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px; margin-bottom:7px; }
-.lesson-card b { display:block; font-size:10px; color: #ffffff; }
-.lesson-card small { display:block; color:var(--muted); font-size:9px; margin-top:4px; }
-.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; padding:16px; z-index:10; }
-.modal-backdrop.open { display:flex; }
-.modal { width:min(560px,100%); max-height:90vh; overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:17px; padding:21px; color: #ffffff; }
-.modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-.modal-head h3 { color: #ffffff; }
-.close { border:0; background:var(--surface-2); color:#ffffff; width:30px;height:30px;border-radius:9px;font-size:17px; }
-.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.field { display:grid; gap:6px; }
-.field label { font-size:11px; font-weight:650; color:var(--muted); }
-.pkg-pill { background: #064e3b; color: #4ade80; padding: 4px 8px; border-radius: 6px; font-weight: 700; }
-@media(max-width:900px) { .layout{grid-template-columns:1fr} aside{padding:12px} nav{display:flex;overflow-x:auto} }
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); }
+.layout { display: grid; grid-template-columns: 240px minmax(0,1fr); min-height: 100vh; }
+aside { background: #111815; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; color: #fff; }
+.brand span { width: 35px; height: 35px; background: #1f352b; display: grid; place-items: center; border-radius: 8px; color: var(--green); }
+nav { display: grid; gap: 6px; }
+.nav-btn { background: transparent; border: 0; color: var(--muted); text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.nav-btn:hover, .nav-btn.active { background: var(--surface-2); color: #fff; }
+main { padding: 30px; max-width: 1200px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+h1 { margin: 0; font-size: 24px; color: #fff; }
+.btn { background: var(--green); color: #000; border: 0; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-secondary { background: var(--surface-2); color: #fff; border: 1px solid var(--border); }
+.page { display: none; }
+.page.active { display: block; }
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: auto; margin-top: 15px; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th { background: var(--surface-2); color: var(--muted); padding: 12px; font-size: 11px; }
+td { padding: 12px; border-top: 1px solid var(--border); font-size: 12px; color: #e2e8f0; }
+td b { color: #fff; }
+.pill { background: #064e3b; color: #4ade80; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; display: inline-block; }
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; place-items: center; z-index: 100; padding: 20px; }
+.modal-bg.open { display: grid; }
+.modal { background: var(--surface); border: 1px solid var(--border); width: min(450px, 100%); padding: 20px; border-radius: 12px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.field input, .field select { width: 100%; background: var(--surface-2); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; outline: none; }
+.actions { display: flex; gap: 6px; }
+@media(max-width:768px) { .layout { display: block; } aside { display: flex; overflow-x: auto; padding: 10px; } nav { display: flex; } main { padding: 15px; } }
 </style>
 </head>
 <body>
-<div id="app">
 <div class="layout">
-<aside>
-  <div class="brand"><div class="brand-mark">♬</div><div class="brand-copy"><strong>Gitara Kursu</strong><small>Xırdalan · İdarəetmə</small></div></div>
-  <nav>
-    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span><span class="nav-text">İcmal</span></button>
-    <button class="nav-btn" data-page="students"><span class="nav-icon">♙</span><span class="nav-text">Tələbələr</span></button>
-    <button class="nav-btn" data-page="schedule"><span class="nav-icon">▦</span><span class="nav-text">Cədvəl</span></button>
-    <button class="nav-btn" data-page="attendance"><span class="nav-icon">✓</span><span class="nav-text">Davamiyyət</span></button>
-    <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span class="nav-text">Ödənişlər & Paketlər</span></button>
-  </nav>
-  <div class="side-note"><b>Sinxronizasiya Aktivdir</b>Telefon və komputerdəki dəyişikliklər avtomatik yenilənir.</div>
-</aside>
-<main>
-  <header class="topbar"><div><div class="eyebrow">Şəxsi İdarəetmə</div><h1 id="pageTitle">İcmal</h1></div><div class="top-actions"><button class="primary-btn" id="quickAdd">＋ Yeni Tələbə</button></div></header>
-
-  <section class="page active" id="dashboard">
-    <div class="stats">
-      <div class="stat"><div class="stat-top">Aktiv Tələbələr</div><div class="stat-value" id="statStudents">0</div></div>
-      <div class="stat"><div class="stat-top">Bu Ay Gəlir</div><div class="stat-value" id="statIncome">0 ₼</div></div>
-      <div class="stat"><div class="stat-top">Bu Gün Dərslər</div><div class="stat-value" id="statLessons">0</div></div>
-    </div>
-  </section>
-
-  <section class="page" id="students">
-    <div class="section-head"><h2>Tələbələr</h2><button class="primary-btn" id="addStudent">＋ Yeni Tələbə</button></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>PAKET ÖLÇÜSÜ</th><th>AYLIQ ÖDƏNİŞ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead>
-        <tbody id="studentsBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="page" id="schedule">
-    <div class="section-head"><h2>Həftəlik Cədvəl</h2><button class="primary-btn" id="addLesson">＋ Dərs Əlavə Et</button></div>
-    <div class="week-grid" id="weekGrid"></div>
-  </section>
-
-  <section class="page" id="attendance">
-    <div class="section-head"><h2>Davamiyyət Qeydiyyatı</h2><button class="primary-btn" id="addAttendance">＋ Davamiyyət Qeydi</button></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>STATUS</th><th>QEYD</th><th>ƏMƏLİYYAT</th></tr></thead>
-        <tbody id="attendanceBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="page" id="payments">
-    <div class="section-head"><h2>Ödənişlər & Paket İzləmə</h2><button class="primary-btn" id="addPayment">＋ Ödəniş Əlavə Et</button></div>
-    <div class="panel">
-      <h3>Dərs Paketləri Vəziyyəti (Qalan Dərslər)</h3>
+  <aside>
+    <div class="brand"><span>♬</span> Gitara Kursu</div>
+    <nav>
+      <button class="nav-btn active" data-page="students">Tələbələr</button>
+      <button class="nav-btn" data-page="attendance">Davamiyyət</button>
+      <button class="nav-btn" data-page="payments">Ödənişlər & Paketlər</button>
+    </nav>
+  </aside>
+  <main>
+    <!-- TƏLƏBƏLƏR SƏHİFƏSİ -->
+    <section class="page active" id="students">
+      <header>
+        <h1>Tələbələr</h1>
+        <button class="btn" onclick="openStudentModal()">＋ Yeni Tələbə</button>
+      </header>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>TƏLƏBƏ</th><th>PAKET HƏCMİ</th><th>KEÇİRİLƏN DƏRS</th><th>QALAN DƏRS SAYI</th></tr></thead>
+          <thead><tr><th>AD SOYAD</th><th>TELEFON</th><th>PAKET DƏRSİ</th><th>AYLIQ ÖDƏNİŞ</th><th>ƏMƏLİYYAT</th></tr></thead>
+          <tbody id="studentsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- DAVAMİYYƏT SƏHİFƏSİ -->
+    <section class="page" id="attendance">
+      <header>
+        <h1>Davamiyyət</h1>
+        <button class="btn" onclick="openAttendanceModal()">＋ Davamiyyət Qeyd Et</button>
+      </header>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead>
+          <tbody id="attendanceBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ÖDƏNİŞLƏR & PAKETLƏR SƏHİFƏSİ -->
+    <section class="page" id="payments">
+      <header>
+        <h1>Paket İzləmə</h1>
+      </header>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİRİLƏN</th><th>QALAN DƏRS</th></tr></thead>
           <tbody id="packageBody"></tbody>
         </table>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>MƏBLƏĞ</th><th>ÜSUL</th><th>AY</th><th>ƏMƏLİYYAT</th></tr></thead>
-        <tbody id="paymentsBody"></tbody>
-      </table>
-    </div>
-  </section>
-</main>
-</div>
+    </section>
+  </main>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Form</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
+<!-- MODAL FORMA -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle" style="margin-top:0; color:#fff">Form</h3>
+    <form id="modalForm">
+      <div id="modalFields"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Ləğv et</button>
+        <button type="submit" class="btn">Yadda saxla</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = "YOUR_SUPABASE_URL";
 const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+let supabaseClient = (SUPABASE_URL !== "YOUR_SUPABASE_URL") ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-let supabaseClient = null;
-if (SUPABASE_URL !== "YOUR_SUPABASE_URL") {
-  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-}
-
-let data = { students: [], lessons: [], payments: [], attendance: [] };
+let data = { students: [], attendance: [] };
 
 async function loadData() {
   if (supabaseClient) {
-    const { data: dbData } = await supabaseClient.from('course_data').select('content').eq('id', 'main').single();
-    if (dbData && dbData.content) data = dbData.content;
+    let { data: res } = await supabaseClient.from('course_data').select('content').eq('id', 'main').single();
+    if (res && res.content) data = res.content;
   } else {
-    data = JSON.parse(localStorage.getItem('gitara_data')) || data;
+    data = JSON.parse(localStorage.getItem('gitara_data_v2')) || { students: [], attendance: [] };
   }
   renderAll();
 }
@@ -192,96 +139,134 @@ async function saveData() {
   if (supabaseClient) {
     await supabaseClient.from('course_data').upsert({ id: 'main', content: data });
   } else {
-    localStorage.setItem('gitara_data', JSON.stringify(data));
+    localStorage.setItem('gitara_data_v2', JSON.stringify(data));
   }
 }
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id===id));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
-}
-document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+// Səhifə dəyişmə
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.page).classList.add('active');
+  };
+});
 
-let modalSave = null;
-function openModal(title, fields, onSave) {
+// Modal idarəetməsi
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function showModal(title, html, onSubmit) {
   document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalFields').innerHTML = fields;
-  modalSave = onSave;
-  document.getElementById('modalBackdrop').classList.add('open');
+  document.getElementById('modalFields').innerHTML = html;
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modalForm').onsubmit = (e) => {
+    e.preventDefault();
+    onSubmit(new FormData(e.target));
+    closeModal();
+  };
 }
-function closeModal() { document.getElementById('modalBackdrop').classList.remove('open'); }
-document.getElementById('closeModal').onclick = closeModal;
-document.getElementById('cancelModal').onclick = closeModal;
-document.getElementById('modalForm').onsubmit = (e) => {
-  e.preventDefault();
-  if (modalSave) { modalSave(Object.fromEntries(new FormData(e.target))); closeModal(); }
-};
 
-function addStudentForm(s={}) {
-  openModal(s.id?'Tələbəyə düzəliş et':'Yeni Tələbə', `
-    <div class="form-grid">
-      <div class="field"><label>Ad Soyad</label><input name="name" value="${s.name||''}" required></div>
-      <div class="field"><label>Telefon</label><input name="phone" value="${s.phone||''}"></div>
-      <div class="field"><label>Paket Dərs Sayı</label><input name="packageSize" type="number" value="${s.packageSize||8}" required></div>
-      <div class="field"><label>Aylıq Məbləğ (AZN)</label><input name="fee" type="number" value="${s.fee||''}" required></div>
-    </div>
-  `, v => {
-    if (s.id) Object.assign(s, v);
-    else data.students.push({ ...v, id: crypto.randomUUID() });
+// Tələbə əlavə et və ya redaktə et
+function openStudentModal(s = null) {
+  showModal(s ? 'Tələbəyə düzəliş et' : 'Yeni Tələbə', `
+    <div class="field"><label>Ad Soyad</label><input name="name" value="${s ? s.name : ''}" required></div>
+    <div class="field"><label>Telefon</label><input name="phone" value="${s ? s.phone : ''}"></div>
+    <div class="field"><label>Paket Dərs Sayı</label><input name="packageSize" type="number" value="${s ? s.packageSize : 8}" required></div>
+    <div class="field"><label>Aylıq Məbləğ (AZN)</label><input name="fee" type="number" value="${s ? s.fee : ''}" required></div>
+  `, (form) => {
+    if (s) {
+      s.name = form.get('name');
+      s.phone = form.get('phone');
+      s.packageSize = Number(form.get('packageSize'));
+      s.fee = Number(form.get('fee'));
+    } else {
+      data.students.push({
+        id: crypto.randomUUID(),
+        name: form.get('name'),
+        phone: form.get('phone'),
+        packageSize: Number(form.get('packageSize')),
+        fee: Number(form.get('fee'))
+      });
+    }
     saveData();
   });
 }
-document.getElementById('addStudent').onclick = () => addStudentForm();
-document.getElementById('quickAdd').onclick = () => addStudentForm();
 
-function addAttendanceForm() {
-  const opts = data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-  openModal('Davamiyyət Qeydi', `
-    <div class="form-grid">
-      <div class="field"><label>Tələbə</label><select name="studentId">${opts}</select></div>
-      <div class="field"><label>Tarix</label><input type="date" name="date" value="${new Date().toISOString().slice(0,10)}" required></div>
-      <div class="field"><label>Status</label><select name="status"><option>İştirak edib</option><option>İştirak etməyib</option></select></div>
-    </div>
-  `, v => {
-    data.attendance.push({ ...v, id: crypto.randomUUID() });
+function deleteStudent(id) {
+  if (confirm('Bu tələbəni silmək istədiyinizə əminsiniz?')) {
+    data.students = data.students.filter(s => s.id !== id);
+    data.attendance = data.attendance.filter(a => a.studentId !== id);
+    saveData();
+  }
+}
+
+// Davamiyyət əlavə et
+function openAttendanceModal() {
+  if (data.students.length === 0) { alert('Əvvəlcə tələbə əlavə edin!'); return; }
+  let options = data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  showModal('Davamiyyət Qeyd Et', `
+    <div class="field"><label>Tələbə</label><select name="studentId">${options}</select></div>
+    <div class="field"><label>Tarix</label><input type="date" name="date" value="${new Date().toISOString().slice(0,10)}" required></div>
+    <div class="field"><label>Status</label><select name="status"><option>İştirak edib</option><option>İştirak etməyib</option></select></div>
+  `, (form) => {
+    data.attendance.push({
+      id: crypto.randomUUID(),
+      studentId: form.get('studentId'),
+      date: form.get('date'),
+      status: form.get('status')
+    });
     saveData();
   });
 }
-document.getElementById('addAttendance').onclick = () => addAttendanceForm();
 
+function deleteAttendance(id) {
+  data.attendance = data.attendance.filter(a => a.id !== id);
+  saveData();
+}
+
+// Cədvəlləri yenilə
 function renderAll() {
   document.getElementById('studentsBody').innerHTML = data.students.map(s => `
     <tr>
       <td><b>${s.name}</b></td>
-      <td>${s.phone||'—'}</td>
-      <td>${s.packageSize||8} dərs</td>
+      <td>${s.phone || '—'}</td>
+      <td>${s.packageSize || 8} dərs</td>
       <td>${s.fee} ₼</td>
-      <td><span class="pill paid">Aktiv</span></td>
-      <td><button class="mini-btn" onclick='addStudentForm(${JSON.stringify(s)})'>Düzəliş</button></td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:10px;" onclick='openStudentModal(${JSON.stringify(s)})'>Düzəliş</button>
+          <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteStudent('${s.id}')">Sil</button>
+        </div>
+      </td>
     </tr>
-  `).join('');
+  `).join('') || `<tr><td colspan="5" style="text-align:center; color:var(--muted)">Tələbə yoxdur</td></tr>`;
+
+  document.getElementById('attendanceBody').innerHTML = data.attendance.map(a => {
+    let st = data.students.find(s => s.id === a.studentId);
+    return `
+      <tr>
+        <td>${a.date}</td>
+        <td><b>${st ? st.name : 'Naməlum'}</b></td>
+        <td><span class="pill">${a.status}</span></td>
+        <td><button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteAttendance('${a.id}')">Sil</button></td>
+      </tr>
+    `;
+  }).join('') || `<tr><td colspan="4" style="text-align:center; color:var(--muted)">Davamiyyət qeydi yoxdur</td></tr>`;
 
   document.getElementById('packageBody').innerHTML = data.students.map(s => {
-    const attended = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak edib').length;
-    const pkgSize = Number(s.packageSize) || 8;
-    const currentBatchAttended = attended % pkgSize;
-    const remaining = pkgSize - currentBatchAttended;
+    let attended = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak edib').length;
+    let pkgSize = Number(s.packageSize) || 8;
+    let currentBatch = attended % pkgSize;
+    let remaining = pkgSize - currentBatch;
     return `
       <tr>
         <td><b>${s.name}</b></td>
         <td>${pkgSize} dərslik paket</td>
-        <td>${currentBatchAttended} dərs keçilib</td>
-        <td><span class="pkg-pill">${pkgSize} dərslik paketdən ${remaining}-i qalıb</span></td>
+        <td>${currentBatch} dərs keçilib</td>
+        <td><span class="pill">${pkgSize} dərsdən ${remaining}-i qalıb</span></td>
       </tr>
     `;
-  }).join('');
-
-  document.getElementById('attendanceBody').innerHTML = data.attendance.map(a => {
-    const st = data.students.find(s=>s.id===a.studentId);
-    return `<tr><td>${a.date}</td><td><b>${st?.name||'—'}</b></td><td><span class="pill present">${a.status}</span></td><td>—</td><td><button class="mini-btn">Sil</button></td></tr>`;
-  }).join('');
-
-  document.getElementById('statStudents').textContent = data.students.length;
+  }).join('') || `<tr><td colspan="4" style="text-align:center; color:var(--muted)">Aktiv paket yoxdur</td></tr>`;
 }
 
 loadData();
