@@ -423,7 +423,10 @@ function renderAttendance() {
       <td><b>${a.studentName}</b></td>
       <td><span class="pill ${a.status === 'İştirak etdi' ? 'paid' : a.status === 'İştirak etmədi' ? 'absent' : 'group'}">${a.status}</span></td>
       <td>
-        <button class="mini-btn" style="color:var(--red);" onclick="deleteAttendance('${a.id}')">Sil</button>
+        <div class="actions">
+          <button class="mini-btn" style="color:var(--green);" onclick="editAttendance('${a.id}')">Redaktə</button>
+          <button class="mini-btn" style="color:var(--red);" onclick="deleteAttendance('${a.id}')">Sil</button>
+        </div>
       </td>
     </tr>
   `).join('');
@@ -464,7 +467,14 @@ function renderPayments() {
         <td>${studentPay ? formatAzDate(studentPay.date) : '—'}</td>
         <td>${studentPay ? studentPay.amount + ' ₼' : '<span style="color:var(--red)">Ödənilməyib</span>'}</td>
         <td>
-          <button class="mini-btn" onclick="addPaymentForStudent('${s.id}')">＋ Ödəniş qeyd et</button>
+          <div class="actions">
+            ${studentPay ? `
+              <button class="mini-btn" style="color:var(--green);" onclick="editPayment('${studentPay.id}')">Redaktə</button>
+              <button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${studentPay.id}')">Sil</button>
+            ` : `
+              <button class="mini-btn" onclick="addPaymentForStudent('${s.id}')">＋ Ödəniş qeyd et</button>
+            `}
+          </div>
         </td>
       </tr>
     `;
@@ -626,15 +636,77 @@ document.getElementById('addAttendance').onclick = () => {
   backdrop.classList.add('open');
 };
 
+window.editAttendance = function(id) {
+  const att = data.attendance.find(a => a.id === id);
+  if (!att) return;
+
+  modalTitle.textContent = 'Davamiyyəti redaktə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mAStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === att.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Ayın Tarixi</label><input type="date" id="mADate" value="${att.date || isoToday(today)}"></div>
+      <div class="field"><label>İştirak vəziyyəti</label><select id="mAStatus"><option value="İştirak etdi" ${att.status === 'İştirak etdi' ? 'selected' : ''}>İştirak etdi</option><option value="İştirak etmədi" ${att.status === 'İştirak etmədi' ? 'selected' : ''}>İştirak etmədi</option><option value="Üzrlü səbəb" ${att.status === 'Üzrlü səbəb' ? 'selected' : ''}>Üzrlü səbəb</option></select></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    const sId = document.getElementById('mAStudent').value;
+    const st = data.students.find(x => x.id === sId);
+
+    att.studentId = sId;
+    att.studentName = st ? st.name : '';
+    att.date = document.getElementById('mADate').value;
+    att.status = document.getElementById('mAStatus').value;
+
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
 window.deleteAttendance = function(id) {
-  data.attendance = data.attendance.filter(a => a.id !== id);
-  saveData();
+  if (confirm('Bu davamiyyət qeydini silmək istədiyinizə əminsiniz?')) {
+    data.attendance = data.attendance.filter(a => a.id !== id);
+    saveData();
+  }
 };
 
 document.getElementById('addPayment').onclick = () => openPaymentModal();
 
 window.addPaymentForStudent = function(studentId) {
   openPaymentModal(studentId);
+};
+
+window.editPayment = function(id) {
+  const pay = data.payments.find(p => p.id === id);
+  if (!pay) return;
+
+  modalTitle.textContent = 'Ödənişi redaktə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === pay.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="${pay.amount || 80}"></div>
+      <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${pay.date || isoToday(today)}"></div>
+      <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${pay.month || monthNow}"></div>
+      <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd" ${pay.method === 'Nağd' ? 'selected' : ''}>Nağd</option><option value="Kart" ${pay.method === 'Kart' ? 'selected' : ''}>Kart</option><option value="Köçürmə" ${pay.method === 'Köçürmə' ? 'selected' : ''}>Köçürmə</option></select></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    const sId = document.getElementById('mPStudent').value;
+    const st = data.students.find(x => x.id === sId);
+
+    pay.studentId = sId;
+    pay.studentName = st ? st.name : '';
+    pay.amount = Number(document.getElementById('mPAmount').value);
+    pay.date = document.getElementById('mPDate').value;
+    pay.month = document.getElementById('mPMonth').value;
+    pay.method = document.getElementById('mPMethod').value;
+
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
 };
 
 function openPaymentModal(selectedStudentId = null) {
@@ -669,6 +741,13 @@ function openPaymentModal(selectedStudentId = null) {
   };
   backdrop.classList.add('open');
 }
+
+window.deletePayment = function(id) {
+  if (confirm('Bu ödənişi silmək istədiyinizə əminsiniz?')) {
+    data.payments = data.payments.filter(p => p.id !== id);
+    saveData();
+  }
+};
 
 modalForm.onsubmit = (e) => {
   e.preventDefault();
