@@ -112,7 +112,8 @@ td b { font-size:12px; color: #212529; }
 .lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px 10px; margin-bottom:8px; }
 .lesson-card b { display:block; font-size:11px; color: #212529; }
 .lesson-card small { display:block; color:var(--muted); font-size:10px; margin-top:3px; }
-.lesson-card button { border:0; background:transparent; padding:4px 0 0; color:var(--green); font-size:10px; font-weight:600; }
+.lesson-card-actions { display:flex; gap:8px; margin-top:4px; }
+.lesson-card-actions button { border:0; background:transparent; padding:0; font-size:10px; font-weight:600; }
 
 @media(max-width:850px) {
   .layout { display:block; }
@@ -397,7 +398,10 @@ function renderSchedule() {
             <div class="lesson-card">
               <b>${l.studentName}</b>
               <small>${l.time} (${l.lessonType || 'Fərdi'} - ${l.duration || '60'} dəq)</small>
-              <button onclick="deleteLesson('${l.id}')">Sil</button>
+              <div class="lesson-card-actions">
+                <button style="color:var(--green);" onclick="editLesson('${l.id}')">Redaktə et</button>
+                <button style="color:var(--red);" onclick="deleteLesson('${l.id}')">Sil</button>
+              </div>
             </div>
           `).join('')}
       </div>
@@ -554,9 +558,43 @@ document.getElementById('addLesson').onclick = () => {
   backdrop.classList.add('open');
 };
 
+window.editLesson = function(id) {
+  const lesson = data.lessons.find(l => l.id === id);
+  if (!lesson) return;
+
+  modalTitle.textContent = 'Dərsi redaktə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mLStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === lesson.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Dərs növü</label><select id="mLLessonType"><option value="Fərdi" ${lesson.lessonType === 'Fərdi' ? 'selected' : ''}>Fərdi</option><option value="Qrup" ${lesson.lessonType === 'Qrup' ? 'selected' : ''}>Qrup</option></select></div>
+      <div class="field"><label>Müddət (dəqiqə)</label><input type="number" id="mLDuration" value="${lesson.duration || 60}"></div>
+      <div class="field"><label>Həftənin günü</label><select id="mLDay">${days.map(d => `<option value="${d}" ${d === lesson.day ? 'selected' : ''}>${d}</option>`).join('')}</select></div>
+      <div class="field"><label>Saat</label><input type="time" id="mLTime" value="${lesson.time || '15:00'}"></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    const sId = document.getElementById('mLStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    
+    lesson.studentId = sId;
+    lesson.studentName = st ? st.name : '';
+    lesson.lessonType = document.getElementById('mLLessonType').value;
+    lesson.duration = document.getElementById('mLDuration').value;
+    lesson.day = document.getElementById('mLDay').value;
+    lesson.time = document.getElementById('mLTime').value;
+
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
 window.deleteLesson = function(id) {
-  data.lessons = data.lessons.filter(l => l.id !== id);
-  saveData();
+  if (confirm('Bu dərsi cədvəldən silmək istədiyinizə əminsiniz?')) {
+    data.lessons = data.lessons.filter(l => l.id !== id);
+    saveData();
+  }
 };
 
 document.getElementById('addAttendance').onclick = () => {
