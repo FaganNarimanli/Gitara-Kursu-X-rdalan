@@ -24,7 +24,7 @@
 body { margin: 0; font-family: var(--site-font-body); background: var(--site-background); color: var(--site-on-background); }
 #app { min-height: 100vh; width: 100%; border-radius: 0; background-color: light-dark(var(--site-background), #171d1a); color: light-dark(var(--site-on-background), #edf1ed); }
 :root { --surface: light-dark(#ffffff, #222b26); --surface-2: light-dark(#f7f8f5, #29332d); --line: light-dark(#e5e8e2, #39443d); --muted: light-dark(#748078, #a8b3aa); --green: light-dark(#315b49, #9bc5aa); --green-ink: light-dark(#ffffff, #16251c); --red: light-dark(#b84e46, #f09a91); --amber: light-dark(#a8752e, #e8bd72); --shadow: 0 10px 30px rgba(28,42,33,.06); }
-button, input, select, textarea { font: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 .layout { display: grid; grid-template-columns: 248px minmax(0,1fr); min-height: 100vh; }
 aside { background: var(--site-primary); color: var(--site-on-primary); padding: calc(25px * var(--site-spacing-scale)) 16px; display: flex; flex-direction: column; gap: 28px; }
@@ -79,7 +79,7 @@ h1 { font-family:var(--site-font-heading); font-size:calc(clamp(24px,3vw,31px) *
 .pill.due,.pill.absent { background:light-dark(#fff0e3,#443426); color:var(--amber); }
 .toolbar { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:14px; }
 .search { flex:1; min-width:180px; }
-input,select,textarea { width:100%; background:var(--surface); color:var(--site-on-background); border:1px solid var(--line); border-radius:9px; padding:10px 11px; outline:none; font-size:12px; }
+input,select,textarea { width:100%; background:var(--surface); color:var(--site-on-background); border:1px solid var(--line); border-radius:9px; padding:10px 11px; outline:none; font-size:12px; color-scheme: dark; }
 input:focus,select:focus,textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px light-dark(rgba(49,91,73,.1),rgba(155,197,170,.12)); }
 .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:11px; }
 table { width:100%; border-collapse:collapse; min-width:650px; }
@@ -262,7 +262,6 @@ function addStudentForm(existing=null){
     } else {
       const newId = crypto.randomUUID();
       data.students.push({...v, id: newId});
-      // Avtomatik ödənişlərə əlavə et
       data.payments.push({
         id: crypto.randomUUID(),
         studentId: newId,
