@@ -2,59 +2,137 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gitara Kursu — İdarəetmə</title>
 <style>
-:root { --site-primary: #253b35; --site-on-primary: #ffffff; --site-secondary: #e9e3d7; --site-on-secondary: #28342f; --site-background: #f8f9fa; --site-on-background: #212529; --site-font-body: Inter, system-ui, sans-serif; --surface: #ffffff; --surface-2: #f1f3f5; --line: #dee2e6; --muted: #6c757d; --green: #2b4c3f; --red: #c92a2a; }
+:root {
+  --site-primary: #253b35;
+  --site-on-primary: #ffffff;
+  --site-secondary: #e9e3d7;
+  --site-on-secondary: #28342f;
+  --site-background: #f8f9fa;
+  --site-on-background: #212529;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
 * { box-sizing: border-box; }
-body { margin: 0; font-family: var(--site-font-body); background: var(--site-background); color: var(--site-on-background); }
-#app { min-height: 100vh; width: 100%; }
-button, input, select { font: inherit; color: #212529; }
+body { margin: 0; font-family: var(--site-font-body); background: var(--site-background); color: var(--site-on-background); -webkit-tap-highlight-color: transparent; }
+#app { min-height: 100vh; width: 100%; background-color: #f8f9fa; }
+:root { --surface: #ffffff; --surface-2: #f1f3f5; --line: #dee2e6; --muted: #6c757d; --green: #2b4c3f; --red: #c92a2a; --amber: #f08c00; --shadow: 0 4px 15px rgba(0,0,0,.05); }
+
+button, input, select, textarea { font: inherit; color: #212529; }
 button { cursor: pointer; }
+
 .layout { display: grid; grid-template-columns: 248px minmax(0,1fr); min-height: 100vh; }
 aside { background: var(--site-primary); color: var(--site-on-primary); padding: 25px 16px; display: flex; flex-direction: column; gap: 24px; }
 .brand { display:flex; align-items:center; gap:12px; padding: 0 10px; }
 .brand-mark { width:40px; height:40px; border-radius: 12px; display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
+.brand strong { display:block; font-size:15px; }
+.brand small { display:block; opacity:.66; font-size:11px; margin-top:2px; }
 nav { display:grid; gap:6px; }
-.nav-btn { border:0; color:rgba(255,255,255,.78); background:transparent; text-align:left; padding:12px 14px; border-radius:10px; display:flex; align-items:center; gap:12px; font-size:14px; }
-.nav-btn.active { background:rgba(255,255,255,.15); color:white; font-weight:600; }
-.side-note { margin-top:auto; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.1); border-radius:13px; padding:14px; font-size:12px; color:rgba(255,255,255,.8); }
+.nav-btn { border:0; color:rgba(255,255,255,.78); background:transparent; text-align:left; padding:12px 14px; border-radius:10px; display:flex; align-items:center; gap:12px; font-size:14px; transition:.15s; }
+.nav-btn:hover,.nav-btn.active { background:rgba(255,255,255,.15); color:white; font-weight:600; }
+.nav-icon { width:20px; text-align:center; font-size:16px; }
+.side-note { margin-top:auto; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.1); border-radius:13px; padding:14px; font-size:12px; line-height:1.5; color:rgba(255,255,255,.8); }
+.side-note b { color:white; display:block; margin-bottom:4px; }
+
 main { min-width:0; padding: 24px 32px 40px; }
-.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:14px; }
-h1 { font-size:24px; margin:0; font-weight:750; }
-.primary-btn, .secondary-btn { border:0; border-radius:10px; padding:10px 16px; font-weight:650; font-size:13px; display:inline-flex; align-items:center; gap:6px; }
-.primary-btn { background:var(--site-primary); color:white; }
-.secondary-btn { background:var(--surface); border:1px solid var(--line); }
+.topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:24px; flex-wrap:wrap; }
+.eyebrow { color:var(--muted); font-size:12px; margin-bottom:4px; }
+h1 { font-size:clamp(22px, 4vw, 28px); letter-spacing:-.5px; margin:0; font-weight:750; color: #212529; }
+.top-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.date-chip { color:var(--muted); font-size:12px; background:var(--surface); border:1px solid var(--line); padding:10px 14px; border-radius:10px; font-weight:500; }
+.primary-btn,.secondary-btn { border:0; border-radius:10px; padding:11px 16px; font-weight:650; font-size:13px; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.primary-btn { background:var(--site-primary); color:var(--site-on-primary); }
+.secondary-btn { background:var(--surface); color:#212529; border:1px solid var(--line); }
+
 .page { display:none; }
 .page.active { display:block; }
-.section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-.stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; margin-bottom:20px; }
-.stat { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; }
-.stat-value { font-size:22px; font-weight:750; margin-top:8px; }
-.table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:#ffffff; margin-bottom:10px; }
+.section-head { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin:4px 0 18px; flex-wrap:wrap; }
+.section-head h2 { font-size:18px; margin:0; color: #212529; }
+.section-head p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+
+.stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:20px; }
+.stat { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow:var(--shadow); }
+.stat-top { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:12px; }
+.stat-icon { width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:var(--surface-2);font-size:15px; }
+.stat-value { font-size:24px; font-weight:750; margin-top:10px; color: #212529; }
+.stat-foot { color:var(--muted); font-size:11px; margin-top:4px; }
+
+.content-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+.panel { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow); }
+.panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+.panel-head h3 { margin:0; font-size:15px; color: #212529; }
+
+.empty { text-align:center; padding:30px 15px; color:var(--muted); font-size:13px; }
+.empty .empty-icon { font-size:26px; margin-bottom:8px; }
+.list-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--line); }
+.avatar { width:36px;height:36px;flex:0 0 36px;border-radius:10px;display:grid;place-items:center;background:var(--site-secondary);color:var(--site-on-secondary);font-weight:700;font-size:13px; }
+.row-main { min-width:0; flex:1; }
+.row-main b { display:block; font-size:13px; color: #212529; }
+.row-main small { display:block; color:var(--muted); font-size:11px; margin-top:2px; }
+
+.pill { display:inline-flex; align-items:center; border-radius:20px; padding:6px 10px; font-size:11px; font-weight:600; background:var(--surface-2); color:var(--muted); white-space:nowrap; }
+.pill.paid { background:#ebfbee; color:#2b8a3e; }
+.pill.absent { background:#fff3bf; color:#f08c00; }
+.pill.group { background:#e7f5ff; color:#1864ab; }
+
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.search { flex:1; min-width:200px; }
+input,select,textarea { width:100%; background:#ffffff; color:#212529; border:1px solid #ced4da; border-radius:10px; padding:11px 12px; outline:none; font-size:13px; min-height:42px; }
+input:focus,select:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(43,76,63,.1); }
+
+.table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:12px; background:#ffffff; margin-bottom:10px; }
 table { width:100%; border-collapse:collapse; min-width:600px; }
-th { text-align:left; background:var(--surface-2); color:var(--muted); font-size:11px; padding:12px 14px; }
-td { padding:12px 14px; border-top:1px solid var(--line); font-size:12px; }
-.actions { display:flex; gap:6px; }
-.mini-btn { border:1px solid var(--line); background:var(--surface); border-radius:8px; padding:6px 10px; font-size:11px; }
-.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:16px; z-index:100; }
-.modal-backdrop.open { display:flex; }
-.modal { width:min(500px,100%); background:#ffffff; border-radius:16px; padding:20px; }
-.modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-.close { border:0; background:var(--surface-2); border-radius:8px; width:30px; height:30px; }
+th { text-align:left; background:var(--surface-2); color:var(--muted); font-size:11px; font-weight:650; padding:12px 14px; white-space:nowrap; }
+td { padding:12px 14px; border-top:1px solid var(--line); font-size:12px; color: #212529; white-space:nowrap; }
+td b { font-size:12px; color: #212529; }
+
+.actions { display:flex; gap:6px; flex-wrap:wrap; }
+.mini-btn { border:1px solid var(--line); background:var(--surface); color:#212529; border-radius:8px; padding:7px 10px; font-size:11px; font-weight:500; min-height:32px; }
+
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.field { display:grid; gap:4px; }
-.field label { font-size:11px; font-weight:600; color:var(--muted); }
+.field { display:grid; gap:6px; }
+.field label { font-size:12px; font-weight:600; color:var(--muted); }
 .field.full { grid-column:1/-1; }
-.week-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; }
-.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px; min-height:150px; }
-.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px; margin-bottom:8px; }
-.pill { padding:4px 8px; border-radius:12px; font-size:11px; font-weight:600; background:var(--surface-2); }
+
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:16px; z-index:100; backdrop-filter: blur(2px); }
+.modal-backdrop.open { display:flex; }
+.modal { width:min(540px,100%); max-height:88vh; overflow-y:auto; background:#ffffff; border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+.modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.modal-head h3 { margin:0; font-size:17px; color: #212529; }
+.close { border:0; background:var(--surface-2); color:#212529; width:34px;height:34px;border-radius:10px;font-size:18px; display:grid; place-items:center; }
+.modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+
+.week-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; overflow-x:auto; }
+.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:160px; padding:12px; }
+.day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
+.day-title { font-size:12px; font-weight:750; margin-bottom:2px; color: #212529; }
+.day-date { color:var(--muted); font-size:11px; margin-bottom:10px; }
+.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px 10px; margin-bottom:8px; }
+.lesson-card b { display:block; font-size:11px; color: #212529; }
+.lesson-card small { display:block; color:var(--muted); font-size:10px; margin-top:3px; }
+.lesson-card-actions { display:flex; gap:8px; margin-top:4px; }
+.lesson-card-actions button { border:0; background:transparent; padding:0; font-size:10px; font-weight:600; }
+
 @media(max-width:850px) {
   .layout { display:block; }
-  aside { flex-direction:row; justify-content:space-between; padding:12px; }
-  .side-note { display:none; }
-  main { padding:16px; }
+  aside { padding: 12px 14px; position: sticky; top: 0; z-index: 50; flex-direction: row; align-items: center; justify-content: space-between; gap: 0; border-bottom:1px solid rgba(255,255,255,.1); }
+  .brand-copy, .nav-label, .side-note { display: none; }
+  .brand-mark { width:34px; height:34px; font-size:18px; }
+  nav { display: flex; gap: 4px; overflow-x: auto; max-width: calc(100vw - 70px); -webkit-overflow-scrolling: touch; }
+  .nav-btn { padding: 8px 12px; font-size: 12px; white-space: nowrap; border-radius: 8px; }
+  .nav-icon { display: none; }
+  main { padding: 16px 14px 40px; }
+  .topbar { margin-bottom: 16px; gap: 8px; }
+  .top-actions { width: 100%; justify-content: space-between; }
+  .date-chip { display: none; }
+  .primary-btn, .secondary-btn { flex: 1; min-height: 44px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat { padding: 14px; }
+  .stat-value { font-size: 20px; }
+  .modal { padding: 16px; }
 }
 </style>
 </head>
@@ -62,64 +140,67 @@ td { padding:12px 14px; border-top:1px solid var(--line); font-size:12px; }
 <div id="app">
 <div class="layout">
 <aside>
-  <div class="brand"><div class="brand-mark">♬</div><strong>Gitara Kursu</strong></div>
+  <div class="brand"><div class="brand-mark">♬</div><div class="brand-copy"><strong>Gitara Kursu</strong><small>Xırdalan · İdarəetmə</small></div></div>
   <nav>
-    <button class="nav-btn active" data-page="dashboard">▦ İcmal</button>
-    <button class="nav-btn" data-page="students">♙ Tələbələr</button>
-    <button class="nav-btn" data-page="schedule">▦ Cədvəl</button>
-    <button class="nav-btn" data-page="attendance">✓ Davamiyyət</button>
-    <button class="nav-btn" data-page="payments">₼ Ödənişlər</button>
+    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span><span>İcmal</span></button>
+    <button class="nav-btn" data-page="students"><span class="nav-icon">♙</span><span>Tələbələr</span></button>
+    <button class="nav-btn" data-page="schedule"><span class="nav-icon">▦</span><span>Cədvəl</span></button>
+    <button class="nav-btn" data-page="attendance"><span class="nav-icon">✓</span><span>Davamiyyət</span></button>
+    <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span>Ödənişlər</span></button>
+    <button class="nav-btn" data-page="statistics"><span class="nav-icon">▤</span><span>Statistika</span></button>
   </nav>
-  <div class="side-note">Bulud Sinxronizasiyası</div>
+  <div class="side-note"><b>Bulud Sinxronizasiyası</b>Məlumatlar onlayn bazada saxlanılır.</div>
 </aside>
 <main>
-  <header class="topbar">
-    <div><h1 id="pageTitle">İcmal</h1></div>
-    <div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div>
-  </header>
+  <header class="topbar"><div><div class="eyebrow">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><div class="date-chip" id="dateChip"></div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
 
   <section class="page active" id="dashboard">
     <div class="stats">
-      <div class="stat"><div>Aktiv tələbələr</div><div class="stat-value" id="statStudents">0</div></div>
-      <div class="stat"><div>Bu ay gəlir</div><div class="stat-value" id="statIncome">0 ₼</div></div>
+      <div class="stat"><div class="stat-top">Aktiv tələbələr <span class="stat-icon">♙</span></div><div class="stat-value" id="statStudents">0</div><div class="stat-foot">Qeydiyyatda olanlar</div></div>
+      <div class="stat"><div class="stat-top">Bu ay gəlir <span class="stat-icon">₼</span></div><div class="stat-value" id="statIncome">0 ₼</div><div class="stat-foot">Ödənişlər</div></div>
+      <div class="stat"><div class="stat-top">Bu gün dərslər <span class="stat-icon">♫</span></div><div class="stat-value" id="statLessons">0</div><div class="stat-foot">Cədvəldə</div></div>
+      <div class="stat"><div class="stat-top">Ödəniş gözləyənlər <span class="stat-icon">◷</span></div><div class="stat-value" id="statDue">0</div><div class="stat-foot">Cari ay</div></div>
+    </div>
+    <div class="content-grid">
+      <div class="panel"><div class="panel-head"><h3>Yaxın dərslər</h3></div><div id="upcomingList" class="empty"><div class="empty-icon">♫</div>Hələ dərs əlavə edilməyib.</div></div>
+      <div class="panel"><div class="panel-head"><h3>Son ödənişlər</h3></div><div id="recentPayments" class="empty"><div class="empty-icon">₼</div>Hələ ödəniş yoxdur.</div></div>
     </div>
   </section>
 
   <section class="page" id="students">
-    <div class="section-head"><h2>Tələbələr</h2><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>QEYDİYYAT</th><th>PAKET</th><th>AYLIQ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
+    <div class="section-head"><div><h2>Tələbələr</h2><p>Tələbə məlumatları və paket sayı.</p></div><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
+    <div class="toolbar"><input class="search" id="studentSearch" placeholder="Ad və ya telefon üzrə axtar..."><select id="studentFilter" style="max-width:140px"><option value="all">Hamısı</option><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>QEYDİYYAT</th><th>PAKET DƏRS</th><th>AYLIQ ÖDƏNİŞ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="studentsBody"><tr><td colspan="7" class="empty">Tələbə yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="schedule">
-    <div class="section-head"><h2>Cədvəl</h2><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
+    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2><p>Saatlar, günlər və dəqiqələr.</p></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
     <div class="week-grid" id="weekGrid"></div>
   </section>
 
   <section class="page" id="attendance">
-    <div class="section-head"><h2>Davamiyyət</h2><button class="primary-btn" id="addAttendance">＋ Qeyd et</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>İŞTİRAK</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
+    <div class="section-head"><div><h2>Davamiyyət və İştirak</h2><p>Tələbələrin dərsdə iştirakını qeyd edin.</p></div><button class="primary-btn" id="addAttendance">＋ Davamiyyət Qeyd Et</button></div>
+    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>İŞTİRAK VƏZİYYƏTİ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="4" class="empty">Davamiyyət qeydi yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="payments">
-    <div class="section-head"><h2>Ödənişlər və Paketlər</h2><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN</th><th>QALAN</th><th>TARİX</th><th>MƏBLƏĞ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
+    <div class="section-head"><div><h2>Ödənişlər və Paket İzləmə</h2><p>Paketdə keçilən və qalan dərslər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
+    <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))"><div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
+    <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:170px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>ÖDƏNİŞ TARİXİ</th><th>MƏBLƏĞ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
+  </section>
+
+  <section class="page" id="statistics">
+    <div class="section-head"><div><h2>Statistika</h2><p>Gəlir xülasəsi.</p></div></div>
+    <div class="stats"><div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value" id="totalIncome">0 ₼</div></div><div class="stat"><div class="stat-top">Ödəniş sayı</div><div class="stat-value" id="paymentCount">0</div></div><div class="stat"><div class="stat-top">Aktiv tələbə</div><div class="stat-value" id="activeCount">0</div></div></div>
   </section>
 </main>
 </div>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="modal-head"><h3 id="modalTitle">Qeyd</h3><button class="close" id="closeModal">×</button></div>
-    <form id="modalForm"><div id="modalFields"></div>
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
-        <button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button>
-        <button type="submit" class="primary-btn">Yadda saxla</button>
-      </div>
-    </form>
-  </div>
-</div>
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions" id="modalActionsArea"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
 
+<!-- Firebase SDK (Modular v10) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -131,161 +212,584 @@ const firebaseConfig = {
   projectId: "gitara-kursu",
   storageBucket: "gitara-kursu.firebasestorage.app",
   messagingSenderId: "1018395422952",
-  appId: "1:1018395422952:web:dd1ac19551878141cc195d"
+  appId: "1:1018395422952:web:dd1ac19551878141cc195d",
+  measurementId: "G-RLL2VZ35RX"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
 const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
+const monthNamesAz = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+
+const today = new Date();
+const isoToday = d => { const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
+const monthNow = isoToday(today).slice(0,7);
+
+function formatAzDate(dStr) {
+  if (!dStr) return '—';
+  const parts = dStr.split('-');
+  if (parts.length !== 3) return dStr;
+  const year = parts[0];
+  const month = monthNamesAz[parseInt(parts[1], 10) - 1] || parts[1];
+  const day = parseInt(parts[2], 10);
+  return `${day} ${month} ${year}`;
+}
 
 let data = {students:[], lessons:[], payments:[], attendance:[]};
 let modalSave = null;
 
-onValue(ref(db, 'kursData'), (snapshot) => {
-  const d = snapshot.val();
-  if (d) { data = { students: d.students||[], lessons: d.lessons||[], payments: d.payments||[], attendance: d.attendance||[] }; }
+const dbRef = ref(db, 'kursData');
+onValue(dbRef, (snapshot) => {
+  const serverData = snapshot.val();
+  if (serverData) {
+    data = {
+      students: serverData.students || [],
+      lessons: serverData.lessons || [],
+      payments: serverData.payments || [],
+      attendance: serverData.attendance || []
+    };
+  }
   renderAll();
 });
 
-function saveData() { set(ref(db, 'kursData'), data); }
+function saveData() {
+  set(ref(db, 'kursData'), data).catch((error) => {
+    console.error("Yadda saxlama xətası: ", error);
+    alert("Məlumat yadda saxlanılarkən xəta baş verdi!");
+  });
+}
 
-document.querySelectorAll('.nav-btn').forEach(btn => {
+document.getElementById('dateChip').textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}, ${days[today.getDay() === 0 ? 6 : today.getDay() - 1]}`;
+
+const navBtns = document.querySelectorAll('.nav-btn');
+const pages = document.querySelectorAll('.page');
+
+navBtns.forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    navBtns.forEach(b => b.classList.remove('active'));
+    pages.forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
-    const pId = btn.getAttribute('data-page');
-    document.getElementById(pId).classList.add('active');
-    document.getElementById('pageTitle').textContent = btn.textContent;
+    const pageId = btn.getAttribute('data-page');
+    document.getElementById(pageId).classList.add('active');
+    
+    const titles = {
+      dashboard: 'İcmal',
+      students: 'Tələbələr',
+      schedule: 'Dərs cədvəli',
+      attendance: 'Davamiyyət',
+      payments: 'Ödənişlər və Paketlər',
+      statistics: 'Statistika'
+    };
+    document.getElementById('pageTitle').textContent = titles[pageId] || 'İdarəetmə';
   });
 });
 
 function renderAll() {
-  document.getElementById('statStudents').textContent = data.students.filter(s=>s.status==='active').length;
-  document.getElementById('statIncome').textContent = data.payments.reduce((sum,p)=>sum+Number(p.amount||0),0) + ' ₼';
+  renderDashboard();
+  renderStudents();
+  renderSchedule();
+  renderAttendance();
+  renderPayments();
+  renderStatistics();
+}
+
+function renderDashboard() {
+  const activeStudents = data.students.filter(s => s.status === 'active');
+  document.getElementById('statStudents').textContent = activeStudents.length;
   
-  // Tələbələr
-  document.getElementById('studentsBody').innerHTML = data.students.map(s => `
-    <tr><td><b>${s.name}</b></td><td>${s.phone||'—'}</td><td>${s.regDate||'—'}</td><td>${s.packageLessons||8} dərs</td><td>${s.monthlyFee||0} ₼</td>
-    <td><span class="pill">${s.status==='active'?'Aktiv':'Passiv'}</span></td>
-    <td><div class="actions"><button class="mini-btn" style="color:var(--green);" onclick="editStudent('${s.id}')">Redaktə</button><button class="mini-btn" style="color:var(--red);" onclick="deleteStudent('${s.id}')">Sil</button></div></td></tr>
+  const currentMonthStr = monthNow;
+  const monthPayments = data.payments.filter(p => (p.month || '').startsWith(currentMonthStr));
+  const totalIncome = monthPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  document.getElementById('statIncome').textContent = totalIncome + ' ₼';
+  
+  const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
+  const todayDayName = days[dayIndex];
+  const todaysLessons = data.lessons.filter(l => l.day === todayDayName);
+  document.getElementById('statLessons').textContent = todaysLessons.length;
+  
+  document.getElementById('statDue').textContent = activeStudents.filter(s => {
+    const paid = data.payments.some(p => p.studentId === s.id && (p.month || '').startsWith(currentMonthStr));
+    return !paid;
+  }).length;
+
+  const upcomingList = document.getElementById('upcomingList');
+  if (todaysLessons.length === 0) {
+    upcomingList.className = 'empty';
+    upcomingList.innerHTML = '<div class="empty-icon">♫</div>Bu gün üçün dərs yoxdur.';
+  } else {
+    upcomingList.className = '';
+    upcomingList.innerHTML = todaysLessons.map(l => `
+      <div class="list-row">
+        <div class="avatar">♫</div>
+        <div class="row-main">
+          <b>${l.studentName || 'Tələbə'} (${l.lessonType || 'Fərdi'} - ${l.duration || '60'} dəq)</b>
+          <small>${l.time} — ${l.subject || 'Gitara'}</small>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const recentPayments = document.getElementById('recentPayments');
+  if (data.payments.length === 0) {
+    recentPayments.className = 'empty';
+    recentPayments.innerHTML = '<div class="empty-icon">₼</div>Hələ ödəniş yoxdur.';
+  } else {
+    recentPayments.className = '';
+    recentPayments.innerHTML = data.payments.slice(-5).reverse().map(p => `
+      <div class="list-row">
+        <div class="avatar" style="background:#ebfbee; color:#2b8a3e;">₼</div>
+        <div class="row-main">
+          <b>${p.studentName} — ${p.amount} ₼</b>
+          <small>${formatAzDate(p.date)} (${p.method || 'Nağd'})</small>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderStudents() {
+  const tbody = document.getElementById('studentsBody');
+  const search = (document.getElementById('studentSearch').value || '').toLowerCase();
+  const filter = document.getElementById('studentFilter').value;
+
+  let filtered = data.students.filter(s => {
+    const matchText = (s.name + ' ' + s.phone).toLowerCase().includes(search);
+    if (filter === 'active') return matchText && s.status === 'active';
+    if (filter === 'inactive') return matchText && s.status === 'inactive';
+    return matchText;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Tələbə tapılmadı.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(s => `
+    <tr>
+      <td><b>${s.name}</b></td>
+      <td>${s.phone || '—'}</td>
+      <td>${formatAzDate(s.regDate)}</td>
+      <td>${s.packageLessons || 8} dərs</td>
+      <td>${s.monthlyFee || 0} ₼</td>
+      <td><span class="pill ${s.status === 'active' ? 'paid' : 'absent'}">${s.status === 'active' ? 'Aktiv' : 'Passiv'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="mini-btn" style="color:var(--green);" onclick="editStudent('${s.id}')">Redaktə</button>
+          <button class="mini-btn" style="color:var(--red);" onclick="deleteStudent('${s.id}')">Sil</button>
+        </div>
+      </td>
+    </tr>
   `).join('');
+}
 
-  // Cədvəl
-  document.getElementById('weekGrid').innerHTML = days.map(d => {
-    const dLessons = data.lessons.filter(l => l.day === d);
-    return `<div class="day-col"><b>${d}</b><div style="margin-top:10px;">${dLessons.map(l=>`
-      <div class="lesson-card"><b>${l.studentName}</b><small style="display:block;">${l.time} (${l.lessonType||'Fərdi'} - ${l.duration||60} dəq)</small>
-      <div style="margin-top:4px;"><button style="color:var(--green); border:0; background:none;" onclick="editLesson('${l.id}')">Redaktə</button> <button style="color:var(--red); border:0; background:none;" onclick="deleteLesson('${l.id}')">Sil</button></div></div>
-    `).join('')}</div></div>`;
-  }).join('');
+function renderSchedule() {
+  const weekGrid = document.getElementById('weekGrid');
+  const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
 
-  // Davamiyyət
-  document.getElementById('attendanceBody').innerHTML = data.attendance.slice().reverse().map(a => `
-    <tr><td>${a.date}</td><td><b>${a.studentName}</b></td><td><span class="pill">${a.status}</span></td>
-    <td><div class="actions"><button class="mini-btn" style="color:var(--green);" onclick="editAttendance('${a.id}')">Redaktə</button><button class="mini-btn" style="color:var(--red);" onclick="deleteAttendance('${a.id}')">Sil</button></div></td></tr>
-  `).join('');
-
-  // Ödənişlər
-  document.getElementById('paymentsBody').innerHTML = data.students.filter(s=>s.status==='active').map(s => {
-    const attCount = data.attendance.filter(a=>a.studentId===s.id && a.status==='İştirak etdi').length;
-    const totalPkg = Number(s.packageLessons||8);
-    const pay = data.payments.find(p=>p.studentId===s.id);
-    return `<tr><td><b>${s.name}</b></td><td>${totalPkg} dərs</td><td>${attCount} dərs</td><td><b>${Math.max(0, totalPkg-attCount)} dərs</b></td>
-    <td>${pay?pay.date:'—'}</td><td>${pay?pay.amount+' ₼':'Ödənilməyib'}</td>
-    <td><div class="actions">${pay?`<button class="mini-btn" style="color:var(--green);" onclick="editPayment('${pay.id}')">Redaktə</button><button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${pay.id}')">Sil</button>`:`<button class="mini-btn" onclick="addPay('${s.id}')">＋ Ödəniş</button>`}</div></td></tr>`;
+  weekGrid.innerHTML = days.map((d, idx) => {
+    const dayLessons = data.lessons.filter(l => l.day === d);
+    const isToday = idx === dayIndex;
+    return `
+      <div class="day-col ${isToday ? 'today' : ''}">
+        <div class="day-title">${d}</div>
+        <div class="day-date">${isToday ? 'Bu gün' : ''}</div>
+        ${dayLessons.length === 0 ? '<div style="color:var(--muted); font-size:11px; margin-top:10px;">Dərs yoxdur</div>' : 
+          dayLessons.map(l => `
+            <div class="lesson-card">
+              <b>${l.studentName}</b>
+              <small>${l.time} (${l.lessonType || 'Fərdi'} - ${l.duration || '60'} dəq)</small>
+              <div class="lesson-card-actions">
+                <button style="color:var(--green);" onclick="editLesson('${l.id}')">Redaktə et</button>
+                <button style="color:var(--red);" onclick="deleteLesson('${l.id}')">Sil</button>
+              </div>
+            </div>
+          `).join('')}
+      </div>
+    `;
   }).join('');
 }
 
+function renderAttendance() {
+  const tbody = document.getElementById('attendanceBody');
+
+  if (data.attendance.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">Davamiyyət qeydi yoxdur.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.attendance.slice().reverse().map(a => `
+    <tr>
+      <td>${formatAzDate(a.date)}</td>
+      <td><b>${a.studentName}</b></td>
+      <td><span class="pill ${a.status === 'İştirak etdi' ? 'paid' : a.status === 'İştirak etmədi' ? 'absent' : 'group'}">${a.status}</span></td>
+      <td>
+        <div class="actions">
+          <button class="mini-btn" style="color:var(--green);" onclick="editAttendance('${a.id}')">Redaktə</button>
+          <button class="mini-btn" style="color:var(--red);" onclick="deleteAttendance('${a.id}')">Sil</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderPayments() {
+  const tbody = document.getElementById('paymentsBody');
+  const search = (document.getElementById('paymentSearch').value || '').toLowerCase();
+  const monthFilter = document.getElementById('paymentMonth').value || monthNow;
+
+  const activeStudents = data.students.filter(s => s.status === 'active');
+  const monthPay = data.payments.filter(p => (p.month || '').startsWith(monthFilter));
+  const totalIn = monthPay.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  
+  document.getElementById('payMonth').textContent = totalIn + ' ₼';
+  const totalExpected = activeStudents.reduce((sum, s) => sum + Number(s.monthlyFee || 0), 0);
+  document.getElementById('payExpected').textContent = totalExpected + ' ₼';
+  document.getElementById('payOutstanding').textContent = Math.max(0, totalExpected - totalIn) + ' ₼';
+
+  if (activeStudents.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Aktiv tələbə yoxdur.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = activeStudents.map(s => {
+    const studentAtt = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak etdi');
+    const attendedCount = studentAtt.length;
+    const totalPkg = Number(s.packageLessons || 8);
+    const remaining = Math.max(0, totalPkg - attendedCount);
+    const studentPay = data.payments.find(p => p.studentId === s.id && (p.month || '').startsWith(monthFilter));
+
+    return `
+      <tr>
+        <td><b>${s.name}</b></td>
+        <td>${totalPkg} dərs</td>
+        <td>${attendedCount} dərs</td>
+        <td><b>${remaining} dərs</b></td>
+        <td>${studentPay ? formatAzDate(studentPay.date) : '—'}</td>
+        <td>${studentPay ? studentPay.amount + ' ₼' : '<span style="color:var(--red)">Ödənilməyib</span>'}</td>
+        <td>
+          <div class="actions">
+            ${studentPay ? `
+              <button class="mini-btn" style="color:var(--green);" onclick="editPayment('${studentPay.id}')">Redaktə</button>
+              <button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${studentPay.id}')">Sil</button>
+            ` : `
+              <button class="mini-btn" onclick="addPaymentForStudent('${s.id}')">＋ Ödəniş qeyd et</button>
+            `}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderStatistics() {
+  const totalInc = data.payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  document.getElementById('totalIncome').textContent = totalInc + ' ₼';
+  document.getElementById('paymentCount').textContent = data.payments.length;
+  document.getElementById('activeCount').textContent = data.students.filter(s => s.status === 'active').length;
+}
+
 const backdrop = document.getElementById('modalBackdrop');
+const modalTitle = document.getElementById('modalTitle');
 const modalFields = document.getElementById('modalFields');
+const modalForm = document.getElementById('modalForm');
+
 document.getElementById('closeModal').onclick = () => backdrop.classList.remove('open');
 document.getElementById('cancelModal').onclick = () => backdrop.classList.remove('open');
 
-// Tələbə Əlavə / Redaktə / Sil
-const openStudent = (st = null) => {
-  document.getElementById('modalTitle').textContent = st ? 'Tələbəni Redaktə Et' : 'Yeni Tələbə';
+document.getElementById('quickAdd').onclick = openAddStudentModal;
+document.getElementById('addStudent').onclick = openAddStudentModal;
+
+function openAddStudentModal() {
+  modalTitle.textContent = 'Yeni tələbə əlavə et';
   modalFields.innerHTML = `
-    <div class="form-grid"><div class="field full"><label>Ad Soyad</label><input type="text" id="mName" value="${st?st.name:''}" required></div>
-    <div class="field"><label>Telefon</label><input type="text" id="mPhone" value="${st?st.phone:''}"></div>
-    <div class="field"><label>Tarix</label><input type="date" id="mReg" value="${st?st.regDate:new Date().toISOString().slice(0,10)}"></div>
-    <div class="field"><label>Paket Dərs</label><input type="number" id="mPkg" value="${st?st.packageLessons:8}"></div>
-    <div class="field"><label>Ödəniş (₼)</label><input type="number" id="mFee" value="${st?st.monthlyFee:80}"></div>
-    <div class="field full"><label>Status</label><select id="mSt"><option value="active" ${st&&st.status==='active'?'selected':''}>Aktiv</option><option value="inactive" ${st&&st.status==='inactive'?'selected':''}>Passiv</option></select></div></div>`;
+    <div class="form-grid">
+      <div class="field full"><label>Ad və Soyad</label><input type="text" id="mName" required placeholder="Məsələn: Əli Məmmədov"></div>
+      <div class="field"><label>Əlaqə nömrəsi</label><input type="text" id="mPhone" placeholder="050-123-45-67"></div>
+      <div class="field"><label>Qeydiyyat tarixi</label><input type="date" id="mRegDate" value="${isoToday(today)}"></div>
+      <div class="field"><label>Paket dərs sayı</label><input type="number" id="mPackage" value="8"></div>
+      <div class="field"><label>Aylıq ödəniş (₼)</label><input type="number" id="mFee" value="80"></div>
+      <div class="field full"><label>Status</label><select id="mStatus"><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
+    </div>
+  `;
   modalSave = () => {
-    if (st) { st.name=mName.value; st.phone=mPhone.value; st.regDate=mReg.value; st.packageLessons=Number(mPkg.value); st.monthlyFee=Number(mFee.value); st.status=mSt.value; }
-    else { data.students.push({ id:'s_'+Date.now(), name:mName.value, phone:mPhone.value, regDate:mReg.value, packageLessons:Number(mPkg.value), monthlyFee:Number(mFee.value), status:mSt.value }); }
-    saveData(); backdrop.classList.remove('open');
+    data.students.push({
+      id: 's_' + Date.now(),
+      name: document.getElementById('mName').value,
+      phone: document.getElementById('mPhone').value,
+      regDate: document.getElementById('mRegDate').value,
+      packageLessons: Number(document.getElementById('mPackage').value),
+      monthlyFee: Number(document.getElementById('mFee').value),
+      status: document.getElementById('mStatus').value
+    });
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+}
+
+window.editStudent = function(id) {
+  const st = data.students.find(s => s.id === id);
+  if (!st) return;
+
+  modalTitle.textContent = 'Tələbəni redaktə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Ad və Soyad</label><input type="text" id="mName" required value="${st.name || ''}"></div>
+      <div class="field"><label>Əlaqə nömrəsi</label><input type="text" id="mPhone" value="${st.phone || ''}"></div>
+      <div class="field"><label>Qeydiyyat tarixi</label><input type="date" id="mRegDate" value="${st.regDate || isoToday(today)}"></div>
+      <div class="field"><label>Paket dərs sayı</label><input type="number" id="mPackage" value="${st.packageLessons || 8}"></div>
+      <div class="field"><label>Aylıq ödəniş (₼)</label><input type="number" id="mFee" value="${st.monthlyFee || 80}"></div>
+      <div class="field full"><label>Status</label><select id="mStatus"><option value="active" ${st.status === 'active' ? 'selected' : ''}>Aktiv</option><option value="inactive" ${st.status === 'inactive' ? 'selected' : ''}>Passiv</option></select></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    st.name = document.getElementById('mName').value;
+    st.phone = document.getElementById('mPhone').value;
+    st.regDate = document.getElementById('mRegDate').value;
+    st.packageLessons = Number(document.getElementById('mPackage').value);
+    st.monthlyFee = Number(document.getElementById('mFee').value);
+    st.status = document.getElementById('mStatus').value;
+
+    saveData();
+    backdrop.classList.remove('open');
   };
   backdrop.classList.add('open');
 };
 
-document.getElementById('quickAdd').onclick = () => openStudent();
-document.getElementById('addStudent').onclick = () => openStudent();
-window.editStudent = (id) => openStudent(data.students.find(s=>s.id===id));
-window.deleteStudent = (id) => { if(confirm('Silinsin?')){ data.students=data.students.filter(s=>s.id!==id); saveData(); } };
+window.deleteStudent = function(id) {
+  if (confirm('Bu tələbəni silmək istədiyinizə əminsiniz?')) {
+    data.students = data.students.filter(s => s.id !== id);
+    saveData();
+  }
+};
 
-// Cədvəl Dərs Əlavə / Redaktə / Sil
-const openLesson = (l = null) => {
-  document.getElementById('modalTitle').textContent = l ? 'Dərsi Redaktə Et' : 'Yeni Dərs';
+document.getElementById('addLesson').onclick = () => {
+  if (data.students.length === 0) {
+    alert('Əvvəlcə tələbə əlavə etməlisiniz!');
+    return;
+  }
+  modalTitle.textContent = 'Yeni dərs əlavə et (Cədvəl)';
   modalFields.innerHTML = `
-    <div class="form-grid"><div class="field full"><label>Tələbə</label><select id="mLSt">${data.students.map(s=>`<option value="${s.id}" ${l&&l.studentId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div>
-    <div class="field"><label>Növ</label><select id="mLType"><option value="Fərdi" ${l&&l.lessonType==='Fərdi'?'selected':''}>Fərdi</option><option value="Qrup" ${l&&l.lessonType==='Qrup'?'selected':''}>Qrup</option></select></div>
-    <div class="field"><label>Müddət (dəq)</label><input type="number" id="mLDur" value="${l?l.duration:60}"></div>
-    <div class="field"><label>Gün</label><select id="mLDay">${days.map(d=>`<option value="${d}" ${l&&l.day===d?'selected':''}>${d}</option>`).join('')}</select></div>
-    <div class="field"><label>Saat</label><input type="time" id="mLTime" value="${l?l.time:'15:00'}"></div></div>`;
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mLStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Dərs növü</label><select id="mLLessonType"><option value="Fərdi">Fərdi</option><option value="Qrup">Qrup</option></select></div>
+      <div class="field"><label>Müddət (dəqiqə ilə)</label><input type="number" id="mLDuration" value="60" placeholder="Məs: 45, 60"></div>
+      <div class="field"><label>Həftənin günü</label><select id="mLDay">${days.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
+      <div class="field"><label>Saat</label><input type="time" id="mLTime" value="15:00"></div>
+    </div>
+  `;
   modalSave = () => {
-    const st = data.students.find(x=>x.id===mLSt.value);
-    if(l){ l.studentId=mLSt.value; l.studentName=st?st.name:''; l.lessonType=mLType.value; l.duration=mLDur.value; l.day=mLDay.value; l.time=mLTime.value; }
-    else{ data.lessons.push({ id:'l_'+Date.now(), studentId:mLSt.value, studentName:st?st.name:'', lessonType:mLType.value, duration:mLDur.value, day:mLDay.value, time:mLTime.value }); }
-    saveData(); backdrop.classList.remove('open');
+    const sId = document.getElementById('mLStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    data.lessons.push({
+      id: 'l_' + Date.now(),
+      studentId: sId,
+      studentName: st ? st.name : '',
+      lessonType: document.getElementById('mLLessonType').value,
+      duration: document.getElementById('mLDuration').value,
+      day: document.getElementById('mLDay').value,
+      time: document.getElementById('mLTime').value,
+      subject: 'Gitara dərsi'
+    });
+    saveData();
+    backdrop.classList.remove('open');
   };
   backdrop.classList.add('open');
 };
-document.getElementById('addLesson').onclick = () => openLesson();
-window.editLesson = (id) => openLesson(data.lessons.find(l=>l.id===id));
-window.deleteLesson = (id) => { if(confirm('Silinsin?')){ data.lessons=data.lessons.filter(l=>l.id!==id); saveData(); } };
 
-// Davamiyyət
-const openAtt = (a = null) => {
-  document.getElementById('modalTitle').textContent = a ? 'Davamiyyəti Redaktə Et' : 'Davamiyyət Qeyd Et';
+window.editLesson = function(id) {
+  const lesson = data.lessons.find(l => l.id === id);
+  if (!lesson) return;
+
+  modalTitle.textContent = 'Dərsi redaktə et';
   modalFields.innerHTML = `
-    <div class="form-grid"><div class="field full"><label>Tələbə</label><select id="mASt">${data.students.map(s=>`<option value="${s.id}" ${a&&a.studentId===s.id?'selected':''}>${s.name}</option>`).join('')}</select></div>
-    <div class="field"><label>Tarix</label><input type="date" id="mADate" value="${a?a.date:new Date().toISOString().slice(0,10)}"></div>
-    <div class="field"><label>İştirak</label><select id="mASts"><option value="İştirak etdi" ${a&&a.status==='İştirak etdi'?'selected':''}>İştirak etdi</option><option value="İştirak etmədi" ${a&&a.status==='İştirak etmədi'?'selected':''}>İştirak etmədi</option></select></div></div>`;
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mLStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === lesson.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Dərs növü</label><select id="mLLessonType"><option value="Fərdi" ${lesson.lessonType === 'Fərdi' ? 'selected' : ''}>Fərdi</option><option value="Qrup" ${lesson.lessonType === 'Qrup' ? 'selected' : ''}>Qrup</option></select></div>
+      <div class="field"><label>Müddət (dəqiqə)</label><input type="number" id="mLDuration" value="${lesson.duration || 60}"></div>
+      <div class="field"><label>Həftənin günü</label><select id="mLDay">${days.map(d => `<option value="${d}" ${d === lesson.day ? 'selected' : ''}>${d}</option>`).join('')}</select></div>
+      <div class="field"><label>Saat</label><input type="time" id="mLTime" value="${lesson.time || '15:00'}"></div>
+    </div>
+  `;
+
   modalSave = () => {
-    const st = data.students.find(x=>x.id===mASt.value);
-    if(a){ a.studentId=mASt.value; a.studentName=st?st.name:''; a.date=mADate.value; a.status=mASts.value; }
-    else{ data.attendance.push({ id:'a_'+Date.now(), studentId:mASt.value, studentName:st?st.name:'', date:mADate.value, status:mASts.value }); }
-    saveData(); backdrop.classList.remove('open');
+    const sId = document.getElementById('mLStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    
+    lesson.studentId = sId;
+    lesson.studentName = st ? st.name : '';
+    lesson.lessonType = document.getElementById('mLLessonType').value;
+    lesson.duration = document.getElementById('mLDuration').value;
+    lesson.day = document.getElementById('mLDay').value;
+    lesson.time = document.getElementById('mLTime').value;
+
+    saveData();
+    backdrop.classList.remove('open');
   };
   backdrop.classList.add('open');
 };
-document.getElementById('addAttendance').onclick = () => openAtt();
-window.editAttendance = (id) => openAtt(data.attendance.find(a=>a.id===id));
-window.deleteAttendance = (id) => { if(confirm('Silinsin?')){ data.attendance=data.attendance.filter(a=>a.id!==id); saveData(); } };
 
-// Ödəniş
-const openPayModal = (p = null, sId = null) => {
-  document.getElementById('modalTitle').textContent = p ? 'Ödənişi Redaktə Et' : 'Ödəniş Əlavə Et';
+window.deleteLesson = function(id) {
+  if (confirm('Bu dərsi cədvəldən silmək istədiyinizə əminsiniz?')) {
+    data.lessons = data.lessons.filter(l => l.id !== id);
+    saveData();
+  }
+};
+
+document.getElementById('addAttendance').onclick = () => {
+  if (data.students.length === 0) {
+    alert('Tələbə yoxdur!');
+    return;
+  }
+  modalTitle.textContent = 'Davamiyyət Qeyd Et';
   modalFields.innerHTML = `
-    <div class="form-grid"><div class="field full"><label>Tələbə</label><select id="mPSt">${data.students.map(s=>`<option value="${s.id}" ${(p&&p.studentId===s.id)||(sId===s.id)?'selected':''}>${s.name}</option>`).join('')}</select></div>
-    <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmt" value="${p?p.amount:80}"></div>
-    <div class="field"><label>Tarix</label><input type="date" id="mPDate" value="${p?p.date:new Date().toISOString().slice(0,10)}"></div></div>`;
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mAStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Ayın Tarixi</label><input type="date" id="mADate" value="${isoToday(today)}"></div>
+      <div class="field"><label>İştirak vəziyyəti</label><select id="mAStatus"><option value="İştirak etdi">İştirak etdi</option><option value="İştirak etmədi">İştirak etmədi</option><option value="Üzrlü səbəb">Üzrlü səbəb</option></select></div>
+    </div>
+  `;
   modalSave = () => {
-    const st = data.students.find(x=>x.id===mPSt.value);
-    if(p){ p.studentId=mPSt.value; p.studentName=st?st.name:''; p.amount=Number(mPAmt.value); p.date=mPDate.value; }
-    else{ data.payments.push({ id:'p_'+Date.now(), studentId:mPSt.value, studentName:st?st.name:'', amount:Number(mPAmt.value), date:mPDate.value }); }
-    saveData(); backdrop.classList.remove('open');
+    const sId = document.getElementById('mAStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    data.attendance.push({
+      id: 'a_' + Date.now(),
+      studentId: sId,
+      studentName: st ? st.name : '',
+      date: document.getElementById('mADate').value,
+      status: document.getElementById('mAStatus').value
+    });
+    saveData();
+    backdrop.classList.remove('open');
   };
   backdrop.classList.add('open');
 };
-document.getElementById('addPayment').onclick = () => openPayModal();
-window.addPay = (sId) => openPayModal(null, sId);
-window.editPayment = (id) => openPayModal(data.payments.find(p=>p.id===id));
-window.deletePayment = (id) => { if(confirm('Silinsin?')){ data.payments=data.payments.filter(p=>p.id!==id); saveData(); } };
 
-document.getElementById('modalForm').onsubmit = (e) => { e.preventDefault(); if(modalSave) modalSave(); };
+window.editAttendance = function(id) {
+  const att = data.attendance.find(a => a.id === id);
+  if (!att) return;
+
+  modalTitle.textContent = 'Davamiyyəti redaktə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mAStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === att.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Ayın Tarixi</label><input type="date" id="mADate" value="${att.date || isoToday(today)}"></div>
+      <div class="field"><label>İştirak vəziyyəti</label><select id="mAStatus"><option value="İştirak etdi" ${att.status === 'İştirak etdi' ? 'selected' : ''}>İştirak etdi</option><option value="İştirak etmədi" ${att.status === 'İştirak etmədi' ? 'selected' : ''}>İştirak etmədi</option><option value="Üzrlü səbəb" ${att.status === 'Üzrlü səbəb' ? 'selected' : ''}>Üzrlü səbəb</option></select></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    const sId = document.getElementById('mAStudent').value;
+    const st = data.students.find(x => x.id === sId);
+
+    att.studentId = sId;
+    att.studentName = st ? st.name : '';
+    att.date = document.getElementById('mADate').value;
+    att.status = document.getElementById('mAStatus').value;
+
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
+window.deleteAttendance = function(id) {
+  if (confirm('Bu davamiyyət qeydini silmək istədiyinizə əminsiniz?')) {
+    data.attendance = data.attendance.filter(a => a.id !== id);
+    saveData();
+  }
+};
+
+document.getElementById('addPayment').onclick = () => openPaymentModal();
+
+window.addPaymentForStudent = function(studentId) {
+  openPaymentModal(studentId);
+};
+
+window.editPayment = function(id) {
+  const pay = data.payments.find(p => p.id === id);
+  if (!pay) return;
+
+  modalTitle.textContent = 'Ödənişi redaktə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === pay.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="${pay.amount || 80}"></div>
+      <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${pay.date || isoToday(today)}"></div>
+      <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${pay.month || monthNow}"></div>
+      <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd" ${pay.method === 'Nağd' ? 'selected' : ''}>Nağd</option><option value="Kart" ${pay.method === 'Kart' ? 'selected' : ''}>Kart</option><option value="Köçürmə" ${pay.method === 'Köçürmə' ? 'selected' : ''}>Köçürmə</option></select></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    const sId = document.getElementById('mPStudent').value;
+    const st = data.students.find(x => x.id === sId);
+
+    pay.studentId = sId;
+    pay.studentName = st ? st.name : '';
+    pay.amount = Number(document.getElementById('mPAmount').value);
+    pay.date = document.getElementById('mPDate').value;
+    pay.month = document.getElementById('mPMonth').value;
+    pay.method = document.getElementById('mPMethod').value;
+
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
+function openPaymentModal(selectedStudentId = null) {
+  if (data.students.length === 0) {
+    alert('Tələbə yoxdur!');
+    return;
+  }
+  modalTitle.textContent = 'Ödəniş əlavə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === selectedStudentId ? 'selected' : ''}>${s.name} (${s.monthlyFee || 0} ₼)</option>`).join('')}</select></div>
+      <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="80"></div>
+      <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${isoToday(today)}"></div>
+      <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${monthNow}"></div>
+      <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd">Nağd</option><option value="Kart">Kart</option><option value="Köçürmə">Köçürmə</option></select></div>
+    </div>
+  `;
+  modalSave = () => {
+    const sId = document.getElementById('mPStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    data.payments.push({
+      id: 'p_' + Date.now(),
+      studentId: sId,
+      studentName: st ? st.name : '',
+      amount: Number(document.getElementById('mPAmount').value),
+      date: document.getElementById('mPDate').value,
+      month: document.getElementById('mPMonth').value,
+      method: document.getElementById('mPMethod').value
+    });
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+}
+
+window.deletePayment = function(id) {
+  if (confirm('Bu ödənişi silmək istədiyinizə əminsiniz?')) {
+    data.payments = data.payments.filter(p => p.id !== id);
+    saveData();
+  }
+};
+
+modalForm.onsubmit = (e) => {
+  e.preventDefault();
+  if (modalSave) modalSave();
+};
+
+document.getElementById('studentSearch').oninput = renderStudents;
+document.getElementById('studentFilter').onchange = renderStudents;
+document.getElementById('paymentSearch').oninput = renderPayments;
+document.getElementById('paymentMonth').onchange = renderPayments;
+document.getElementById('paymentMonth').value = monthNow;
 </script>
 </body>
 </html>
