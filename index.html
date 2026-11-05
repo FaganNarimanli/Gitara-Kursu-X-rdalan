@@ -14,23 +14,19 @@
   --site-on-background: #202923;
   --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --site-heading-scale: 1;
-  --site-spacing-scale: 1;
-  --site-radius-scale: 1;
-  --site-decoration-opacity: 1;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: var(--site-font-body); background: #f8f9fa; color: #212529; }
-#app { min-height: 100vh; width: 100%; border-radius: 0; background-color: #f8f9fa; color: #212529; }
-:root { --surface: #ffffff; --surface-2: #f1f3f5; --line: #dee2e6; --muted: #6c757d; --green: #2b4c3f; --green-ink: #ffffff; --red: #c92a2a; --amber: #f08c00; --shadow: 0 10px 30px rgba(0,0,0,.05); }
+#app { min-height: 100vh; width: 100%; background-color: #f8f9fa; color: #212529; }
+:root { --surface: #ffffff; --surface-2: #f1f3f5; --line: #dee2e6; --muted: #6c757d; --green: #2b4c3f; --red: #c92a2a; --amber: #f08c00; --shadow: 0 10px 30px rgba(0,0,0,.05); }
 button, input, select, textarea { font: inherit; color: #212529; }
 button { cursor: pointer; }
 .layout { display: grid; grid-template-columns: 248px minmax(0,1fr); min-height: 100vh; }
-aside { background: var(--site-primary); color: var(--site-on-primary); padding: calc(25px * var(--site-spacing-scale)) 16px; display: flex; flex-direction: column; gap: 28px; }
+aside { background: var(--site-primary); color: var(--site-on-primary); padding: 25px 16px; display: flex; flex-direction: column; gap: 28px; }
 .brand { display:flex; align-items:center; gap:12px; padding: 0 10px; }
-.brand-mark { width:40px; height:40px; border-radius: calc(13px * var(--site-radius-scale)); display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
-.brand strong { display:block; font-family:var(--site-font-heading); font-size:calc(15px * var(--site-heading-scale)); letter-spacing:-.3px; }
+.brand-mark { width:40px; height:40px; border-radius: 13px; display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
+.brand strong { display:block; font-size:15px; }
 .brand small { display:block; opacity:.66; font-size:11px; margin-top:3px; }
 .nav-label { color:rgba(255,255,255,.48); text-transform:uppercase; letter-spacing:1.2px; font-size:10px; padding:0 12px; margin-bottom:8px; }
 nav { display:grid; gap:5px; }
@@ -42,30 +38,28 @@ nav { display:grid; gap:5px; }
 main { min-width:0; padding: 30px clamp(18px,3.5vw,48px) 50px; }
 .topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:30px; }
 .eyebrow { color:var(--muted); font-size:12px; margin-bottom:6px; }
-h1 { font-family:var(--site-font-heading); font-size:calc(clamp(24px,3vw,31px) * var(--site-heading-scale)); letter-spacing:-1px; margin:0; font-weight:720; color: #212529; }
+h1 { font-size:clamp(24px,3vw,31px); letter-spacing:-1px; margin:0; font-weight:720; color: #212529; }
 .top-actions { display:flex; gap:9px; align-items:center; }
 .date-chip { color:var(--muted); font-size:12px; background:var(--surface); border:1px solid var(--line); padding:10px 13px; border-radius:10px; }
-.primary-btn,.secondary-btn,.danger-btn { border:0; border-radius:10px; padding:10px 14px; font-weight:650; font-size:12px; }
+.primary-btn,.secondary-btn { border:0; border-radius:10px; padding:10px 14px; font-weight:650; font-size:12px; }
 .primary-btn { background:var(--site-primary); color:var(--site-on-primary); }
-.secondary-btn { background:var(--surface); color:var(--site-on-background); border:1px solid var(--line); }
-.danger-btn { background:#fff0ee; color:var(--red); }
+.secondary-btn { background:var(--surface); color:#212529; border:1px solid var(--line); }
 .primary-btn:hover { filter:brightness(1.12); }
 .page { display:none; }
 .page.active { display:block; }
 .section-head { display:flex; justify-content:space-between; align-items:end; gap:12px; margin:4px 0 18px; }
-.section-head h2 { font-size:18px; margin:0; letter-spacing:-.4px; color: #212529; }
+.section-head h2 { font-size:18px; margin:0; color: #212529; }
 .section-head p { margin:5px 0 0; color:var(--muted); font-size:12px; }
 .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:23px; }
-.stat { background:var(--surface); border:1px solid var(--line); border-radius:calc(15px * var(--site-radius-scale)); padding:17px; box-shadow:var(--shadow); }
+.stat { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:17px; box-shadow:var(--shadow); }
 .stat-top { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:11px; }
 .stat-icon { width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:var(--surface-2);font-size:15px; }
-.stat-value { font-size:25px; font-weight:750; letter-spacing:-.8px; margin-top:12px; color: #212529; }
+.stat-value { font-size:25px; font-weight:750; margin-top:12px; color: #212529; }
 .stat-foot { color:var(--muted); font-size:10px; margin-top:4px; }
 .content-grid { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(260px,.9fr); gap:16px; }
-.panel { background:var(--surface); border:1px solid var(--line); border-radius:calc(15px * var(--site-radius-scale)); padding:18px; box-shadow:var(--shadow); min-width:0; }
+.panel { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:18px; box-shadow:var(--shadow); }
 .panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
 .panel-head h3 { margin:0; font-size:14px; color: #212529; }
-.panel-head button { border:0; background:transparent; color:var(--green); font-size:11px; font-weight:650; }
 .muted { color:var(--muted); }
 .empty { text-align:center; padding:34px 15px; color:var(--muted); font-size:12px; }
 .empty .empty-icon { font-size:25px; margin-bottom:9px; }
@@ -75,28 +69,19 @@ h1 { font-family:var(--site-font-heading); font-size:calc(clamp(24px,3vw,31px) *
 .row-main b { display:block; font-size:12px; color: #212529; }
 .row-main small { display:block; color:var(--muted); font-size:10px; margin-top:4px; }
 .pill { display:inline-flex; align-items:center; border-radius:30px; padding:5px 8px; font-size:10px; font-weight:650; background:var(--surface-2); color:var(--muted); white-space:nowrap; }
-.pill.paid,.pill.present { background:#ebfbee; color:#2b8a3e; }
-.pill.due,.pill.absent { background:#fff3bf; color:#f08c00; }
+.pill.paid { background:#ebfbee; color:#2b8a3e; }
+.pill.absent { background:#fff3bf; color:#f08c00; }
 .toolbar { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:14px; }
 .search { flex:1; min-width:180px; }
-input,select,textarea { width:100%; background:#ffffff; color:#212529; border:1px solid #ced4da; border-radius:9px; padding:10px 11px; outline:none; font-size:12px; color-scheme: light; }
-input:focus,select:focus,textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(43,76,63,.1); }
+input,select,textarea { width:100%; background:#ffffff; color:#212529; border:1px solid #ced4da; border-radius:9px; padding:10px 11px; outline:none; font-size:12px; }
+input:focus,select:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(43,76,63,.1); }
 .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:11px; background: #ffffff; }
 table { width:100%; border-collapse:collapse; min-width:650px; }
 th { text-align:left; background:var(--surface-2); color:var(--muted); font-size:10px; font-weight:650; padding:11px 12px; }
 td { padding:12px; border-top:1px solid var(--line); font-size:11px; color: #212529; }
 td b { font-size:11px; color: #212529; }
 .actions { display:flex; gap:6px; }
-.mini-btn { border:1px solid var(--line); background:var(--surface); color:var(--site-on-background); border-radius:7px; padding:6px 8px; font-size:10px; }
-.week-grid { display:grid; grid-template-columns:repeat(7,minmax(105px,1fr)); gap:9px; overflow:auto; padding-bottom:5px; }
-.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:190px; padding:10px; }
-.day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
-.day-title { font-size:11px; font-weight:750; margin-bottom:3px; color: #212529; }
-.day-date { color:var(--muted); font-size:10px; margin-bottom:12px; }
-.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px; margin-bottom:7px; }
-.lesson-card b { display:block; font-size:10px; color: #212529; }
-.lesson-card small { display:block; color:var(--muted); font-size:9px; margin-top:4px; }
-.lesson-card button { border:0; background:transparent; padding:5px 0 0; color:var(--green); font-size:9px; }
+.mini-btn { border:1px solid var(--line); background:var(--surface); color:#212529; border-radius:7px; padding:6px 8px; font-size:10px; }
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .field { display:grid; gap:6px; }
 .field label { font-size:11px; font-weight:650; color:var(--muted); }
@@ -106,17 +91,17 @@ td b { font-size:11px; color: #212529; }
 .modal { width:min(560px,100%); max-height:90vh; overflow:auto; background:#ffffff; border:1px solid var(--line); border-radius:17px; padding:21px; box-shadow:0 25px 80px rgba(0,0,0,.15); color: #212529; }
 .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
 .modal-head h3 { margin:0; font-size:17px; color: #212529; }
-.close { border:0; background:var(--surface-2); color:var(--site-on-background); width:30px;height:30px;border-radius:9px;font-size:17px; }
+.close { border:0; background:var(--surface-2); color:#212529; width:30px;height:30px;border-radius:9px;font-size:17px; }
 .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
-.notice { padding:11px 13px; border-radius:10px; background:var(--surface-2); color:var(--muted); font-size:11px; line-height:1.5; margin-bottom:14px; }
-.bar-chart { height:175px; display:flex; align-items:end; gap:10px; padding:10px 2px 0; border-bottom:1px solid var(--line); }
-.bar-col { flex:1; height:100%; display:flex; flex-direction:column; justify-content:end; align-items:center; gap:7px; min-width:0; }
-.bar { width:min(34px,70%); min-height:3px; border-radius:6px 6px 2px 2px; background:var(--green); opacity:.9; }
-.bar-col small { color:var(--muted); font-size:9px; }
-.bar-col span { font-size:9px; color:var(--muted); }
-.mobile-menu { display:none; }
-@media(max-width:900px) { .layout{grid-template-columns:76px minmax(0,1fr)} aside{padding:22px 10px}.brand{justify-content:center;padding:0}.brand-copy,.nav-label,.nav-text,.side-note{display:none}.nav-btn{justify-content:center;padding:13px 8px}.nav-icon{font-size:18px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr} }
-@media(max-width:600px) { .layout{display:block} aside{position:sticky;top:0;z-index:5;padding:8px 10px;display:block}.brand{display:none} nav{display:flex;justify-content:space-around;gap:2px}.nav-btn{padding:9px 10px;flex:1;display:flex;flex-direction:column;gap:3px;font-size:9px}.nav-text{display:block}.nav-icon{font-size:15px}.nav-label,.side-note{display:none} main{padding:20px 14px 38px}.topbar{align-items:flex-start;flex-direction:column;margin-bottom:22px}.top-actions{width:100%;justify-content:space-between}.stats{gap:8px}.stat{padding:13px}.stat-value{font-size:21px}.stat-foot{font-size:9px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-head{align-items:flex-start}.date-chip{display:none} }
+.week-grid { display:grid; grid-template-columns:repeat(7,minmax(105px,1fr)); gap:9px; overflow:auto; padding-bottom:5px; }
+.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:190px; padding:10px; }
+.day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
+.day-title { font-size:11px; font-weight:750; margin-bottom:3px; color: #212529; }
+.day-date { color:var(--muted); font-size:10px; margin-bottom:12px; }
+.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px; margin-bottom:7px; }
+.lesson-card b { display:block; font-size:10px; color: #212529; }
+.lesson-card small { display:block; color:var(--muted); font-size:9px; margin-top:4px; }
+.lesson-card button { border:0; background:transparent; padding:5px 0 0; color:var(--green); font-size:9px; }
 </style>
 </head>
 <body>
@@ -132,60 +117,59 @@ td b { font-size:11px; color: #212529; }
     <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span class="nav-text">Ödənişlər</span></button>
     <button class="nav-btn" data-page="statistics"><span class="nav-icon">▤</span><span class="nav-text">Statistika</span></button>
   </nav></div>
-  <div class="side-note"><b>Kiçik xatırlatma</b>Dərs və ödəniş məlumatlarını mütəmadi yenilə. Məlumatlar bu brauzerdə saxlanılır.</div>
+  <div class="side-note"><b>Kiçik xatırlatma</b>Dərs və ödəniş məlumatları avtomatik yadda saxlanılır.</div>
 </aside>
 <main>
-  <header class="topbar"><div><div class="eyebrow" id="todayLabel">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><div class="date-chip" id="dateChip"></div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
+  <header class="topbar"><div><div class="eyebrow">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><div class="date-chip" id="dateChip"></div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
 
   <section class="page active" id="dashboard">
     <div class="stats">
-      <div class="stat"><div class="stat-top">Aktiv tələbələr <span class="stat-icon">♙</span></div><div class="stat-value" id="statStudents">0</div><div class="stat-foot">Qeydiyyatda olan tələbələr</div></div>
-      <div class="stat"><div class="stat-top">Bu ay gəlir <span class="stat-icon">₼</span></div><div class="stat-value" id="statIncome">0 ₼</div><div class="stat-foot">Qeydə alınmış ödənişlər</div></div>
-      <div class="stat"><div class="stat-top">Bu gün dərslər <span class="stat-icon">♫</span></div><div class="stat-value" id="statLessons">0</div><div class="stat-foot">Cədvəldəki dərslər</div></div>
-      <div class="stat"><div class="stat-top">Ödəniş gözləyənlər <span class="stat-icon">◷</span></div><div class="stat-value" id="statDue">0</div><div class="stat-foot">Cari ay üzrə</div></div>
+      <div class="stat"><div class="stat-top">Aktiv tələbələr <span class="stat-icon">♙</span></div><div class="stat-value" id="statStudents">0</div><div class="stat-foot">Qeydiyyatda olanlar</div></div>
+      <div class="stat"><div class="stat-top">Bu ay gəlir <span class="stat-icon">₼</span></div><div class="stat-value" id="statIncome">0 ₼</div><div class="stat-foot">Ödənişlər</div></div>
+      <div class="stat"><div class="stat-top">Bu gün dərslər <span class="stat-icon">♫</span></div><div class="stat-value" id="statLessons">0</div><div class="stat-foot">Cədvəldə</div></div>
+      <div class="stat"><div class="stat-top">Ödəniş gözləyənlər <span class="stat-icon">◷</span></div><div class="stat-value" id="statDue">0</div><div class="stat-foot">Cari ay</div></div>
     </div>
     <div class="content-grid">
-      <div class="panel"><div class="panel-head"><h3>Yaxın dərslər</h3><button data-goto="schedule">Cədvələ bax →</button></div><div id="upcomingList" class="empty"><div class="empty-icon">♫</div>Hələ dərs əlavə edilməyib.</div></div>
-      <div class="panel"><div class="panel-head"><h3>Son ödənişlər</h3><button data-goto="payments">Hamısına bax →</button></div><div id="recentPayments" class="empty"><div class="empty-icon">₼</div>Hələ ödəniş qeydə alınmayıb.</div></div>
+      <div class="panel"><div class="panel-head"><h3>Yaxın dərslər</h3></div><div id="upcomingList" class="empty"><div class="empty-icon">♫</div>Hələ dərs əlavə edilməyib.</div></div>
+      <div class="panel"><div class="panel-head"><h3>Son ödənişlər</h3></div><div id="recentPayments" class="empty"><div class="empty-icon">₼</div>Hələ ödəniş yoxdur.</div></div>
     </div>
   </section>
 
   <section class="page" id="students">
-    <div class="section-head"><div><h2>Tələbələr</h2><p>Tələbə məlumatlarını əlavə et və idarə et.</p></div><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
-    <div class="toolbar"><input class="search" id="studentSearch" placeholder="Ad, soyad və ya telefon üzrə axtar..."><select id="studentFilter" style="max-width:160px"><option value="all">Bütün tələbələr</option><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
-    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>QEYDİYYAT TARİXİ</th><th>PAKET DƏRS SAYI</th><th>AYLIQ ÖDƏNİŞ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="studentsBody"><tr><td colspan="7" class="empty">Hələ tələbə əlavə edilməyib.</td></tr></tbody></table></div>
+    <div class="section-head"><div><h2>Tələbələr</h2><p>Tələbə məlumatları və paket sayı.</p></div><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
+    <div class="toolbar"><input class="search" id="studentSearch" placeholder="Axtar..."><select id="studentFilter" style="max-width:160px"><option value="all">Hamısı</option><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>QEYDİYYAT</th><th>PAKET DƏRS</th><th>AYLIQ ÖDƏNİŞ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="studentsBody"><tr><td colspan="7" class="empty">Tələbə yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="schedule">
-    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2><p>Tələbələrin dərs günlərini və saatlarını planlaşdır.</p></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
+    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2><p>Saatlar və günlər.</p></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
     <div class="week-grid" id="weekGrid"></div>
   </section>
 
   <section class="page" id="attendance">
-    <div class="section-head"><div><h2>Davamiyyət</h2><p>Keçirilən dərslərdə iştirak vəziyyətini qeyd et və paket hesabını izlə.</p></div><button class="primary-btn" id="addAttendance">＋ Davamiyyət qeyd et</button></div>
-    <div class="toolbar"><input type="month" id="attendanceMonth" style="max-width:190px"></div>
-    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>SON DƏRS TARİXİ</th><th>STATUS</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="6" class="empty">Hələ davamiyyət qeydi yoxdur.</td></tr></tbody></table></div>
+    <div class="section-head"><div><h2>Davamiyyət və Paket İzləmə</h2><p>Keçilen dərsləri əllə daxil edin, qalan dərslər avtomatik hesablanacaq.</p></div></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMÜMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR (ƏLLƏ DAXİL ET)</th><th>QALAN DƏRSLƏR</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="4" class="empty">Aktiv tələbə yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="payments">
-    <div class="section-head"><div><h2>Ödənişlər</h2><p>Tələbə əlavə edildikdə avtomatik yaranan ödənişlər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
-    <div class="stats" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="stat"><div class="stat-top">Bu ay daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Bu ay gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Bu ay ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
-    <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:190px"><input class="search" id="paymentSearch" placeholder="Tələbə üzrə axtar..."></div>
-    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>MƏBLƏĞ</th><th>ÖDƏNİŞ ÜSULU</th><th>AY</th><th>QEYD</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Hələ ödəniş qeydi yoxdur.</td></tr></tbody></table></div>
+    <div class="section-head"><div><h2>Ödənişlər</h2><p>Tələbə əlavə edildikdə avtomatik bura düşür.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
+    <div class="stats" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
+    <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:190px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
+    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>MƏBLƏĞ</th><th>ÖDƏNİŞ ÜSULU</th><th>AY</th><th>QEYD</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="statistics">
-    <div class="section-head"><div><h2>Gəlir statistikası</h2><p>Aylıq daxilolmaların ümumi görünüşü.</p></div><button class="secondary-btn" id="exportCsv">↓ CSV ixrac et</button></div>
-    <div class="stats"><div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value" id="totalIncome">0 ₼</div></div><div class="stat"><div class="stat-top">Orta aylıq gəlir</div><div class="stat-value" id="averageIncome">0 ₼</div></div><div class="stat"><div class="stat-top">Ödəniş sayı</div><div class="stat-value" id="paymentCount">0</div></div><div class="stat"><div class="stat-top">Aktiv tələbə</div><div class="stat-value" id="activeCount">0</div></div></div>
-    <div class="panel"><div class="panel-head"><h3>Son 6 ayın gəliri</h3></div><div class="bar-chart" id="incomeChart"></div></div>
+    <div class="section-head"><div><h2>Statistika</h2><p>Gəlir xülasəsi.</p></div></div>
+    <div class="stats"><div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value" id="totalIncome">0 ₼</div></div><div class="stat"><div class="stat-top">Ödəniş sayı</div><div class="stat-value" id="paymentCount">0</div></div><div class="stat"><div class="stat-top">Aktiv tələbə</div><div class="stat-value" id="activeCount">0</div></div></div>
   </section>
 </main>
 </div>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Yeni qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
+
 <script>
-const STORE_KEY = 'gitara_kursu_manager_v2';
+const STORE_KEY = 'gitara_kursu_manager_v3';
 const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
 const today = new Date();
 const isoToday = d => { const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
@@ -197,9 +181,9 @@ let modalSave = null;
 function loadData(){ 
   try { 
     const item = localStorage.getItem(STORE_KEY);
-    return item ? JSON.parse(item) : {students:[],lessons:[],payments:[],attendance:[]}; 
+    return item ? JSON.parse(item) : {students:[],lessons:[],payments:[],attendedMap:{}}; 
   } catch(e){ 
-    return {students:[],lessons:[],payments:[],attendance:[]}; 
+    return {students:[],lessons:[],payments:[],attendedMap:{}}; 
   } 
 }
 
@@ -215,19 +199,16 @@ function money(n){return (Number(n)||0).toLocaleString('az-AZ',{maximumFractionD
 function student(id){return data.students.find(s=>s.id===id);}
 function shortDate(s){if(!s)return '—';const [y,m,d]=s.split('-');return `${d}.${m}.${y}`;}
 function initials(name){return (name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();}
+
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
-  const titles={dashboard:'Xoş gəldin!',students:'Tələbələrin idarə edilməsi',schedule:'Dərs cədvəli',attendance:'Davamiyyət qeydləri',payments:'Ödənişlərin idarə edilməsi',statistics:'Gəlir statistikası'};
+  const titles={dashboard:'Xoş gəldin!',students:'Tələbələr',schedule:'Dərs cədvəli',attendance:'Davamiyyət',payments:'Ödənişlər',statistics:'Statistika'};
   const el = document.getElementById('pageTitle');
   if(el) el.textContent=titles[id]||'';
 }
 
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.goto)));
-
-const todayLbl = document.getElementById('todayLabel');
-if(todayLbl) todayLbl.textContent='Şəxsi idarəetmə paneli';
 const dateChip = document.getElementById('dateChip');
 if(dateChip) dateChip.textContent=today.toLocaleDateString('az-AZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
@@ -239,8 +220,6 @@ function openModal(title,fields,onSave){
 }
 function closeModal(){
   document.getElementById('modalBackdrop').classList.remove('open');
-  const form = document.getElementById('modalForm');
-  if(form) form.reset();
   modalSave=null;
 }
 document.getElementById('closeModal').onclick=closeModal;
@@ -254,7 +233,7 @@ function studentOptions(){return data.students.filter(s=>s.status!=='Passiv').ma
 
 function addStudentForm(existing=null){
   const s=existing||{};
-  openModal(existing?'Tələbə məlumatlarını redaktə et':'Yeni tələbə əlavə et',`<div class="form-grid">${field('Ad və soyad','name','text',s.name||'')}${field('Telefon nömrəsi','phone','tel',s.phone||'','placeholder="050 000 00 00"')}${field('Qeydiyyat tarixi','joined','date',s.joined||isoToday(today))}${field('Paket dərs sayı','packageSize','number',s.packageSize||'8','min="1" step="1"')}${field('Aylıq ödəniş (AZN)','fee','number',s.fee||'','min="0" step="0.01"')}${selectField('Status','status',['Aktiv','Passiv'].map(x=>({value:x,label:x})),s.status||'Aktiv')}</div>`,v=>{
+  openModal(existing?'Tələbəni redaktə et':'Yeni tələbə',`<div class="form-grid">${field('Ad və soyad','name','text',s.name||'')}${field('Telefon','phone','tel',s.phone||'','placeholder="050 000 00 00"')}${field('Qeydiyyat tarixi','joined','date',s.joined||isoToday(today))}${field('Paket dərs sayı','packageSize','number',s.packageSize||'8','min="1" step="1"')}${field('Aylıq ödəniş (AZN)','fee','number',s.fee||'','min="0" step="0.01"')}${selectField('Status','status',['Aktiv','Passiv'].map(x=>({value:x,label:x})),s.status||'Aktiv')}</div>`,v=>{
     v.packageSize = Number(v.packageSize)||8;
     v.fee = Number(v.fee)||0;
     if(existing){
@@ -282,7 +261,7 @@ if(quickAddBtn) quickAddBtn.onclick=()=>{showPage('students');addStudentForm();}
 function addLessonForm(existing=null){
   if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
   const l=existing||{};
-  openModal(existing?'Dərsi redaktə et':'Cədvələ dərs əlavə et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),l.studentId||'')}${selectField('Həftənin günü','day',days.map((d,i)=>({value:String(i),label:d})),String(l.day??0))}${field('Başlama saatı','time','time',l.time||'10:00')}${field('Müddət (dəqiqə)','duration','number',l.duration||'90','min="15" step="15"')}<div class="field"><label>Qeyd</label><input name="note" value="${esc(l.note||'')}" placeholder="Məsələn: elektro gitara"></div></div>`,v=>{
+  openModal(existing?'Dərsi redaktə et':'Cədvələ dərs əlavə et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),l.studentId||'')}${selectField('Həftənin günü','day',days.map((d,i)=>({value:String(i),label:d})),String(l.day??0))}${field('Saat','time','time',l.time||'10:00')}${field('Müddət (dəq)','duration','number',l.duration||'90','min="15" step="15"')}<div class="field"><label>Qeyd</label><input name="note" value="${esc(l.note||'')}" placeholder="Qeyd"></div></div>`,v=>{
     v.day=Number(v.day);v.duration=Number(v.duration)||90;
     if(existing)Object.assign(existing,v);
     else data.lessons.push({...v,id:crypto.randomUUID()});
@@ -294,7 +273,7 @@ document.getElementById('addLesson').onclick=()=>addLessonForm();
 function addPaymentForm(existing=null){
   if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
   const p=existing||{};
-  openModal(existing?'Ödənişi redaktə et':'Yeni ödəniş qeydi',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),p.studentId||'')}${field('Məbləğ (AZN)','amount','number',p.amount||'','min="0.01" step="0.01"')}${field('Ödəniş tarixi','date','date',p.date||isoToday(today))}${selectField('Ödəniş üsulu','method',['Kart','m10','Nağd','Bank köçürməsi','Digər'].map(x=>({value:x,label:x})),p.method||'Nağd')}${field('Hansı ay üçün','month','month',p.month||monthNow)}<div class="field"><label>Qeyd</label><input name="note" value="${esc(p.note||'')}" placeholder="Məsələn: aylıq ödəniş"></div></div>`,v=>{
+  openModal(existing?'Ödənişi redaktə et':'Yeni ödəniş',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),p.studentId||'')}${field('Məbləş (AZN)','amount','number',p.amount||'','min="0.01" step="0.01"')}${field('Tarix','date','date',p.date||isoToday(today))}${selectField('Üsul','method',['Kart','m10','Nağd','Bank köçürməsi','Digər'].map(x=>({value:x,label:x})),p.method||'Nağd')}${field('Ay','month','month',p.month||monthNow)}<div class="field"><label>Qeyd</label><input name="note" value="${esc(p.note||'')}" placeholder="Qeyd"></div></div>`,v=>{
     v.amount=Number(v.amount)||0;
     if(existing)Object.assign(existing,v);
     else data.payments.push({...v,id:crypto.randomUUID()});
@@ -303,19 +282,8 @@ function addPaymentForm(existing=null){
 }
 document.getElementById('addPayment').onclick=()=>addPaymentForm();
 
-function addAttendanceForm(existing=null){
-  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
-  const a=existing||{};
-  openModal(existing?'Davamiyyəti redaktə et':'Davamiyyət qeyd et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),a.studentId||'')}${field('Dərs tarixi','date','date',a.date||isoToday(today))}${selectField('İştirak statusu','status',['İştirak edib','İştirak etməyib','Xəbərdar edib'].map(x=>({value:x,label:x})),a.status||'İştirak edib')}<div class="field"><label>Qeyd</label><input name="note" value="${esc(a.note||'')}" placeholder="Əlavə qeyd..."></div></div>`,v=>{
-    if(existing)Object.assign(existing,v);
-    else data.attendance.push({...v,id:crypto.randomUUID()});
-    save();
-  });
-}
-document.getElementById('addAttendance').onclick=()=>addAttendanceForm();
-
 function removeItem(collection,id){
-  if(confirm('Bu qeydi silmək istədiyinizə əminsiniz?')){
+  if(confirm('Silmək istədiyinizə əminsiniz?')){
     data[collection]=data[collection].filter(x=>x.id!==id);
     save();
   }
@@ -325,7 +293,7 @@ function renderStudents(){
   const q=(document.getElementById('studentSearch').value||'').toLowerCase();
   const f=document.getElementById('studentFilter').value;
   const rows=data.students.filter(s=>(s.name+' '+s.phone).toLowerCase().includes(q)&&(f==='all'||(f==='active'?s.status==='Aktiv':s.status==='Passiv')));
-  document.getElementById('studentsBody').innerHTML=rows.length?rows.map(s=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><div class="avatar">${esc(initials(s.name))}</div><div><b>${esc(s.name)}</b></div></div></td><td>${esc(s.phone||'—')}</td><td>${shortDate(s.joined)}</td><td><span class="pill">${s.packageSize||8} dərs</span></td><td><b>${money(s.fee)}</b></td><td><span class="pill ${s.status==='Aktiv'?'paid':''}">${esc(s.status)}</span></td><td><div class="actions"><button class="mini-btn" data-edit-student="${s.id}">Redaktə</button><button class="mini-btn" data-del-student="${s.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Uyğun tələbə tapılmadı.</td></tr>`;
+  document.getElementById('studentsBody').innerHTML=rows.length?rows.map(s=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><div class="avatar">${esc(initials(s.name))}</div><div><b>${esc(s.name)}</b></div></div></td><td>${esc(s.phone||'—')}</td><td>${shortDate(s.joined)}</td><td><span class="pill">${s.packageSize||8} dərs</span></td><td><b>${money(s.fee)}</b></td><td><span class="pill ${s.status==='Aktiv'?'paid':''}">${esc(s.status)}</span></td><td><div class="actions"><button class="mini-btn" data-edit-student="${s.id}">Redaktə</button><button class="mini-btn" data-del-student="${s.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Tələbə tapılmadı.</td></tr>`;
   document.querySelectorAll('[data-edit-student]').forEach(b=>b.onclick=()=>addStudentForm(student(b.dataset.editStudent)));
   document.querySelectorAll('[data-del-student]').forEach(b=>b.onclick=()=>removeItem('students',b.dataset.delStudent));
 }
@@ -340,53 +308,35 @@ function renderSchedule(){
     const date=new Date(start);
     date.setDate(start.getDate()+i);
     const lessons=data.lessons.filter(l=>Number(l.day)===i).sort((a,b)=>a.time.localeCompare(b.time));
-    return `<div class="day-col ${isoToday(date)===isoToday(today)?'today':''}"><div class="day-title">${d}</div><div class="day-date">${date.toLocaleDateString('az-AZ',{day:'numeric',month:'short'})}</div>${lessons.length?lessons.map(l=>`<div class="lesson-card"><b>${esc(l.time)} · ${esc(student(l.studentId)?.name||'Silinmiş tələbə')}</b><small>${l.duration||90} dəq.</small><button data-edit-lesson="${l.id}">Redaktə</button> <button data-del-lesson="${l.id}">Sil</button></div>`).join(''):'<div class="muted" style="font-size:10px;padding:12px 2px">Dərs yoxdur</div>'}</div>`;
+    return `<div class="day-col ${isoToday(date)===isoToday(today)?'today':''}"><div class="day-title">${d}</div><div class="day-date">${date.toLocaleDateString('az-AZ',{day:'numeric',month:'short'})}</div>${lessons.length?lessons.map(l=>`<div class="lesson-card"><b>${esc(l.time)} · ${esc(student(l.studentId)?.name||'Silinmiş')}</b><small>${l.duration||90} dəq.</small><button data-edit-lesson="${l.id}">Redaktə</button> <button data-del-lesson="${l.id}">Sil</button></div>`).join(''):'<div class="muted" style="font-size:10px;padding:12px 2px">Dərs yoxdur</div>'}</div>`;
   }).join('');
   document.querySelectorAll('[data-edit-lesson]').forEach(b=>b.onclick=()=>addLessonForm(data.lessons.find(x=>x.id===b.dataset.editLesson)));
   document.querySelectorAll('[data-del-lesson]').forEach(b=>b.onclick=()=>removeItem('lessons',b.dataset.delLesson));
 }
 
 function renderAttendance(){
+  if(!data.attendedMap) data.attendedMap = {};
   const activeStudents = data.students.filter(s => s.status === 'Aktiv');
   document.getElementById('attendanceBody').innerHTML = activeStudents.length ? activeStudents.map(s => {
-    const sAtt = data.attendance.filter(a => a.studentId === s.id);
-    const attendedCount = sAtt.filter(a => a.status === 'İştirak edib').length;
     const pkgSize = Number(s.packageSize) || 8;
-    const remaining = Math.max(0, pkgSize - attendedCount);
-    const lastAtt = sAtt.sort((a,b)=>b.date.localeCompare(a.date))[0];
+    const attended = Number(data.attendedMap[s.id]) || 0;
+    const remaining = Math.max(0, pkgSize - attended);
     
     return `<tr>
       <td><b>${esc(s.name)}</b></td>
       <td><span class="pill">${pkgSize} dərs</span></td>
-      <td><span class="pill present">${attendedCount} dərs</span></td>
+      <td><input type="number" min="0" max="${pkgSize}" value="${attended}" style="width:90px;" oninput="updateAttended('${s.id}', this.value)"></td>
       <td><span class="pill ${remaining === 0 ? 'absent' : 'paid'}">${remaining} dərs qalır</span></td>
-      <td>${lastAtt ? shortDate(lastAtt.date) : '—'}</td>
-      <td><button class="mini-btn" onclick="openStudentAttHistory('${s.id}')">Qeydlərə bax</button></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr>`;
-}
-const attMonth = document.getElementById('attendanceMonth');
-if(attMonth){ attMonth.value=monthNow; attMonth.onchange=renderAttendance; }
-
-function openStudentAttHistory(studentId){
-  const s = student(studentId);
-  const sAtt = data.attendance.filter(a => a.studentId === studentId).sort((a,b)=>b.date.localeCompare(a.date));
-  let html = `<div style="margin-bottom:12px"><b>${esc(s.name)}</b> — Davamiyyət tarixçəsi</div>`;
-  html += `<div class="table-wrap"><table><thead><tr><th>Tarix</th><th>Status</th><th>Qeyd</th><th>Sil</th></tr></thead><tbody>`;
-  if(sAtt.length){
-    html += sAtt.map(a=>`<tr><td>${shortDate(a.date)}</td><td><span class="pill ${a.status==='İştirak edib'?'present':'absent'}">${esc(a.status)}</span></td><td>${esc(a.note||'—')}</td><td><button class="mini-btn" onclick="removeAttItem('${a.id}','${studentId}')">Sil</button></td></tr>`).join('');
-  } else {
-    html += `<tr><td colspan="4" class="empty">Hələ qeyd yoxdur.</td></tr>`;
-  }
-  html += `</tbody></table></div>`;
-  openModal(s.name + ' - Davamiyyət', html, null);
-  document.querySelector('.modal-actions').style.display = 'none';
+  }).join('') : `<tr><td colspan="4" class="empty">Aktiv tələbə yoxdur.</td></tr>`;
 }
 
-window.removeAttItem = function(attId, studentId){
-  data.attendance = data.attendance.filter(x => x.id !== attId);
+window.updateAttended = function(studentId, val){
+  if(!data.attendedMap) data.attendedMap = {};
+  data.attendedMap[studentId] = Number(val) || 0;
   save();
-  openStudentAttHistory(studentId);
+  // Sadəcə qalan dərslər sütununu yenilə
+  renderAttendance();
 }
 
 function renderPayments(){
@@ -394,7 +344,7 @@ function renderPayments(){
   const q=(document.getElementById('paymentSearch').value||'').toLowerCase();
   const rows=data.payments.filter(p=>(!m||p.month===m)&&((student(p.studentId)?.name||'').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));
   
-  document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(p=>`<tr><td>${shortDate(p.date)}</td><td><b>${esc(student(p.studentId)?.name||'Silinmiş tələbə')}</b></td><td><b>${money(p.amount)}</b></td><td>${esc(p.method||'—')}</td><td>${esc(p.month||'—')}</td><td>${esc(p.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-pay="${p.id}">Redaktə</button><button class="mini-btn" data-del-pay="${p.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Bu seçim üzrə ödəniş yoxdur.</td></tr>`;
+  document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(p=>`<tr><td>${shortDate(p.date)}</td><td><b>${esc(student(p.studentId)?.name||'Silinmiş')}</b></td><td><b>${money(p.amount)}</b></td><td>${esc(p.method||'—')}</td><td>${esc(p.month||'—')}</td><td>${esc(p.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-pay="${p.id}">Redaktə</button><button class="mini-btn" data-del-pay="${p.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr>`;
   
   document.querySelectorAll('[data-edit-pay]').forEach(b=>b.onclick=()=>addPaymentForm(data.payments.find(x=>x.id===b.dataset.editPay)));
   document.querySelectorAll('[data-del-pay]').forEach(b=>b.onclick=()=>removeItem('payments',b.dataset.delPay));
@@ -422,28 +372,18 @@ function renderDashboard(){
   
   const todayLessons=data.lessons.filter(l=>Number(l.day)===day).sort((a,b)=>a.time.localeCompare(b.time));
   document.getElementById('upcomingList').className=todayLessons.length?'':'empty';
-  document.getElementById('upcomingList').innerHTML=todayLessons.length?todayLessons.map(l=>`<div class="list-row"><div class="avatar">${esc(initials(student(l.studentId)?.name||'?'))}</div><div class="row-main"><b>${esc(student(l.studentId)?.name||'Silinmiş tələbə')}</b><small>${esc(l.format||'Fərdi')} · ${l.duration||90} dəqiqə</small></div><span class="pill">${esc(l.time)}</span></div>`).join(''):'<div class="empty"><div class="empty-icon">♫</div>Bu gün üçün dərs planlaşdırılmayıb.</div>';
+  document.getElementById('upcomingList').innerHTML=todayLessons.length?todayLessons.map(l=>`<div class="list-row"><div class="avatar">${esc(initials(student(l.studentId)?.name||'?'))}</div><div class="row-main"><b>${esc(student(l.studentId)?.name||'Silinmiş')}</b><small>${l.duration||90} dəq.</small></div><span class="pill">${esc(l.time)}</span></div>`).join(''):'<div class="empty"><div class="empty-icon">♫</div>Bu gün dərs yoxdur.</div>';
   
   const recent=[...data.payments].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
   document.getElementById('recentPayments').className=recent.length?'':'empty';
-  document.getElementById('recentPayments').innerHTML=recent.length?recent.map(p=>`<div class="list-row"><div class="avatar">₼</div><div class="row-main"><b>${esc(student(p.studentId)?.name||'Silinmiş tələbə')}</b><small>${shortDate(p.date)} · ${esc(p.method||'')}</small></div><b style="font-size:12px">${money(p.amount)}</b></div>`).join(''):'<div class="empty"><div class="empty-icon">₼</div>Hələ ödəniş qeydə alınmayıb.</div>';
+  document.getElementById('recentPayments').innerHTML=recent.length?recent.map(p=>`<div class="list-row"><div class="avatar">₼</div><div class="row-main"><b>${esc(student(p.studentId)?.name||'Silinmiş')}</b><small>${shortDate(p.date)}</small></div><b style="font-size:12px">${money(p.amount)}</b></div>`).join(''):'<div class="empty"><div class="empty-icon">₼</div>Ödəniş yoxdur.</div>';
 }
 
 function renderStats(){
   const total=data.payments.reduce((a,p)=>a+p.amount,0);
-  const months=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date(today.getFullYear(),today.getMonth()-i,1);
-    months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
-  }
-  const sums=months.map(m=>data.payments.filter(p=>p.month===m).reduce((a,p)=>a+p.amount,0));
   document.getElementById('totalIncome').textContent=money(total);
-  document.getElementById('averageIncome').textContent=money(sums.reduce((a,b)=>a+b,0)/6);
   document.getElementById('paymentCount').textContent=data.payments.length;
   document.getElementById('activeCount').textContent=data.students.filter(s=>s.status==='Aktiv').length;
-  
-  const max=Math.max(...sums,1);
-  document.getElementById('incomeChart').innerHTML=months.map((m,i)=>`<div class="bar-col"><span>${sums[i]?Math.round(sums[i]):''}</span><div class="bar" style="height:${Math.max(3,sums[i]/max*125)}px"></div><small>${new Date(Number(m.slice(0,4)),Number(m.slice(5))-1,1).toLocaleDateString('az-AZ',{month:'short'})}</small></div>`).join('');
 }
 
 function renderAll(){
@@ -454,24 +394,7 @@ function renderAll(){
     renderPayments();
     renderDashboard();
     renderStats();
-  } catch(e) {
-    console.error("Render xətası:", e);
-  }
-}
-
-const exportCsv = document.getElementById('exportCsv');
-if(exportCsv){
-  exportCsv.onclick=()=>{
-    const lines=[['Tarix','Tələbə','Məbləğ AZN','Ödəniş üsulu','Ay','Qeyd'],...data.payments.map(p=>[p.date,student(p.studentId)?.name||'',p.amount,p.method,p.month,p.note||''])];
-    const csv='\uFEFF'+lines.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='gitara-kursu-odenisler.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  } catch(e) {}
 }
 
 renderAll();
