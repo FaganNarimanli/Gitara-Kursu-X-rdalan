@@ -148,7 +148,7 @@ td b { font-size:12px; color: #212529; }
     <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span>Ödənişlər</span></button>
     <button class="nav-btn" data-page="statistics"><span class="nav-icon">▤</span><span>Statistika</span></button>
   </nav>
-  <div class="side-note"><b>Kiçik xatırlatma</b>Məlumatlar avtomatik yadda saxlanılır.</div>
+  <div class="side-note"><b>Bulud Sinxronizasiyası</b>Məlumatlar onlayn bazada saxlanılır.</div>
 </aside>
 <main>
   <header class="topbar"><div><div class="eyebrow">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><div class="date-chip" id="dateChip"></div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
@@ -186,7 +186,7 @@ td b { font-size:12px; color: #212529; }
     <div class="section-head"><div><h2>Ödənişlər</h2><p>Avtomatik və əllə əlavə edilən ödənişlər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
     <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))"><div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
     <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:170px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
-    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>MƏBLƏĞ</th><th>ÜSUL</th><th>AY</th><th>QEYD</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>Tələbə</th><th>Məbləğ</th><th>Üsul</th><th>Ay</th><th>Qeyd</th><th>Əməliyyat</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="statistics">
@@ -199,8 +199,25 @@ td b { font-size:12px; color: #212529; }
 
 <div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions" id="modalActionsArea"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
 
-<script>
-const STORE_KEY = 'gitara_kursu_manager_v5';
+<!-- Firebase SDK (Modular v10) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCk5oHCOKemJfMwxVCgvDskBTVQJ9hXxRY",
+  authDomain: "gitara-kursu.firebaseapp.com",
+  databaseURL: "https://gitara-kursu-default-rtdb.firebaseio.com",
+  projectId: "gitara-kursu",
+  storageBucket: "gitara-kursu.firebasestorage.app",
+  messagingSenderId: "1018395422952",
+  appId: "1:1018395422952:web:dd1ac19551878141cc195d",
+  measurementId: "G-RLL2VZ35RX"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
 const monthNamesAz = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
 
@@ -218,257 +235,11 @@ function formatAzDate(dStr) {
   return `${day} ${month} ${year}`;
 }
 
-let data = loadData();
+let data = {students:[], lessons:[], payments:[], attendance:[]};
 let modalSave = null;
 
-function loadData(){ 
-  try { 
-    const item = localStorage.getItem(STORE_KEY);
-    return item ? JSON.parse(item) : {students:[],lessons:[],payments:[],attendance:[]}; 
-  } catch(e){ 
-    return {students:[],lessons:[],payments:[],attendance:[]}; 
-  } 
-}
-
-function save(){ 
-  try {
-    localStorage.setItem(STORE_KEY,JSON.stringify(data)); 
-  } catch(e){}
-  renderAll(); 
-}
-
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function money(n){return (Number(n)||0).toLocaleString('az-AZ',{maximumFractionDigits:2})+' ₼';}
-function student(id){return data.students.find(s=>s.id===id);}
-function initials(name){return (name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();}
-
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
-  const titles={dashboard:'Xoş gəldin!',students:'Tələbələr',schedule:'Dərs cədvəli',attendance:'Davamiyyət',payments:'Ödənişlər',statistics:'Statistika'};
-  const el = document.getElementById('pageTitle');
-  if(el) el.textContent=titles[id]||'';
-  window.scrollTo(0, 0);
-}
-
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-const dateChip = document.getElementById('dateChip');
-if(dateChip) dateChip.textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}`;
-
-function openModal(title,fields,onSave){
-  document.getElementById('modalTitle').textContent=title;
-  document.getElementById('modalFields').innerHTML=fields;
-  document.getElementById('modalActionsArea').style.display = 'flex';
-  modalSave=onSave;
-  document.getElementById('modalBackdrop').classList.add('open');
-}
-function closeModal(){
-  document.getElementById('modalBackdrop').classList.remove('open');
-  modalSave=null;
-}
-document.getElementById('closeModal').onclick=closeModal;
-document.getElementById('cancelModal').onclick=closeModal;
-document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});
-document.getElementById('modalForm').addEventListener('submit',e=>{e.preventDefault();if(modalSave){const fd=new FormData(e.target);modalSave(Object.fromEntries(fd.entries()));closeModal();}});
-
-function field(label,name,type='text',value='',extra=''){return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" value="${esc(value)}" ${extra} required></div>`;}
-function selectField(label,name,options,value=''){return `<div class="field"><label>${label}</label><select name="${name}" required>${options.map(o=>`<option value="${esc(o.value)}" ${o.value===value?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>`;}
-function studentOptions(){return data.students.filter(s=>s.status!=='Passiv').map(s=>({value:s.id,label:s.name}));}
-
-function addStudentForm(existing=null){
-  const s=existing||{};
-  openModal(existing?'Tələbəni redaktə et':'Yeni tələbə',`<div class="form-grid">${field('Ad və soyad','name','text',s.name||'')}${field('Telefon','phone','tel',s.phone||'','placeholder="050 000 00 00"')}${field('Qeydiyyat tarixi','joined','date',s.joined||isoToday(today))}${field('Paket dərs sayı','packageSize','number',s.packageSize||'8','min="1" step="1"')}${field('Aylıq ödəniş (AZN)','fee','number',s.fee||'','min="0" step="0.01"')}${selectField('Status','status',['Aktiv','Passiv'].map(x=>({value:x,label:x})),s.status||'Aktiv')}</div>`,v=>{
-    v.packageSize = Number(v.packageSize)||8;
-    v.fee = Number(v.fee)||0;
-    if(existing){
-      Object.assign(existing, v);
-    } else {
-      const newId = crypto.randomUUID();
-      data.students.push({...v, id: newId});
-      data.payments.push({
-        id: crypto.randomUUID(),
-        studentId: newId,
-        amount: v.fee,
-        date: v.joined,
-        method: 'Nağd',
-        month: v.joined.slice(0,7),
-        note: 'Yeni qeydiyyat / Aylıq ödəniş'
-      });
-    }
-    save();
-  });
-}
-document.getElementById('addStudent').onclick=()=>addStudentForm();
-const quickAddBtn = document.getElementById('quickAdd');
-if(quickAddBtn) quickAddBtn.onclick=()=>{showPage('students');addStudentForm();};
-
-function addLessonForm(existing=null){
-  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
-  const l=existing||{};
-  openModal(existing?'Dərsi redaktə et':'Cədvələ dərs əlavə et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),l.studentId||'')}${selectField('Həftənin günü','day',days.map((d,i)=>({value:String(i),label:d})),String(l.day??0))}${field('Saat','time','time',l.time||'10:00')}${field('Müddət (dəq)','duration','number',l.duration||'90','min="15" step="15"')}<div class="field full"><label>Qeyd</label><input name="note" value="${esc(l.note||'')}" placeholder="Qeyd"></div></div>`,v=>{
-    v.day=Number(v.day);v.duration=Number(v.duration)||90;
-    if(existing)Object.assign(existing,v);
-    else data.lessons.push({...v,id:crypto.randomUUID()});
-    save();
-  });
-}
-document.getElementById('addLesson').onclick=()=>addLessonForm();
-
-function addPaymentForm(existing=null){
-  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
-  const p=existing||{};
-  openModal(existing?'Ödənişi redaktə et':'Yeni ödəniş',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),p.studentId||'')}${field('Məbləğ (AZN)','amount','number',p.amount||'','min="0.01" step="0.01"')}${field('Tarix','date','date',p.date||isoToday(today))}${selectField('Üsul','method',['Kart','m10','Nağd','Bank köçürməsi','Digər'].map(x=>({value:x,label:x})),p.method||'Nağd')}${field('Ay','month','month',p.month||monthNow)}<div class="field full"><label>Qeyd</label><input name="note" value="${esc(p.note||'')}" placeholder="Qeyd"></div></div>`,v=>{
-    v.amount=Number(v.amount)||0;
-    if(existing)Object.assign(existing,v);
-    else data.payments.push({...v,id:crypto.randomUUID()});
-    save();
-  });
-}
-document.getElementById('addPayment').onclick=()=>addPaymentForm();
-
-function addAttendanceForm(){
-  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
-  openModal('Təqvimdən Davamiyyət Qeydi', `<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),'')}${field('Dərs tarixi (Təqvim)','date','date',isoToday(today))}${selectField('İştirak statusu','status',['İştirak edib','İştirak etməyib','Xəbərdar edib'].map(x=>({value:x,label:x})),'İştirak edib')}<div class="field full"><label>Qeyd</label><input name="note" placeholder="Məsələn: Mövzu keçildi və ya gecikdi"></div></div>`, v=>{
-    if(!data.attendance) data.attendance = [];
-    data.attendance.push({...v, id: crypto.randomUUID()});
-    save();
-  });
-}
-document.getElementById('addAttendance').onclick = () => addAttendanceForm();
-
-function removeItem(collection,id){
-  if(confirm('Silmək istədiyinizə əminsiniz?')){
-    data[collection]=data[collection].filter(x=>x.id!==id);
-    save();
-  }
-}
-
-function renderStudents(){
-  const q=(document.getElementById('studentSearch').value||'').toLowerCase();
-  const f=document.getElementById('studentFilter').value;
-  const rows=data.students.filter(s=>(s.name+' '+s.phone).toLowerCase().includes(q)&&(f==='all'||(f==='active'?s.status==='Aktiv':s.status==='Passiv')));
-  document.getElementById('studentsBody').innerHTML=rows.length?rows.map(s=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><div class="avatar">${esc(initials(s.name))}</div><div><b>${esc(s.name)}</b></div></div></td><td>${esc(s.phone||'—')}</td><td>${formatAzDate(s.joined)}</td><td><span class="pill">${s.packageSize||8} dərs</span></td><td><b>${money(s.fee)}</b></td><td><span class="pill ${s.status==='Aktiv'?'paid':''}">${esc(s.status)}</span></td><td><div class="actions"><button class="mini-btn" data-edit-student="${s.id}">Redaktə</button><button class="mini-btn" data-del-student="${s.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Tələbə tapılmadı.</td></tr>`;
-  document.querySelectorAll('[data-edit-student]').forEach(b=>b.onclick=()=>addStudentForm(student(b.dataset.editStudent)));
-  document.querySelectorAll('[data-del-student]').forEach(b=>b.onclick=()=>removeItem('students',b.dataset.delStudent));
-}
-document.getElementById('studentSearch').addEventListener('input',renderStudents);
-document.getElementById('studentFilter').addEventListener('change',renderStudents);
-
-function renderSchedule(){
-  const start=new Date(today);
-  const monday=(start.getDay()+6)%7;
-  start.setDate(start.getDate()-monday);
-  document.getElementById('weekGrid').innerHTML=days.map((d,i)=>{
-    const date=new Date(start);
-    date.setDate(start.getDate()+i);
-    const lessons=data.lessons.filter(l=>Number(l.day)===i).sort((a,b)=>a.time.localeCompare(b.time));
-    return `<div class="day-col ${isoToday(date)===isoToday(today)?'today':''}"><div class="day-title">${d}</div><div class="day-date">${date.getDate()} ${monthNamesAz[date.getMonth()]}</div>${lessons.length?lessons.map(l=>`<div class="lesson-card"><b>${esc(l.time)} · ${esc(student(l.studentId)?.name||'Silinmiş')}</b><small>${l.duration||90} dəq.</small><button data-edit-lesson="${l.id}">Redaktə</button> <button data-del-lesson="${l.id}">Sil</button></div>`).join(''):'<div class="muted" style="font-size:10px;padding:8px 0">Dərs yoxdur</div>'}</div>`;
-  }).join('');
-  document.querySelectorAll('[data-edit-lesson]').forEach(b=>b.onclick=()=>addLessonForm(data.lessons.find(x=>x.id===b.dataset.editLesson)));
-  document.querySelectorAll('[data-del-lesson]').forEach(b=>b.onclick=()=>removeItem('lessons',b.dataset.delLesson));
-}
-
-function renderAttendance(){
-  if(!data.attendance) data.attendance = [];
-  const activeStudents = data.students.filter(s => s.status === 'Aktiv');
-  document.getElementById('attendanceBody').innerHTML = activeStudents.length ? activeStudents.map(s => {
-    const pkgSize = Number(s.packageSize) || 8;
-    const sAtt = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak edib');
-    const attended = sAtt.length;
-    const remaining = Math.max(0, pkgSize - attended);
-    const lastAtt = data.attendance.filter(a => a.studentId === s.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
-    
-    return `<tr>
-      <td><b>${esc(s.name)}</b></td>
-      <td><span class="pill">${pkgSize} dərs</span></td>
-      <td><span class="pill paid">${attended} dərs keçilib</span></td>
-      <td><span class="pill ${remaining === 0 ? 'absent' : 'paid'}">${remaining} dərs qalır</span></td>
-      <td>${lastAtt ? formatAzDate(lastAtt.date) : '—'}</td>
-      <td><button class="mini-btn" onclick="openStudentAttHistory('${s.id}')">Tarixçəyə bax</button></td>
-    </tr>`;
-  }).join('') : `<tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr>`;
-}
-
-function openStudentAttHistory(studentId){
-  const s = student(studentId);
-  const sAtt = (data.attendance||[]).filter(a => a.studentId === studentId).sort((a,b)=>b.date.localeCompare(a.date));
-  let html = `<div style="margin-bottom:12px"><b>${esc(s.name)}</b> — Davamiyyət Tarixçəsi</div>`;
-  html += `<div class="table-wrap"><table><thead><tr><th>Tarix</th><th>Status</th><th>Qeyd</th><th>Sil</th></tr></thead><tbody>`;
-  if(sAtt.length){
-    html += sAtt.map(a=>`<tr><td>${formatAzDate(a.date)}</td><td><span class="pill ${a.status==='İştirak edib'?'paid':'absent'}">${esc(a.status)}</span></td><td>${esc(a.note||'—')}</td><td><button class="mini-btn" onclick="removeAttRecord('${a.id}','${studentId}')">Sil</button></td></tr>`).join('');
-  } else {
-    html += `<tr><td colspan="4" class="empty">Hələ təqvimlə qeyd edilən dərs yoxdur.</td></tr>`;
-  }
-  html += `</tbody></table></div>`;
-  openModal(s.name + ' - Tarixçə', html, null);
-  document.getElementById('modalActionsArea').style.display = 'none';
-}
-
-window.removeAttRecord = function(attId, studentId){
-  data.attendance = data.attendance.filter(x => x.id !== attId);
-  save();
-  openStudentAttHistory(studentId);
-}
-
-function renderPayments(){
-  const m=document.getElementById('paymentMonth').value;
-  const q=(document.getElementById('paymentSearch').value||'').toLowerCase();
-  const rows=data.payments.filter(p=>(!m||p.month===m)&&((student(p.studentId)?.name||'').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));
-  
-  document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(p=>`<tr><td>${formatAzDate(p.date)}</td><td><b>${esc(student(p.studentId)?.name||'Silinmiş')}</b></td><td><b>${money(p.amount)}</b></td><td>${esc(p.method||'—')}</td><td>${esc(p.month||'—')}</td><td>${esc(p.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-pay="${p.id}">Redaktə</button><button class="mini-btn" data-del-pay="${p.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr>`;
-  
-  document.querySelectorAll('[data-edit-pay]').forEach(b=>b.onclick=()=>addPaymentForm(data.payments.find(x=>x.id===b.dataset.editPay)));
-  document.querySelectorAll('[data-del-pay]').forEach(b=>b.onclick=()=>removeItem('payments',b.dataset.delPay));
-  
-  const monthPays=data.payments.filter(p=>p.month===m);
-  const paid=monthPays.reduce((a,p)=>a+p.amount,0);
-  const expected=data.students.filter(s=>s.status==='Aktiv').reduce((a,s)=>a+s.fee,0);
-  document.getElementById('payMonth').textContent=money(paid);
-  document.getElementById('payExpected').textContent=money(expected);
-  document.getElementById('payOutstanding').textContent=money(Math.max(0,expected-paid));
-}
-
-const payMonth = document.getElementById('paymentMonth');
-if(payMonth){ payMonth.value=monthNow; payMonth.onchange=renderPayments; }
-const paySearch = document.getElementById('paymentSearch');
-if(paySearch) paySearch.oninput=renderPayments;
-
-function renderDashboard(){
-  document.getElementById('statStudents').textContent=data.students.filter(s=>s.status==='Aktiv').length;
-  document.getElementById('statIncome').textContent=money(data.payments.filter(p=>p.month===monthNow).reduce((a,p)=>a+p.amount,0));
-  const day=(today.getDay()+6)%7;
-  document.getElementById('statLessons').textContent=data.lessons.filter(l=>Number(l.day)===day).length;
-  const paidIds=new Set(data.payments.filter(p=>p.month===monthNow).map(p=>p.studentId));
-  document.getElementById('statDue').textContent=data.students.filter(s=>s.status==='Aktiv'&&!paidIds.has(s.id)&&s.fee>0).length;
-  
-  const todayLessons=data.lessons.filter(l=>Number(l.day)===day).sort((a,b)=>a.time.localeCompare(b.time));
-  document.getElementById('upcomingList').className=todayLessons.length?'':'empty';
-  document.getElementById('upcomingList').innerHTML=todayLessons.length?todayLessons.map(l=>`<div class="list-row"><div class="avatar">${esc(initials(student(l.studentId)?.name||'?'))}</div><div class="row-main"><b>${esc(student(l.studentId)?.name||'Silinmiş')}</b><small>${l.duration||90} dəq.</small></div><span class="pill">${esc(l.time)}</span></div>`).join(''):'<div class="empty"><div class="empty-icon">♫</div>Bu gün dərs yoxdur.</div>';
-  
-  const recent=[...data.payments].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
-  document.getElementById('recentPayments').className=recent.length?'':'empty';
-  document.getElementById('recentPayments').innerHTML=recent.length?recent.map(p=>`<div class="list-row"><div class="avatar">₼</div><div class="row-main"><b>${esc(student(p.studentId)?.name||'Silinmiş')}</b><small>${formatAzDate(p.date)}</small></div><b style="font-size:12px">${money(p.amount)}</b></div>`).join(''):'<div class="empty"><div class="empty-icon">₼</div>Ödəniş yoxdur.</div>';
-}
-
-function renderStats(){
-  const total=data.payments.reduce((a,p)=>a+p.amount,0);
-  document.getElementById('totalIncome').textContent=money(total);
-  document.getElementById('paymentCount').textContent=data.payments.length;
-  document.getElementById('activeCount').textContent=data.students.filter(s=>s.status==='Aktiv').length;
-}
-
-function renderAll(){
-  try {
-    renderStudents();
-    renderSchedule();
-    renderAttendance();
-    renderPayments();
-    renderDashboard();
-    renderStats();
-  } catch(e) {}
-}
-
-renderAll();
-</script>
-</body>
-</html>
+// Firebase Realtime Listener (Real-time Sync)
+const dbRef = ref(db, 'kursData');
+onValue(dbRef, (snapshot) => {
+  const serverData = snapshot.val();
+  if (server
