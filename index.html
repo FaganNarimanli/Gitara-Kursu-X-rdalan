@@ -173,7 +173,7 @@ td b { font-size:12px; color: #212529; }
   </section>
 
   <section class="page" id="schedule">
-    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2><p>Saatlar və günlər.</p></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
+    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2><p>Saatlar, günlər və dəqiqələr.</p></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
     <div class="week-grid" id="weekGrid"></div>
   </section>
 
@@ -322,7 +322,7 @@ function renderDashboard() {
       <div class="list-row">
         <div class="avatar">♫</div>
         <div class="row-main">
-          <b>${l.studentName || 'Tələbə'} (${l.lessonType || 'Fərdi'})</b>
+          <b>${l.studentName || 'Tələbə'} (${l.lessonType || 'Fərdi'} - ${l.duration || '60'} dəq)</b>
           <small>${l.time} — ${l.subject || 'Gitara'}</small>
         </div>
       </div>
@@ -396,7 +396,7 @@ function renderSchedule() {
           dayLessons.map(l => `
             <div class="lesson-card">
               <b>${l.studentName}</b>
-              <small>${l.time} (${l.lessonType || 'Fərdi'})</small>
+              <small>${l.time} (${l.lessonType || 'Fərdi'} - ${l.duration || '60'} dəq)</small>
               <button onclick="deleteLesson('${l.id}')">Sil</button>
             </div>
           `).join('')}
@@ -530,6 +530,7 @@ document.getElementById('addLesson').onclick = () => {
     <div class="form-grid">
       <div class="field full"><label>Tələbə</label><select id="mLStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
       <div class="field"><label>Dərs növü</label><select id="mLLessonType"><option value="Fərdi">Fərdi</option><option value="Qrup">Qrup</option></select></div>
+      <div class="field"><label>Müddət (dəqiqə ilə)</label><input type="number" id="mLDuration" value="60" placeholder="Məs: 45, 60"></div>
       <div class="field"><label>Həftənin günü</label><select id="mLDay">${days.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
       <div class="field"><label>Saat</label><input type="time" id="mLTime" value="15:00"></div>
     </div>
@@ -542,6 +543,7 @@ document.getElementById('addLesson').onclick = () => {
       studentId: sId,
       studentName: st ? st.name : '',
       lessonType: document.getElementById('mLLessonType').value,
+      duration: document.getElementById('mLDuration').value,
       day: document.getElementById('mLDay').value,
       time: document.getElementById('mLTime').value,
       subject: 'Gitara dərsi'
