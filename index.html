@@ -65,4 +65,410 @@ h1 { font-size:clamp(22px, 4vw, 28px); letter-spacing:-.5px; margin:0; font-weig
 .panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
 .panel-head h3 { margin:0; font-size:15px; color: #212529; }
 
-.empty { text-align:center
+.empty { text-align:center; padding:30px 15px; color:var(--muted); font-size:13px; }
+.empty .empty-icon { font-size:26px; margin-bottom:8px; }
+.list-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--line); }
+.avatar { width:36px;height:36px;flex:0 0 36px;border-radius:10px;display:grid;place-items:center;background:var(--site-secondary);color:var(--site-on-secondary);font-weight:700;font-size:13px; }
+.row-main { min-width:0; flex:1; }
+.row-main b { display:block; font-size:13px; color: #212529; }
+.row-main small { display:block; color:var(--muted); font-size:11px; margin-top:2px; }
+
+.pill { display:inline-flex; align-items:center; border-radius:20px; padding:6px 10px; font-size:11px; font-weight:600; background:var(--surface-2); color:var(--muted); white-space:nowrap; }
+.pill.paid { background:#ebfbee; color:#2b8a3e; }
+.pill.absent { background:#fff3bf; color:#f08c00; }
+
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.search { flex:1; min-width:200px; }
+input,select,textarea { width:100%; background:#ffffff; color:#212529; border:1px solid #ced4da; border-radius:10px; padding:11px 12px; outline:none; font-size:13px; min-height:42px; }
+input:focus,select:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(43,76,63,.1); }
+
+.table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:12px; background:#ffffff; margin-bottom:10px; }
+table { width:100%; border-collapse:collapse; min-width:600px; }
+th { text-align:left; background:var(--surface-2); color:var(--muted); font-size:11px; font-weight:650; padding:12px 14px; white-space:nowrap; }
+td { padding:12px 14px; border-top:1px solid var(--line); font-size:12px; color: #212529; white-space:nowrap; }
+td b { font-size:12px; color: #212529; }
+
+.actions { display:flex; gap:6px; flex-wrap:wrap; }
+.mini-btn { border:1px solid var(--line); background:var(--surface); color:#212529; border-radius:8px; padding:7px 10px; font-size:11px; font-weight:500; min-height:32px; }
+
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.field { display:grid; gap:6px; }
+.field label { font-size:12px; font-weight:600; color:var(--muted); }
+.field.full { grid-column:1/-1; }
+
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:16px; z-index:100; backdrop-filter: blur(2px); }
+.modal-backdrop.open { display:flex; }
+.modal { width:min(540px,100%); max-height:88vh; overflow-y:auto; background:#ffffff; border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+.modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.modal-head h3 { margin:0; font-size:17px; color: #212529; }
+.close { border:0; background:var(--surface-2); color:#212529; width:34px;height:34px;border-radius:10px;font-size:18px; display:grid; place-items:center; }
+.modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+
+.week-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; overflow-x:auto; }
+.day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:160px; padding:12px; }
+.day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
+.day-title { font-size:12px; font-weight:750; margin-bottom:2px; color: #212529; }
+.day-date { color:var(--muted); font-size:11px; margin-bottom:10px; }
+.lesson-card { background:var(--surface-2); border-left:3px solid var(--green); border-radius:8px; padding:8px 10px; margin-bottom:8px; }
+.lesson-card b { display:block; font-size:11px; color: #212529; }
+.lesson-card small { display:block; color:var(--muted); font-size:10px; margin-top:3px; }
+.lesson-card button { border:0; background:transparent; padding:4px 0 0; color:var(--green); font-size:10px; font-weight:600; }
+
+@media(max-width:850px) {
+  .layout { display:block; }
+  aside { padding: 12px 14px; position: sticky; top: 0; z-index: 50; flex-direction: row; align-items: center; justify-content: space-between; gap: 0; border-bottom:1px solid rgba(255,255,255,.1); }
+  .brand-copy, .nav-label, .side-note { display: none; }
+  .brand-mark { width:34px; height:34px; font-size:18px; }
+  nav { display: flex; gap: 4px; overflow-x: auto; max-width: calc(100vw - 70px); -webkit-overflow-scrolling: touch; }
+  .nav-btn { padding: 8px 12px; font-size: 12px; white-space: nowrap; border-radius: 8px; }
+  .nav-icon { display: none; }
+  main { padding: 16px 14px 40px; }
+  .topbar { margin-bottom: 16px; gap: 8px; }
+  .top-actions { width: 100%; justify-content: space-between; }
+  .date-chip { display: none; }
+  .primary-btn, .secondary-btn { flex: 1; min-height: 44px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat { padding: 14px; }
+  .stat-value { font-size: 20px; }
+  .modal { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="layout">
+<aside>
+  <div class="brand"><div class="brand-mark">♬</div><div class="brand-copy"><strong>Gitara Kursu</strong><small>Xırdalan · İdarəetmə</small></div></div>
+  <nav>
+    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span><span>İcmal</span></button>
+    <button class="nav-btn" data-page="students"><span class="nav-icon">♙</span><span>Tələbələr</span></button>
+    <button class="nav-btn" data-page="schedule"><span class="nav-icon">▦</span><span>Cədvəl</span></button>
+    <button class="nav-btn" data-page="attendance"><span class="nav-icon">✓</span><span>Davamiyyət</span></button>
+    <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span>Ödənişlər</span></button>
+    <button class="nav-btn" data-page="statistics"><span class="nav-icon">▤</span><span>Statistika</span></button>
+  </nav>
+  <div class="side-note"><b>Kiçik xatırlatma</b>Dərs və ödəniş məlumatları avtomatik yadda saxlanılır.</div>
+</aside>
+<main>
+  <header class="topbar"><div><div class="eyebrow">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><div class="date-chip" id="dateChip"></div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
+
+  <section class="page active" id="dashboard">
+    <div class="stats">
+      <div class="stat"><div class="stat-top">Aktiv tələbələr <span class="stat-icon">♙</span></div><div class="stat-value" id="statStudents">0</div><div class="stat-foot">Qeydiyyatda olanlar</div></div>
+      <div class="stat"><div class="stat-top">Bu ay gəlir <span class="stat-icon">₼</span></div><div class="stat-value" id="statIncome">0 ₼</div><div class="stat-foot">Ödənişlər</div></div>
+      <div class="stat"><div class="stat-top">Bu gün dərslər <span class="stat-icon">♫</span></div><div class="stat-value" id="statLessons">0</div><div class="stat-foot">Cədvəldə</div></div>
+      <div class="stat"><div class="stat-top">Ödəniş gözləyənlər <span class="stat-icon">◷</span></div><div class="stat-value" id="statDue">0</div><div class="stat-foot">Cari ay</div></div>
+    </div>
+    <div class="content-grid">
+      <div class="panel"><div class="panel-head"><h3>Yaxın dərslər</h3></div><div id="upcomingList" class="empty"><div class="empty-icon">♫</div>Hələ dərs əlavə edilməyib.</div></div>
+      <div class="panel"><div class="panel-head"><h3>Son ödənişlər</h3></div><div id="recentPayments" class="empty"><div class="empty-icon">₼</div>Hələ ödəniş yoxdur.</div></div>
+    </div>
+  </section>
+
+  <section class="page" id="students">
+    <div class="section-head"><div><h2>Tələbələr</h2><p>Tələbə məlumatları və paket sayı.</p></div><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
+    <div class="toolbar"><input class="search" id="studentSearch" placeholder="Ad və ya telefon üzrə axtar..."><select id="studentFilter" style="max-width:140px"><option value="all">Hamısı</option><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ƏLAQƏ</th><th>QEYDİYYAT</th><th>PAKET DƏRS</th><th>AYLIQ ÖDƏNİŞ</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="studentsBody"><tr><td colspan="7" class="empty">Tələbə yoxdur.</td></tr></tbody></table></div>
+  </section>
+
+  <section class="page" id="schedule">
+    <div class="section-head"><div><h2>Həftəlik dərs cədvəli</h2><p>Saatlar və günlər.</p></div><button class="primary-btn" id="addLesson">＋ Dərs əlavə et</button></div>
+    <div class="week-grid" id="weekGrid"></div>
+  </section>
+
+  <section class="page" id="attendance">
+    <div class="section-head"><div><h2>Davamiyyət və Paket İzləmə</h2><p>Təqvimdən dərs tarixlərini qeyd edin.</p></div><button class="primary-btn" id="addAttendance">＋ Davamiyyət Qeyd Et (Təqvim)</button></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>SON DƏRS TARİXİ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr></tbody></table></div>
+  </section>
+
+  <section class="page" id="payments">
+    <div class="section-head"><div><h2>Ödənişlər</h2><p>Avtomatik və əllə əlavə edilən ödənişlər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
+    <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))"><div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
+    <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:170px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
+    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>MƏBLƏĞ</th><th>ÜSUL</th><th>AY</th><th>QEYD</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
+  </section>
+
+  <section class="page" id="statistics">
+    <div class="section-head"><div><h2>Statistika</h2><p>Gəlir xülasəsi.</p></div></div>
+    <div class="stats"><div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value" id="totalIncome">0 ₼</div></div><div class="stat"><div class="stat-top">Ödəniş sayı</div><div class="stat-value" id="paymentCount">0</div></div><div class="stat"><div class="stat-top">Aktiv tələbə</div><div class="stat-value" id="activeCount">0</div></div></div>
+  </section>
+</main>
+</div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions" id="modalActionsArea"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
+
+<script>
+const STORE_KEY = 'gitara_kursu_manager_v4';
+const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə','Bazar'];
+const monthNamesAz = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+
+const today = new Date();
+const isoToday = d => { const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
+const monthNow = isoToday(today).slice(0,7);
+
+function formatAzDate(dStr) {
+  if (!dStr) return '—';
+  const parts = dStr.split('-');
+  if (parts.length !== 3) return dStr;
+  const year = parts[0];
+  const month = monthNamesAz[parseInt(parts[1], 10) - 1] || parts[1];
+  const day = parseInt(parts[2], 10);
+  return `${day} ${month} ${year}`;
+}
+
+let data = loadData();
+let modalSave = null;
+
+function loadData(){ 
+  try { 
+    const item = localStorage.getItem(STORE_KEY);
+    return item ? JSON.parse(item) : {students:[],lessons:[],payments:[],attendance:[]}; 
+  } catch(e){ 
+    return {students:[],lessons:[],payments:[],attendance:[]}; 
+  } 
+}
+
+function save(){ 
+  try {
+    localStorage.setItem(STORE_KEY,JSON.stringify(data)); 
+  } catch(e){}
+  renderAll(); 
+}
+
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function money(n){return (Number(n)||0).toLocaleString('az-AZ',{maximumFractionDigits:2})+' ₼';}
+function student(id){return data.students.find(s=>s.id===id);}
+function initials(name){return (name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  const titles={dashboard:'Xoş gəldin!',students:'Tələbələr',schedule:'Dərs cədvəli',attendance:'Davamiyyət',payments:'Ödənişlər',statistics:'Statistika'};
+  const el = document.getElementById('pageTitle');
+  if(el) el.textContent=titles[id]||'';
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+const dateChip = document.getElementById('dateChip');
+if(dateChip) dateChip.textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}`;
+
+function openModal(title,fields,onSave){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalFields').innerHTML=fields;
+  document.getElementById('modalActionsArea').style.display = 'flex';
+  modalSave=onSave;
+  document.getElementById('modalBackdrop').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modalBackdrop').classList.remove('open');
+  modalSave=null;
+}
+document.getElementById('closeModal').onclick=closeModal;
+document.getElementById('cancelModal').onclick=closeModal;
+document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});
+document.getElementById('modalForm').addEventListener('submit',e=>{e.preventDefault();if(modalSave){const fd=new FormData(e.target);modalSave(Object.fromEntries(fd.entries()));closeModal();}});
+
+function field(label,name,type='text',value='',extra=''){return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" value="${esc(value)}" ${extra} required></div>`;}
+function selectField(label,name,options,value=''){return `<div class="field"><label>${label}</label><select name="${name}" required>${options.map(o=>`<option value="${esc(o.value)}" ${o.value===value?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>`;}
+function studentOptions(){return data.students.filter(s=>s.status!=='Passiv').map(s=>({value:s.id,label:s.name}));}
+
+function addStudentForm(existing=null){
+  const s=existing||{};
+  openModal(existing?'Tələbəni redaktə et':'Yeni tələbə',`<div class="form-grid">${field('Ad və soyad','name','text',s.name||'')}${field('Telefon','phone','tel',s.phone||'','placeholder="050 000 00 00"')}${field('Qeydiyyat tarixi','joined','date',s.joined||isoToday(today))}${field('Paket dərs sayı','packageSize','number',s.packageSize||'8','min="1" step="1"')}${field('Aylıq ödəniş (AZN)','fee','number',s.fee||'','min="0" step="0.01"')}${selectField('Status','status',['Aktiv','Passiv'].map(x=>({value:x,label:x})),s.status||'Aktiv')}</div>`,v=>{
+    v.packageSize = Number(v.packageSize)||8;
+    v.fee = Number(v.fee)||0;
+    if(existing){
+      Object.assign(existing, v);
+    } else {
+      const newId = crypto.randomUUID();
+      data.students.push({...v, id: newId});
+      data.payments.push({
+        id: crypto.randomUUID(),
+        studentId: newId,
+        amount: v.fee,
+        date: v.joined,
+        method: 'Nağd',
+        month: v.joined.slice(0,7),
+        note: 'Yeni qeydiyyat / Aylıq ödəniş'
+      });
+    }
+    save();
+  });
+}
+document.getElementById('addStudent').onclick=()=>addStudentForm();
+const quickAddBtn = document.getElementById('quickAdd');
+if(quickAddBtn) quickAddBtn.onclick=()=>{showPage('students');addStudentForm();};
+
+function addLessonForm(existing=null){
+  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
+  const l=existing||{};
+  openModal(existing?'Dərsi redaktə et':'Cədvələ dərs əlavə et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),l.studentId||'')}${selectField('Həftənin günü','day',days.map((d,i)=>({value:String(i),label:d})),String(l.day??0))}${field('Saat','time','time',l.time||'10:00')}${field('Müddət (dəq)','duration','number',l.duration||'90','min="15" step="15"')}<div class="field full"><label>Qeyd</label><input name="note" value="${esc(l.note||'')}" placeholder="Qeyd"></div></div>`,v=>{
+    v.day=Number(v.day);v.duration=Number(v.duration)||90;
+    if(existing)Object.assign(existing,v);
+    else data.lessons.push({...v,id:crypto.randomUUID()});
+    save();
+  });
+}
+document.getElementById('addLesson').onclick=()=>addLessonForm();
+
+function addPaymentForm(existing=null){
+  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
+  const p=existing||{};
+  openModal(existing?'Ödənişi redaktə et':'Yeni ödəniş',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),p.studentId||'')}${field('Məbləğ (AZN)','amount','number',p.amount||'','min="0.01" step="0.01"')}${field('Tarix','date','date',p.date||isoToday(today))}${selectField('Üsul','method',['Kart','m10','Nağd','Bank köçürməsi','Digər'].map(x=>({value:x,label:x})),p.method||'Nağd')}${field('Ay','month','month',p.month||monthNow)}<div class="field full"><label>Qeyd</label><input name="note" value="${esc(p.note||'')}" placeholder="Qeyd"></div></div>`,v=>{
+    v.amount=Number(v.amount)||0;
+    if(existing)Object.assign(existing,v);
+    else data.payments.push({...v,id:crypto.randomUUID()});
+    save();
+  });
+}
+document.getElementById('addPayment').onclick=()=>addPaymentForm();
+
+function addAttendanceForm(){
+  if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}
+  openModal('Təqvimdən Davamiyyət Qeydi', `<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),'')}${field('Dərs tarixi (Təqvim)','date','date',isoToday(today))}${selectField('İştirak statusu','status',['İştirak edib','İştirak etməyib','Xəbərdar edib'].map(x=>({value:x,label:x})),'İştirak edib')}<div class="field full"><label>Qeyd</label><input name="note" placeholder="Məsələn: Mövzu keçildi və ya gecikdi"></div></div>`, v=>{
+    if(!data.attendance) data.attendance = [];
+    data.attendance.push({...v, id: crypto.randomUUID()});
+    save();
+  });
+}
+document.getElementById('addAttendance').onclick = () => addAttendanceForm();
+
+function removeItem(collection,id){
+  if(confirm('Silmək istədiyinizə əminsiniz?')){
+    data[collection]=data[collection].filter(x=>x.id!==id);
+    save();
+  }
+}
+
+function renderStudents(){
+  const q=(document.getElementById('studentSearch').value||'').toLowerCase();
+  const f=document.getElementById('studentFilter').value;
+  const rows=data.students.filter(s=>(s.name+' '+s.phone).toLowerCase().includes(q)&&(f==='all'||(f==='active'?s.status==='Aktiv':s.status==='Passiv')));
+  document.getElementById('studentsBody').innerHTML=rows.length?rows.map(s=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><div class="avatar">${esc(initials(s.name))}</div><div><b>${esc(s.name)}</b></div></div></td><td>${esc(s.phone||'—')}</td><td>${formatAzDate(s.joined)}</td><td><span class="pill">${s.packageSize||8} dərs</span></td><td><b>${money(s.fee)}</b></td><td><span class="pill ${s.status==='Aktiv'?'paid':''}">${esc(s.status)}</span></td><td><div class="actions"><button class="mini-btn" data-edit-student="${s.id}">Redaktə</button><button class="mini-btn" data-del-student="${s.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Tələbə tapılmadı.</td></tr>`;
+  document.querySelectorAll('[data-edit-student]').forEach(b=>b.onclick=()=>addStudentForm(student(b.dataset.editStudent)));
+  document.querySelectorAll('[data-del-student]').forEach(b=>b.onclick=()=>removeItem('students',b.dataset.delStudent));
+}
+document.getElementById('studentSearch').addEventListener('input',renderStudents);
+document.getElementById('studentFilter').addEventListener('change',renderStudents);
+
+function renderSchedule(){
+  const start=new Date(today);
+  const monday=(start.getDay()+6)%7;
+  start.setDate(start.getDate()-monday);
+  document.getElementById('weekGrid').innerHTML=days.map((d,i)=>{
+    const date=new Date(start);
+    date.setDate(start.getDate()+i);
+    const lessons=data.lessons.filter(l=>Number(l.day)===i).sort((a,b)=>a.time.localeCompare(b.time));
+    return `<div class="day-col ${isoToday(date)===isoToday(today)?'today':''}"><div class="day-title">${d}</div><div class="day-date">${date.getDate()} ${monthNamesAz[date.getMonth()]}</div>${lessons.length?lessons.map(l=>`<div class="lesson-card"><b>${esc(l.time)} · ${esc(student(l.studentId)?.name||'Silinmiş')}</b><small>${l.duration||90} dəq.</small><button data-edit-lesson="${l.id}">Redaktə</button> <button data-del-lesson="${l.id}">Sil</button></div>`).join(''):'<div class="muted" style="font-size:10px;padding:8px 0">Dərs yoxdur</div>'}</div>`;
+  }).join('');
+  document.querySelectorAll('[data-edit-lesson]').forEach(b=>b.onclick=()=>addLessonForm(data.lessons.find(x=>x.id===b.dataset.editLesson)));
+  document.querySelectorAll('[data-del-lesson]').forEach(b=>b.onclick=()=>removeItem('lessons',b.dataset.delLesson));
+}
+
+function renderAttendance(){
+  if(!data.attendance) data.attendance = [];
+  const activeStudents = data.students.filter(s => s.status === 'Aktiv');
+  document.getElementById('attendanceBody').innerHTML = activeStudents.length ? activeStudents.map(s => {
+    const pkgSize = Number(s.packageSize) || 8;
+    const sAtt = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak edib');
+    const attended = sAtt.length;
+    const remaining = Math.max(0, pkgSize - attended);
+    const lastAtt = data.attendance.filter(a => a.studentId === s.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
+    
+    return `<tr>
+      <td><b>${esc(s.name)}</b></td>
+      <td><span class="pill">${pkgSize} dərs</span></td>
+      <td><span class="pill paid">${attended} dərs keçilib</span></td>
+      <td><span class="pill ${remaining === 0 ? 'absent' : 'paid'}">${remaining} dərs qalır</span></td>
+      <td>${lastAtt ? formatAzDate(lastAtt.date) : '—'}</td>
+      <td><button class="mini-btn" onclick="openStudentAttHistory('${s.id}')">Tarixçəyə bax</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr>`;
+}
+
+function openStudentAttHistory(studentId){
+  const s = student(studentId);
+  const sAtt = (data.attendance||[]).filter(a => a.studentId === studentId).sort((a,b)=>b.date.localeCompare(a.date));
+  let html = `<div style="margin-bottom:12px"><b>${esc(s.name)}</b> — Davamiyyət Tarixçəsi</div>`;
+  html += `<div class="table-wrap"><table><thead><tr><th>Tarix</th><th>Status</th><th>Qeyd</th><th>Sil</th></tr></thead><tbody>`;
+  if(sAtt.length){
+    html += sAtt.map(a=>`<tr><td>${formatAzDate(a.date)}</td><td><span class="pill ${a.status==='İştirak edib'?'paid':'absent'}">${esc(a.status)}</span></td><td>${esc(a.note||'—')}</td><td><button class="mini-btn" onclick="removeAttRecord('${a.id}','${studentId}')">Sil</button></td></tr>`).join('');
+  } else {
+    html += `<tr><td colspan="4" class="empty">Hələ təqvimlə qeyd edilən dərs yoxdur.</td></tr>`;
+  }
+  html += `</tbody></table></div>`;
+  openModal(s.name + ' - Tarixçə', html, null);
+  document.getElementById('modalActionsArea').style.display = 'none';
+}
+
+window.removeAttRecord = function(attId, studentId){
+  data.attendance = data.attendance.filter(x => x.id !== attId);
+  save();
+  openStudentAttHistory(studentId);
+}
+
+function renderPayments(){
+  const m=document.getElementById('paymentMonth').value;
+  const q=(document.getElementById('paymentSearch').value||'').toLowerCase();
+  const rows=data.payments.filter(p=>(!m||p.month===m)&&((student(p.studentId)?.name||'').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));
+  
+  document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(p=>`<tr><td>${formatAzDate(p.date)}</td><td><b>${esc(student(p.studentId)?.name||'Silinmiş')}</b></td><td><b>${money(p.amount)}</b></td><td>${esc(p.method||'—')}</td><td>${esc(p.month||'—')}</td><td>${esc(p.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-pay="${p.id}">Redaktə</button><button class="mini-btn" data-del-pay="${p.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr>`;
+  
+  document.querySelectorAll('[data-edit-pay]').forEach(b=>b.onclick=()=>addPaymentForm(data.payments.find(x=>x.id===b.dataset.editPay)));
+  document.querySelectorAll('[data-del-pay]').forEach(b=>b.onclick=()=>removeItem('payments',b.dataset.delPay));
+  
+  const monthPays=data.payments.filter(p=>p.month===m);
+  const paid=monthPays.reduce((a,p)=>a+p.amount,0);
+  const expected=data.students.filter(s=>s.status==='Aktiv').reduce((a,s)=>a+s.fee,0);
+  document.getElementById('payMonth').textContent=money(paid);
+  document.getElementById('payExpected').textContent=money(expected);
+  document.getElementById('payOutstanding').textContent=money(Math.max(0,expected-paid));
+}
+
+const payMonth = document.getElementById('paymentMonth');
+if(payMonth){ payMonth.value=monthNow; payMonth.onchange=renderPayments; }
+const paySearch = document.getElementById('paymentSearch');
+if(paySearch) paySearch.oninput=renderPayments;
+
+function renderDashboard(){
+  document.getElementById('statStudents').textContent=data.students.filter(s=>s.status==='Aktiv').length;
+  document.getElementById('statIncome').textContent=money(data.payments.filter(p=>p.month===monthNow).reduce((a,p)=>a+p.amount,0));
+  const day=(today.getDay()+6)%7;
+  document.getElementById('statLessons').textContent=data.lessons.filter(l=>Number(l.day)===day).length;
+  const paidIds=new Set(data.payments.filter(p=>p.month===monthNow).map(p=>p.studentId));
+  document.getElementById('statDue').textContent=data.students.filter(s=>s.status==='Aktiv'&&!paidIds.has(s.id)&&s.fee>0).length;
+  
+  const todayLessons=data.lessons.filter(l=>Number(l.day)===day).sort((a,b)=>a.time.localeCompare(b.time));
+  document.getElementById('upcomingList').className=todayLessons.length?'':'empty';
+  document.getElementById('upcomingList').innerHTML=todayLessons.length?todayLessons.map(l=>`<div class="list-row"><div class="avatar">${esc(initials(student(l.studentId)?.name||'?'))}</div><div class="row-main"><b>${esc(student(l.studentId)?.name||'Silinmiş')}</b><small>${l.duration||90} dəq.</small></div><span class="pill">${esc(l.time)}</span></div>`).join(''):'<div class="empty"><div class="empty-icon">♫</div>Bu gün dərs yoxdur.</div>';
+  
+  const recent=[...data.payments].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+  document.getElementById('recentPayments').className=recent.length?'':'empty';
+  document.getElementById('recentPayments').innerHTML=recent.length?recent.map(p=>`<div class="list-row"><div class="avatar">₼</div><div class="row-main"><b>${esc(student(p.studentId)?.name||'Silinmiş')}</b><small>${formatAzDate(p.date)}</small></div><b style="font-size:12px">${money(p.amount)}</b></div>`).join(''):'<div class="empty"><div class="empty-icon">₼</div>Ödəniş yoxdur.</div>';
+}
+
+function renderStats(){
+  const total=data.payments.reduce((a,p)=>a+p.amount,0);
+  document.getElementById('totalIncome').textContent=money(total);
+  document.getElementById('paymentCount').textContent=data.payments.length;
+  document.getElementById('activeCount').textContent=data.students.filter(s=>s.status==='Aktiv').length;
+}
+
+function renderAll(){
+  try {
+    renderStudents();
+    renderSchedule();
+    renderAttendance();
+    renderPayments();
+    renderDashboard();
+    renderStats();
+  } catch(e) {}
+}
+
+renderAll();
+</script>
+</body>
+</html>
