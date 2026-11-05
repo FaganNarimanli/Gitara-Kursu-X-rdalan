@@ -242,4 +242,422 @@ let modalSave = null;
 const dbRef = ref(db, 'kursData');
 onValue(dbRef, (snapshot) => {
   const serverData = snapshot.val();
-  if (server
+  if (serverif (serverData) {
+    data = {
+      students: serverData.students || [],
+      lessons: serverData.lessons || [],
+      payments: serverData.payments || [],
+      attendance: serverData.attendance || []
+    };
+  }
+  renderAll();
+});
+
+function saveData() {
+  set(ref(db, 'kursData'), data).catch((error) => {
+    console.error("Yadda saxlama xətası: ", error);
+    alert("Məlumat yadda saxlanılarkən xəta baş verdi!");
+  });
+}
+
+// Tarix və başlıqlar
+document.getElementById('dateChip').textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}, ${days[today.getDay() === 0 ? 6 : today.getDay() - 1]}`;
+
+// Naviqasiya (Səhifələr arası keçid)
+const navBtns = document.querySelectorAll('.nav-btn');
+const pages = document.querySelectorAll('.page');
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    navBtns.forEach(b => b.classList.remove('active'));
+    pages.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const pageId = btn.getAttribute('data-page');
+    document.getElementById(pageId).classList.add('active');
+    
+    const titles = {
+      dashboard: 'İcmal',
+      students: 'Tələbələr',
+      schedule: 'Dərs cədvəli',
+      attendance: 'Davamiyyət',
+      payments: 'Ödənişlər',
+      statistics: 'Statistika'
+    };
+    document.getElementById('pageTitle').textContent = titles[pageId] || 'İdarəetmə';
+  });
+});
+
+// Render funksiyaları
+function renderAll() {
+  renderDashboard();
+  renderStudents();
+  renderSchedule();
+  renderAttendance();
+  renderPayments();
+  renderStatistics();
+}
+
+function renderDashboard() {
+  const activeStudents = data.students.filter(s => s.status === 'active');
+  document.getElementById('statStudents').textContent = activeStudents.length;
+  
+  const currentMonthStr = monthNow;
+  const monthPayments = data.payments.filter(p => p.month === currentMonthStr);
+  const totalIncome = monthPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  document.getElementById('statIncome').textContent = totalIncome + ' ₼';
+  
+  const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
+  const todayDayName = days[dayIndex];
+  const todaysLessons = data.lessons.filter(l => l.day === todayDayName);
+  document.getElementById('statLessons').textContent = todaysLessons.length;
+  
+  document.getElementById('statDue').textContent = activeStudents.filter(s => {
+    const paid = data.payments.some(p => p.studentId === s.id && p.month === currentMonthStr);
+    return !paid;
+  }).length;
+
+  // Yaxın dərslər
+  const upcomingList = document.getElementById('upcomingList');
+  if (todaysLessons.length === 0) {
+    upcomingList.className = 'empty';
+    upcomingList.innerHTML = '<div class="empty-icon">♫</div>Bu gün üçün dərs yoxdur.';
+  } else {
+    upcomingList.className = '';
+    upcomingList.innerHTML = todaysLessons.map(l => `
+      <div class="list-row">
+        <div class="avatar">♫</div>
+        <div class="row-main">
+          <b>${l.studentName || 'Tələbə'}</b>
+          <small>${l.time} — ${l.subject || 'Gitara'}</small>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Son ödənişlər
+  const recentPayments = document.getElementById('recentPayments');
+  if (data.payments.length === 0) {
+    recentPayments.className = 'empty';
+    recentPayments.innerHTML = '<div class="empty-icon">₼</div>Hələ ödəniş yoxdur.';
+  } else {
+    recentPayments.className = '';
+    recentPayments.innerHTML = data.payments.slice(-5).reverse().map(p => `
+      <div class="list-row">
+        <div class="avatar" style="background:#ebfbee; color:#2b8a3e;">₼</div>
+        <div class="row-main">
+          <b>${p.studentName} — ${p.amount} ₼</b>
+          <small>${formatAzDate(p.date)} (${p.method || 'Nağd'})</small>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderStudents() {
+  const tbody = document.getElementById('studentsBody');
+  const search = (document.getElementById('studentSearch').value || '').toLowerCase();
+  const filter = document.getElementById('studentFilter').value;
+
+  let filtered = data.students.filter(s => {
+    const matchText = (s.name + ' ' + s.phone).toLowerCase().includes(search);
+    if (filter === 'active') return matchText && s.status === 'active';
+    if (filter === 'inactive') return matchText && s.status === 'inactive';
+    return matchText;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Tələbə tapılmadı.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(s => `
+    <tr>
+      <td><b>${s.name}</b></td>
+      <td>${s.phone || '—'}</td>
+      <td>${formatAzDate(s.regDate)}</td>
+      <td>${s.packageLessons || 8} dərs</td>
+      <td>${s.monthlyFee || 0} ₼</td>
+      <td><span class="pill ${s.status === 'active' ? 'paid' : 'absent'}">${s.status === 'active' ? 'Aktiv' : 'Passiv'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="mini-btn" onclick="editStudent('${s.id}')">Redaktə</button>
+          <button class="mini-btn" style="color:var(--red);" onclick="deleteStudent('${s.id}')">Sil</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderSchedule() {
+  const weekGrid = document.getElementById('weekGrid');
+  const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
+
+  weekGrid.innerHTML = days.map((d, idx) => {
+    const dayLessons = data.lessons.filter(l => l.day === d);
+    const isToday = idx === dayIndex;
+    return `
+      <div class="day-col ${isToday ? 'today' : ''}">
+        <div class="day-title">${d}</div>
+        <div class="day-date">${isToday ? 'Bu gün' : ''}</div>
+        ${dayLessons.length === 0 ? '<div style="color:var(--muted); font-size:11px; margin-top:10px;">Dərs yoxdur</div>' : 
+          dayLessons.map(l => `
+            <div class="lesson-card">
+              <b>${l.studentName}</b>
+              <small>${l.time}</small>
+              <button onclick="deleteLesson('${l.id}')">Sil</button>
+            </div>
+          `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAttendance() {
+  const tbody = document.getElementById('attendanceBody');
+  const activeStudents = data.students.filter(s => s.status === 'active');
+
+  if (activeStudents.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = activeStudents.map(s => {
+    const studentAtt = data.attendance.filter(a => a.studentId === s.id);
+    const attendedCount = studentAtt.length;
+    const totalPkg = Number(s.packageLessons || 8);
+    const remaining = Math.max(0, totalPkg - attendedCount);
+    const lastDate = studentAtt.length > 0 ? studentAtt[studentAtt.length - 1].date : '—';
+
+    return `
+      <tr>
+        <td><b>${s.name}</b></td>
+        <td>${totalPkg} dərs</td>
+        <td>${attendedCount} dərs</td>
+        <td><b>${remaining} dərs</b></td>
+        <td>${formatAzDate(lastDate)}</td>
+        <td>
+          <button class="mini-btn" onclick="markAttendance('${s.id}')">＋ Dərs keçildi</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderPayments() {
+  const tbody = document.getElementById('paymentsBody');
+  const search = (document.getElementById('paymentSearch').value || '').toLowerCase();
+  const monthFilter = document.getElementById('paymentMonth').value || monthNow;
+
+  const filtered = data.payments.filter(p => {
+    const matchMonth = p.month === monthFilter;
+    const matchSearch = (p.studentName || '').toLowerCase().includes(search);
+    return matchMonth && matchSearch;
+  });
+
+  // Ümumi statistika kartları
+  const monthPay = data.payments.filter(p => p.month === monthFilter);
+  const totalIn = monthPay.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  document.getElementById('payMonth').textContent = totalIn + ' ₼';
+  document.getElementById('payExpected').textContent = data.students.filter(s => s.status === 'active').reduce((sum, s) => sum + Number(s.monthlyFee || 0), 0) + ' ₼';
+  document.getElementById('payOutstanding').textContent = Math.max(0, Number(document.getElementById('payExpected').textContent.replace(' ₼','')) - totalIn) + ' ₼';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Bu ay üçün ödəniş tapılmadı.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => `
+    <tr>
+      <td>${formatAzDate(p.date)}</td>
+      <td><b>${p.studentName}</b></td>
+      <td>${p.amount} ₼</td>
+      <td>${p.method || 'Nağd'}</td>
+      <td>${p.month}</td>
+      <td>${p.note || '—'}</td>
+      <td><button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${p.id}')">Sil</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderStatistics() {
+  const totalInc = data.payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  document.getElementById('totalIncome').textContent = totalInc + ' ₼';
+  document.getElementById('paymentCount').textContent = data.payments.length;
+  document.getElementById('activeCount').textContent = data.students.filter(s => s.status === 'active').length;
+}
+
+// Modal və Əməliyyat Funksiyaları
+const backdrop = document.getElementById('modalBackdrop');
+const modalTitle = document.getElementById('modalTitle');
+const modalFields = document.getElementById('modalFields');
+const modalForm = document.getElementById('modalForm');
+
+document.getElementById('closeModal').onclick = () => backdrop.classList.remove('open');
+document.getElementById('cancelModal').onclick = () => backdrop.classList.remove('open');
+
+// Yeni tələbə əlavə etmə düymələri
+document.getElementById('quickAdd').onclick = openAddStudentModal;
+document.getElementById('addStudent').onclick = openAddStudentModal;
+
+function openAddStudentModal() {
+  modalTitle.textContent = 'Yeni tələbə əlavə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Ad və Soyad</label><input type="text" id="mName" required placeholder="Məsələn: Əli Məmmədov"></div>
+      <div class="field"><label>Əlaqə nömrəsi</label><input type="text" id="mPhone" placeholder="050-123-45-67"></div>
+      <div class="field"><label>Qeydiyyat tarixi</label><input type="date" id="mRegDate" value="${isoToday(today)}"></div>
+      <div class="field"><label>Paket dərs sayı</label><input type="number" id="mPackage" value="8"></div>
+      <div class="field"><label>Aylıq ödəniş (₼)</label><input type="number" id="mFee" value="80"></div>
+      <div class="field full"><label>Status</label><select id="mStatus"><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
+    </div>
+  `;
+  modalSave = () => {
+    const newStudent = {
+      id: 's_' + Date.now(),
+      name: document.getElementById('mName').value,
+      phone: document.getElementById('mPhone').value,
+      regDate: document.getElementById('mRegDate').value,
+      packageLessons: Number(document.getElementById('mPackage').value),
+      monthlyFee: Number(document.getElementById('mFee').value),
+      status: document.getElementById('mStatus').value
+    };
+    data.students.push(newStudent);
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+}
+
+window.deleteStudent = function(id) {
+  if (confirm('Bu tələbəni silmək istədiyinizə əminsiniz?')) {
+    data.students = data.students.filter(s => s.id !== id);
+    saveData();
+  }
+};
+
+// Dərs əlavə et
+document.getElementById('addLesson').onclick = () => {
+  if (data.students.length === 0) {
+    alert('Əvvəlcə tələbə əlavə etməlisiniz!');
+    return;
+  }
+  modalTitle.textContent = 'Yeni dərs əlavə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mLStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Həftənin günü</label><select id="mLDay">${days.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
+      <div class="field"><label>Saat</label><input type="time" id="mLTime" value="15:00"></div>
+    </div>
+  `;
+  modalSave = () => {
+    const sId = document.getElementById('mLStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    const newLesson = {
+      id: 'l_' + Date.now(),
+      studentId: sId,
+      studentName: st ? st.name : '',
+      day: document.getElementById('mLDay').value,
+      time: document.getElementById('mLTime').value,
+      subject: 'Gitara dərsi'
+    };
+    data.lessons.push(newLesson);
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
+window.deleteLesson = function(id) {
+  data.lessons = data.lessons.filter(l => l.id !== id);
+  saveData();
+};
+
+// Davamiyyət qeyd et
+document.getElementById('addAttendance').onclick = () => {
+  if (data.students.length === 0) {
+    alert('Tələbə yoxdur!');
+    return;
+  }
+  modalTitle.textContent = 'Davamiyyət Qeyd Et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mAStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
+      <div class="field full"><label>Tarix</label><input type="date" id="mADate" value="${isoToday(today)}"></div>
+    </div>
+  `;
+  modalSave = () => {
+    const sId = document.getElementById('mAStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    data.attendance.push({
+      id: 'a_' + Date.now(),
+      studentId: sId,
+      studentName: st ? st.name : '',
+      date: document.getElementById('mADate').value
+    });
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
+window.markAttendance = function(studentId) {
+  const st = data.students.find(x => x.id === studentId);
+  data.attendance.push({
+    id: 'a_' + Date.now(),
+    studentId: studentId,
+    studentName: st ? st.name : '',
+    date: isoToday(today)
+  });
+  saveData();
+};
+
+// Ödəniş əlavə et
+document.getElementById('addPayment').onclick = () => {
+  if (data.students.length === 0) {
+    alert('Tələbə yoxdur!');
+    return;
+  }
+  modalTitle.textContent = 'Ödəniş əlavə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}">${s.name} (${s.monthlyFee || 0} ₼)</option>`).join('')}</select></div>
+      <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="80"></div>
+      <div class="field"><label>Tarix</label><input type="date" id="mPDate" value="${isoToday(today)}"></div>
+      <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${monthNow}"></div>
+      <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd">Nağd</option><option value="Kart">Kart</option><option value="Köçürmə">Köçürmə</option></select></div>
+    </div>
+  `;
+  modalSave = () => {
+    const sId = document.getElementById('mPStudent').value;
+    const st = data.students.find(x => x.id === sId);
+    data.payments.push({
+      id: 'p_' + Date.now(),
+      studentId: sId,
+      studentName: st ? st.name : '',
+      amount: Number(document.getElementById('mPAmount').value),
+      date: document.getElementById('mPDate').value,
+      month: document.getElementById('mPMonth').value,
+      method: document.getElementById('mPMethod').value
+    });
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+};
+
+window.deletePayment = function(id) {
+  data.payments = data.payments.filter(p => p.id !== id);
+  saveData();
+};
+
+modalForm.onsubmit = (e) => {
+  e.preventDefault();
+  if (modalSave) modalSave();
+};
+
+// Axtarış və Filtr dəyişiklikləri
+document.getElementById('studentSearch').oninput = renderStudents;
+document.getElementById('studentFilter').onchange = renderStudents;
+document.getElementById('paymentSearch').oninput = renderPayments;
+document.getElementById('paymentMonth').onchange = renderPayments;
+document.getElementById('paymentMonth').value = monthNow;
