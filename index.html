@@ -192,10 +192,26 @@ const days = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə a
 const today = new Date();
 const isoToday = d => { const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
 const monthNow = isoToday(today).slice(0,7);
+
 let data = loadData();
 let modalSave = null;
-function loadData(){ try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {students:[],lessons:[],payments:[],attendance:[]}; } catch(e){ return {students:[],lessons:[],payments:[],attendance:[]}; } }
-function save(){ localStorage.setItem(STORE_KEY,JSON.stringify(data)); renderAll(); }
+
+function loadData(){ 
+  try { 
+    const item = localStorage.getItem(STORE_KEY);
+    return item ? JSON.parse(item) : {students:[],lessons:[],payments:[],attendance:[]}; 
+  } catch(e){ 
+    return {students:[],lessons:[],payments:[],attendance:[]}; 
+  } 
+}
+
+function save(){ 
+  try {
+    localStorage.setItem(STORE_KEY,JSON.stringify(data)); 
+  } catch(e){}
+  renderAll(); 
+}
+
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function money(n){return (Number(n)||0).toLocaleString('az-AZ',{maximumFractionDigits:2})+' ₼';}
 function student(id){return data.students.find(s=>s.id===id);}
@@ -203,47 +219,133 @@ function shortDate(s){if(!s)return '—';const [y,m,d]=s.split('-');return `${d}
 function initials(name){return (name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();}
 function monthName(m){const [y,mo]=m.split('-');return new Date(Number(y),Number(mo)-1,1).toLocaleDateString('az-AZ',{month:'long',year:'numeric'});}
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));const titles={dashboard:'Xoş gəldin!',students:'Tələbələrin idarə edilməsi',schedule:'Dərs cədvəli',attendance:'Davamiyyət qeydləri',payments:'Ödənişlərin idarə edilməsi',statistics:'Gəlir statistikası'};document.getElementById('pageTitle').textContent=titles[id];}
+
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.goto)));
 document.getElementById('todayLabel').textContent='Şəxsi idarəetmə paneli';
 document.getElementById('dateChip').textContent=today.toLocaleDateString('az-AZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
 function openModal(title,fields,onSave){document.getElementById('modalTitle').textContent=title;document.getElementById('modalFields').innerHTML=fields;modalSave=onSave;document.getElementById('modalBackdrop').classList.add('open');}
 function closeModal(){document.getElementById('modalBackdrop').classList.remove('open');document.getElementById('modalForm').reset();modalSave=null;}
 document.getElementById('closeModal').onclick=closeModal;document.getElementById('cancelModal').onclick=closeModal;document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});
 document.getElementById('modalForm').addEventListener('submit',e=>{e.preventDefault();if(modalSave){const fd=new FormData(e.target);modalSave(Object.fromEntries(fd.entries()));closeModal();}});
+
 function field(label,name,type='text',value='',extra=''){return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" value="${esc(value)}" ${extra} required></div>`;}
 function selectField(label,name,options,value=''){return `<div class="field"><label>${label}</label><select name="${name}" required>${options.map(o=>`<option value="${esc(o.value)}" ${o.value===value?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>`;}
 function studentOptions(){return data.students.filter(s=>s.status!=='Passiv').map(s=>({value:s.id,label:s.name}));}
+
 function addStudentForm(existing=null){const s=existing||{};openModal(existing?'Tələbə məlumatlarını redaktə et':'Yeni tələbə əlavə et',`<div class="form-grid">${field('Ad və soyad','name','text',s.name||'')}${field('Telefon','phone','tel',s.phone||'','placeholder="050 000 00 00"')}${selectField('Dərs növü','type',['Fərdi','Qrup','Online'].map(x=>({value:x,label:x})),s.type||'Fərdi')}${field('Aylıq ödəniş (AZN)','fee','number',s.fee||'','min="0" step="0.01"')}${field('Qeydiyyat tarixi','joined','date',s.joined||isoToday(today))}${selectField('Status','status',['Aktiv','Passiv'].map(x=>({value:x,label:x})),s.status||'Aktiv')}<div class="field full"><label>Qeyd</label><textarea name="note" rows="2" placeholder="Tələbə haqqında əlavə məlumat...">${esc(s.note||'')}</textarea></div></div>`,v=>{if(existing)Object.assign(existing,v,{fee:Number(v.fee)||0});else data.students.push({...v,id:crypto.randomUUID(),fee:Number(v.fee)||0});save();});}
 document.getElementById('addStudent').onclick=()=>addStudentForm();document.getElementById('quickAdd').onclick=()=>{showPage('students');addStudentForm();};
+
 function addLessonForm(existing=null){if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}const l=existing||{};openModal(existing?'Dərsi redaktə et':'Cədvələ dərs əlavə et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),l.studentId||'')}${selectField('Həftənin günü','day',days.map((d,i)=>({value:String(i),label:d})),String(l.day??0))}${field('Başlama saatı','time','time',l.time||'10:00')}${field('Müddət (dəqiqə)','duration','number',l.duration||'90','min="15" step="15"')}${selectField('Dərs formatı','format',['Fərdi','Qrup','Online'].map(x=>({value:x,label:x})),l.format||'Fərdi')}<div class="field"><label>Qeyd</label><input name="note" value="${esc(l.note||'')}" placeholder="Məsələn: elektro gitara"></div></div>`,v=>{v.day=Number(v.day);v.duration=Number(v.duration)||90;if(existing)Object.assign(existing,v);else data.lessons.push({...v,id:crypto.randomUUID()});save();});}
 document.getElementById('addLesson').onclick=()=>addLessonForm();
+
 function addPaymentForm(existing=null){if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}const p=existing||{};openModal(existing?'Ödənişi redaktə et':'Yeni ödəniş qeydi',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),p.studentId||'')}${field('Məbləğ (AZN)','amount','number',p.amount||'','min="0.01" step="0.01"')}${field('Ödəniş tarixi','date','date',p.date||isoToday(today))}${selectField('Ödəniş üsulu','method',['Kart','m10','Nağd','Bank köçürməsi','Digər'].map(x=>({value:x,label:x})),p.method||'Nağd')}${field('Hansı ay üçün','month','month',p.month||monthNow)}<div class="field"><label>Qeyd</label><input name="note" value="${esc(p.note||'')}" placeholder="Məsələn: aylıq ödəniş"></div></div>`,v=>{v.amount=Number(v.amount)||0;if(existing)Object.assign(existing,v);else data.payments.push({...v,id:crypto.randomUUID()});save();});}
 document.getElementById('addPayment').onclick=()=>addPaymentForm();
+
 function addAttendanceForm(existing=null){if(!data.students.length){alert('Əvvəlcə tələbə əlavə edin.');showPage('students');return;}const a=existing||{};openModal(existing?'Davamiyyət qeydini redaktə et':'Davamiyyət qeyd et',`<div class="form-grid">${selectField('Tələbə','studentId',studentOptions(),a.studentId||'')}${field('Dərs tarixi','date','date',a.date||isoToday(today))}${selectField('İştirak statusu','status',['İştirak edib','İştirak etməyib','Xəbərdar edib'].map(x=>({value:x,label:x})),a.status||'İştirak edib')}<div class="field"><label>Qeyd</label><input name="note" value="${esc(a.note||'')}" placeholder="Əlavə qeyd..."></div></div>`,v=>{if(existing)Object.assign(existing,v);else data.attendance.push({...v,id:crypto.randomUUID()});save();});}
 document.getElementById('addAttendance').onclick=()=>addAttendanceForm();
+
 function removeItem(collection,id){if(confirm('Bu qeydi silmək istədiyinizə əminsiniz?')){data[collection]=data[collection].filter(x=>x.id!==id);save();}}
+
 function renderStudents(){const q=(document.getElementById('studentSearch').value||'').toLowerCase();const f=document.getElementById('studentFilter').value;const rows=data.students.filter(s=>(s.name+' '+s.phone).toLowerCase().includes(q)&&(f==='all'||(f==='active'?s.status==='Aktiv':s.status==='Passiv')));document.getElementById('studentsBody').innerHTML=rows.length?rows.map(s=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><div class="avatar">${esc(initials(s.name))}</div><div><b>${esc(s.name)}</b><div class="muted" style="font-size:10px;margin-top:3px">${esc(s.joined||'')}</div></div></div></td><td>${esc(s.phone||'—')}</td><td>${esc(s.type||'—')}</td><td>${money(s.fee)}</td><td><span class="pill ${s.status==='Aktiv'?'paid':''}">${esc(s.status)}</span></td><td><div class="actions"><button class="mini-btn" data-edit-student="${s.id}">Redaktə</button><button class="mini-btn" data-del-student="${s.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="6" class="empty">Uyğun tələbə tapılmadı.</td></tr>`;document.querySelectorAll('[data-edit-student]').forEach(b=>b.onclick=()=>addStudentForm(student(b.dataset.editStudent)));document.querySelectorAll('[data-del-student]').forEach(b=>b.onclick=()=>removeItem('students',b.dataset.delStudent));}
 document.getElementById('studentSearch').addEventListener('input',renderStudents);document.getElementById('studentFilter').addEventListener('change',renderStudents);
+
 function renderSchedule(){const start=new Date(today);const monday=(start.getDay()+6)%7;start.setDate(start.getDate()-monday);document.getElementById('weekGrid').innerHTML=days.map((d,i)=>{const date=new Date(start);date.setDate(start.getDate()+i);const lessons=data.lessons.filter(l=>Number(l.day)===i).sort((a,b)=>a.time.localeCompare(b.time));return `<div class="day-col ${isoToday(date)===isoToday(today)?'today':''}"><div class="day-title">${d}</div><div class="day-date">${date.toLocaleDateString('az-AZ',{day:'numeric',month:'short'})}</div>${lessons.length?lessons.map(l=>`<div class="lesson-card"><b>${esc(l.time)} · ${esc(student(l.studentId)?.name||'Silinmiş tələbə')}</b><small>${esc(l.format||'Fərdi')} · ${l.duration||90} dəq.</small><button data-edit-lesson="${l.id}">Redaktə</button> <button data-del-lesson="${l.id}">Sil</button></div>`).join(''):'<div class="muted" style="font-size:10px;padding:12px 2px">Dərs yoxdur</div>'}</div>`;}).join('');document.querySelectorAll('[data-edit-lesson]').forEach(b=>b.onclick=()=>addLessonForm(data.lessons.find(x=>x.id===b.dataset.editLesson)));document.querySelectorAll('[data-del-lesson]').forEach(b=>b.onclick=()=>removeItem('lessons',b.dataset.delLesson));}
+
 function renderAttendance(){const m=document.getElementById('attendanceMonth').value;const rows=data.attendance.filter(a=>!m||a.date.startsWith(m)).sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('attendanceBody').innerHTML=rows.length?rows.map(a=>`<tr><td>${shortDate(a.date)}</td><td><b>${esc(student(a.studentId)?.name||'Silinmiş tələbə')}</b></td><td>Gitara dərsi</td><td><span class="pill ${a.status==='İştirak edib'?'present':a.status==='İştirak etməyib'?'absent':''}">${esc(a.status)}</span></td><td>${esc(a.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-att="${a.id}">Redaktə</button><button class="mini-btn" data-del-att="${a.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="6" class="empty">Bu ay üçün davamiyyət qeydi yoxdur.</td></tr>`;document.querySelectorAll('[data-edit-att]').forEach(b=>b.onclick=()=>addAttendanceForm(data.attendance.find(x=>x.id===b.dataset.editAtt)));document.querySelectorAll('[data-del-att]').forEach(b=>b.onclick=()=>removeItem('attendance',b.dataset.delAtt));}
 document.getElementById('attendanceMonth').value=monthNow;document.getElementById('attendanceMonth').onchange=renderAttendance;
 
 function getStudentPackageText(studentId){
   if(!studentId)return '—';
-  const attended=data.attendance.filter(a=>a.studentId===studentId && a.status==='İştirak edib').length;
-  const pkgSize=8;
-  const currentBatch=attended % pkgSize;
-  const remaining=pkgSize - currentBatch;
+  const attended = data.attendance.filter(a => a.studentId === studentId && a.status === 'İştirak edib').length;
+  const pkgSize = 8;
+  const currentBatch = attended % pkgSize;
+  const remaining = pkgSize - currentBatch;
   return `<span class="pill present">${currentBatch} / ${pkgSize} dərs (${remaining} qalır)</span>`;
 }
 
-function renderPayments(){const m=document.getElementById('paymentMonth').value;const q=(document.getElementById('paymentSearch').value||'').toLowerCase();const rows=data.payments.filter(p=>(!m||p.month===m)&&((student(p.studentId)?.name||'').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(p=>`<tr><td>${shortDate(p.date)}</td><td><b>${esc(student(p.studentId)?.name||'Silinmiş tələbə')}</b></td><td><b>${money(p.amount)}</b></td><td>${esc(p.method||'—')}</td><td>${esc(p.month||'—')}</td><td>${getStudentPackageText(p.studentId)}</td><td>${esc(p.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-pay="${p.id}">Redaktə</button><button class="mini-btn" data-del-pay="${p.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="8" class="empty">Bu seçim üzrə ödəniş yoxdur.</td></tr>`;document.querySelectorAll('[data-edit-pay]').forEach(b=>b.onclick=()=>addPaymentForm(data.payments.find(x=>x.id===b.dataset.editPay)));document.querySelectorAll('[data-del-pay]').forEach(b=>b.onclick=()=>removeItem('payments',b.dataset.delPay));const monthPays=data.payments.filter(p=>p.month===m);const paid=monthPays.reduce((a,p)=>a+p.amount,0);const expected=data.students.filter(s=>s.status==='Aktiv').reduce((a,s)=>a+s.fee,0);document.getElementById('payMonth').textContent=money(paid);document.getElementById('payExpected').textContent=money(expected);document.getElementById('payOutstanding').textContent=money(Math.max(0,expected-paid));}
-document.getElementById('paymentMonth').value=monthNow;document.getElementById('paymentMonth').onchange=renderPayments;document.getElementById('paymentSearch').oninput=renderPayments;
-function renderDashboard(){document.getElementById('statStudents').textContent=data.students.filter(s=>s.status==='Aktiv').length;document.getElementById('statIncome').textContent=money(data.payments.filter(p=>p.month===monthNow).reduce((a,p)=>a+p.amount,0));const day=(today.getDay()+6)%7;document.getElementById('statLessons').textContent=data.lessons.filter(l=>Number(l.day)===day).length;const paidIds=new Set(data.payments.filter(p=>p.month===monthNow).map(p=>p.studentId));document.getElementById('statDue').textContent=data.students.filter(s=>s.status==='Aktiv'&&!paidIds.has(s.id)&&s.fee>0).length;const todayLessons=data.lessons.filter(l=>Number(l.day)===day).sort((a,b)=>a.time.localeCompare(b.time));document.getElementById('upcomingList').className=todayLessons.length?'':'empty';document.getElementById('upcomingList').innerHTML=todayLessons.length?todayLessons.map(l=>`<div class="list-row"><div class="avatar">${esc(initials(student(l.studentId)?.name||'?'))}</div><div class="row-main"><b>${esc(student(l.studentId)?.name||'Silinmiş tələbə')}</b><small>${esc(l.format||'Fərdi')} · ${l.duration||90} dəqiqə</small></div><span class="pill">${esc(l.time)}</span></div>`).join(''):'<div class="empty"><div class="empty-icon">♫</div>Bu gün üçün dərs planlaşdırılmayıb.</div>';const recent=[...data.payments].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);document.getElementById('recentPayments').className=recent.length?'':'empty';document.getElementById('recentPayments').innerHTML=recent.length?recent.map(p=>`<div class="list-row"><div class="avatar">₼</div><div class="row-main"><b>${esc(student(p.studentId)?.name||'Silinmiş tələbə')}</b><small>${shortDate(p.date)} · ${esc(p.method||'')}</small></div><b style="font-size:12px">${money(p.amount)}</b></div>`).join(''):'<div class="empty"><div class="empty-icon">₼</div>Hələ ödəniş qeydə alınmayıb.</div>';}
-function renderStats(){const total=data.payments.reduce((a,p)=>a+p.amount,0);const months=[];for(let i=5;i>=0;i--){const d=new Date(today.getFullYear(),today.getMonth()-i,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);}const sums=months.map(m=>data.payments.filter(p=>p.month===m).reduce((a,p)=>a+p.amount,0));document.getElementById('totalIncome').textContent=money(total);document.getElementById('averageIncome').textContent=money(sums.reduce((a,b)=>a+b,0)/6);document.getElementById('paymentCount').textContent=data.payments.length;document.getElementById('activeCount').textContent=data.students.filter(s=>s.status==='Aktiv').length;const max=Math.max(...sums,1);document.getElementById('incomeChart').innerHTML=months.map((m,i)=>`<div class="bar-col"><span>${sums[i]?Math.round(sums[i]):''}</span><div class="bar" style="height:${Math.max(3,sums[i]/max*125)}px"></div><small>${new Date(Number(m.slice(0,4)),Number(m.slice(5))-1,1).toLocaleDateString('az-AZ',{month:'short'})}</small></div>`).join('');}
-function renderAll(){renderStudents();renderSchedule();renderAttendance();renderPayments();renderDashboard();renderStats();}
-document.getElementById('exportCsv').onclick=()=>{const lines=[['Tarix','Tələbə','Məbləğ AZN','Ödəniş üsulu','Ay','Qeyd'],...data.payments.map(p=>[p.date,student(p.studentId)?.name||'',p.amount,p.method,p.month,p.note||''])];const csv='\uFEFF'+lines.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='gitara-kursu-odenisler.csv';a.click();URL.revokeObjectURL(url);};
+function renderPayments(){
+  const m=document.getElementById('paymentMonth').value;
+  const q=(document.getElementById('paymentSearch').value||'').toLowerCase();
+  const rows=data.payments.filter(p=>(!m||p.month===m)&&((student(p.studentId)?.name||'').toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date));
+  
+  document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(p=>`<tr><td>${shortDate(p.date)}</td><td><b>${esc(student(p.studentId)?.name||'Silinmiş tələbə')}</b></td><td><b>${money(p.amount)}</b></td><td>${esc(p.method||'—')}</td><td>${esc(p.month||'—')}</td><td>${getStudentPackageText(p.studentId)}</td><td>${esc(p.note||'—')}</td><td><div class="actions"><button class="mini-btn" data-edit-pay="${p.id}">Redaktə</button><button class="mini-btn" data-del-pay="${p.id}">Sil</button></div></td></tr>`).join(''):`<tr><td colspan="8" class="empty">Bu seçim üzrə ödəniş yoxdur.</td></tr>`;
+  
+  document.querySelectorAll('[data-edit-pay]').forEach(b=>b.onclick=()=>addPaymentForm(data.payments.find(x=>x.id===b.dataset.editPay)));
+  document.querySelectorAll('[data-del-pay]').forEach(b=>b.onclick=()=>removeItem('payments',b.dataset.delPay));
+  
+  const monthPays=data.payments.filter(p=>p.month===m);
+  const paid=monthPays.reduce((a,p)=>a+p.amount,0);
+  const expected=data.students.filter(s=>s.status==='Aktiv').reduce((a,s)=>a+s.fee,0);
+  document.getElementById('payMonth').textContent=money(paid);
+  document.getElementById('payExpected').textContent=money(expected);
+  document.getElementById('payOutstanding').textContent=money(Math.max(0,expected-paid));
+}
+
+document.getElementById('paymentMonth').value=monthNow;
+document.getElementById('paymentMonth').onchange=renderPayments;
+document.getElementById('paymentSearch').oninput=renderPayments;
+
+function renderDashboard(){
+  document.getElementById('statStudents').textContent=data.students.filter(s=>s.status==='Aktiv').length;
+  document.getElementById('statIncome').textContent=money(data.payments.filter(p=>p.month===monthNow).reduce((a,p)=>a+p.amount,0));
+  const day=(today.getDay()+6)%7;
+  document.getElementById('statLessons').textContent=data.lessons.filter(l=>Number(l.day)===day).length;
+  const paidIds=new Set(data.payments.filter(p=>p.month===monthNow).map(p=>p.studentId));
+  document.getElementById('statDue').textContent=data.students.filter(s=>s.status==='Aktiv'&&!paidIds.has(s.id)&&s.fee>0).length;
+  
+  const todayLessons=data.lessons.filter(l=>Number(l.day)===day).sort((a,b)=>a.time.localeCompare(b.time));
+  document.getElementById('upcomingList').className=todayLessons.length?'':'empty';
+  document.getElementById('upcomingList').innerHTML=todayLessons.length?todayLessons.map(l=>`<div class="list-row"><div class="avatar">${esc(initials(student(l.studentId)?.name||'?'))}</div><div class="row-main"><b>${esc(student(l.studentId)?.name||'Silinmiş tələbə')}</b><small>${esc(l.format||'Fərdi')} · ${l.duration||90} dəqiqə</small></div><span class="pill">${esc(l.time)}</span></div>`).join(''):'<div class="empty"><div class="empty-icon">♫</div>Bu gün üçün dərs planlaşdırılmayıb.</div>';
+  
+  const recent=[...data.payments].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+  document.getElementById('recentPayments').className=recent.length?'':'empty';
+  document.getElementById('recentPayments').innerHTML=recent.length?recent.map(p=>`<div class="list-row"><div class="avatar">₼</div><div class="row-main"><b>${esc(student(p.studentId)?.name||'Silinmiş tələbə')}</b><small>${shortDate(p.date)} · ${esc(p.method||'')}</small></div><b style="font-size:12px">${money(p.amount)}</b></div>`).join(''):'<div class="empty"><div class="empty-icon">₼</div>Hələ ödəniş qeydə alınmayıb.</div>';
+}
+
+function renderStats(){
+  const total=data.payments.reduce((a,p)=>a+p.amount,0);
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(today.getFullYear(),today.getMonth()-i,1);
+    months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
+  }
+  const sums=months.map(m=>data.payments.filter(p=>p.month===m).reduce((a,p)=>a+p.amount,0));
+  document.getElementById('totalIncome').textContent=money(total);
+  document.getElementById('averageIncome').textContent=money(sums.reduce((a,b)=>a+b,0)/6);
+  document.getElementById('paymentCount').textContent=data.payments.length;
+  document.getElementById('activeCount').textContent=data.students.filter(s=>s.status==='Aktiv').length;
+  
+  const max=Math.max(...sums,1);
+  document.getElementById('incomeChart').innerHTML=months.map((m,i)=>`<div class="bar-col"><span>${sums[i]?Math.round(sums[i]):''}</span><div class="bar" style="height:${Math.max(3,sums[i]/max*125)}px"></div><small>${new Date(Number(m.slice(0,4)),Number(m.slice(5))-1,1).toLocaleDateString('az-AZ',{month:'short'})}</small></div>`).join('');
+}
+
+function renderAll(){
+  try {
+    renderStudents();
+    renderSchedule();
+    renderAttendance();
+    renderPayments();
+    renderDashboard();
+    renderStats();
+  } catch(e) {
+    console.error("Render xətası:", e);
+  }
+}
+
+document.getElementById('exportCsv').onclick=()=>{
+  const lines=[['Tarix','Tələbə','Məbləğ AZN','Ödəniş üsulu','Ay','Qeyd'],...data.payments.map(p=>[p.date,student(p.studentId)?.name||'',p.amount,p.method,p.month,p.note||''])];
+  const csv='\uFEFF'+lines.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='gitara-kursu-odenisler.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 renderAll();
 </script>
 </body>
