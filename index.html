@@ -29,7 +29,6 @@ aside { background: var(--site-primary); color: var(--site-on-primary); padding:
 .brand-mark { width:40px; height:40px; border-radius: 12px; display:grid; place-items:center; background:rgba(255,255,255,.14); font-size:21px; }
 .brand strong { display:block; font-size:15px; }
 .brand small { display:block; opacity:.66; font-size:11px; margin-top:2px; }
-.nav-label { color:rgba(255,255,255,.48); text-transform:uppercase; letter-spacing:1.2px; font-size:10px; padding:0 12px; margin-bottom:8px; }
 nav { display:grid; gap:6px; }
 .nav-btn { border:0; color:rgba(255,255,255,.78); background:transparent; text-align:left; padding:12px 14px; border-radius:10px; display:flex; align-items:center; gap:12px; font-size:14px; transition:.15s; }
 .nav-btn:hover,.nav-btn.active { background:rgba(255,255,255,.15); color:white; font-weight:600; }
@@ -76,6 +75,7 @@ h1 { font-size:clamp(22px, 4vw, 28px); letter-spacing:-.5px; margin:0; font-weig
 .pill { display:inline-flex; align-items:center; border-radius:20px; padding:6px 10px; font-size:11px; font-weight:600; background:var(--surface-2); color:var(--muted); white-space:nowrap; }
 .pill.paid { background:#ebfbee; color:#2b8a3e; }
 .pill.absent { background:#fff3bf; color:#f08c00; }
+.pill.group { background:#e7f5ff; color:#1864ab; }
 
 .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
 .search { flex:1; min-width:200px; }
@@ -178,15 +178,15 @@ td b { font-size:12px; color: #212529; }
   </section>
 
   <section class="page" id="attendance">
-    <div class="section-head"><div><h2>Davamiyyət və Paket İzləmə</h2><p>Təqvimdən dərs tarixlərini qeyd edin.</p></div><button class="primary-btn" id="addAttendance">＋ Davamiyyət Qeyd Et (Təqvim)</button></div>
-    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>SON DƏRS TARİXİ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr></tbody></table></div>
+    <div class="section-head"><div><h2>Davamiyyət və İştirak</h2><p>Tələbələrin dərsdə iştirakını qeyd edin.</p></div><button class="primary-btn" id="addAttendance">＋ Davamiyyət Qeyd Et</button></div>
+    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>TƏLƏBƏ</th><th>İŞTİRAK VƏZİYYƏTİ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="4" class="empty">Davamiyyət qeydi yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="payments">
-    <div class="section-head"><div><h2>Ödənişlər</h2><p>Avtomatik və əllə əlavə edilən ödənişlər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
+    <div class="section-head"><div><h2>Ödənişlər və Paket İzləmə</h2><p>Paketdə keçilən və qalan dərslər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
     <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))"><div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
     <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:170px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
-    <div class="table-wrap"><table><thead><tr><th>TARİX</th><th>Tələbə</th><th>Məbləğ</th><th>Üsul</th><th>Ay</th><th>Qeyd</th><th>Əməliyyat</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>ÖDƏNİŞ TARİXİ</th><th>MƏBLƏĞ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
   </section>
 
   <section class="page" id="statistics">
@@ -202,7 +202,7 @@ td b { font-size:12px; color: #212529; }
 <!-- Firebase SDK (Modular v10) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCk5oHCOKemJfMwxVCgvDskBTVQJ9hXxRY",
@@ -238,7 +238,6 @@ function formatAzDate(dStr) {
 let data = {students:[], lessons:[], payments:[], attendance:[]};
 let modalSave = null;
 
-// Firebase Realtime Listener (Real-time Sync)
 const dbRef = ref(db, 'kursData');
 onValue(dbRef, (snapshot) => {
   const serverData = snapshot.val();
@@ -260,10 +259,8 @@ function saveData() {
   });
 }
 
-// Tarix və başlıqlar
 document.getElementById('dateChip').textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}, ${days[today.getDay() === 0 ? 6 : today.getDay() - 1]}`;
 
-// Naviqasiya (Səhifələr arası keçid)
 const navBtns = document.querySelectorAll('.nav-btn');
 const pages = document.querySelectorAll('.page');
 
@@ -280,14 +277,13 @@ navBtns.forEach(btn => {
       students: 'Tələbələr',
       schedule: 'Dərs cədvəli',
       attendance: 'Davamiyyət',
-      payments: 'Ödənişlər',
+      payments: 'Ödənişlər və Paketlər',
       statistics: 'Statistika'
     };
     document.getElementById('pageTitle').textContent = titles[pageId] || 'İdarəetmə';
   });
 });
 
-// Render funksiyaları
 function renderAll() {
   renderDashboard();
   renderStudents();
@@ -302,7 +298,7 @@ function renderDashboard() {
   document.getElementById('statStudents').textContent = activeStudents.length;
   
   const currentMonthStr = monthNow;
-  const monthPayments = data.payments.filter(p => p.month === currentMonthStr);
+  const monthPayments = data.payments.filter(p => (p.month || '').startsWith(currentMonthStr));
   const totalIncome = monthPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
   document.getElementById('statIncome').textContent = totalIncome + ' ₼';
   
@@ -312,11 +308,10 @@ function renderDashboard() {
   document.getElementById('statLessons').textContent = todaysLessons.length;
   
   document.getElementById('statDue').textContent = activeStudents.filter(s => {
-    const paid = data.payments.some(p => p.studentId === s.id && p.month === currentMonthStr);
+    const paid = data.payments.some(p => p.studentId === s.id && (p.month || '').startsWith(currentMonthStr));
     return !paid;
   }).length;
 
-  // Yaxın dərslər
   const upcomingList = document.getElementById('upcomingList');
   if (todaysLessons.length === 0) {
     upcomingList.className = 'empty';
@@ -327,14 +322,13 @@ function renderDashboard() {
       <div class="list-row">
         <div class="avatar">♫</div>
         <div class="row-main">
-          <b>${l.studentName || 'Tələbə'}</b>
+          <b>${l.studentName || 'Tələbə'} (${l.lessonType || 'Fərdi'})</b>
           <small>${l.time} — ${l.subject || 'Gitara'}</small>
         </div>
       </div>
     `).join('');
   }
 
-  // Son ödənişlər
   const recentPayments = document.getElementById('recentPayments');
   if (data.payments.length === 0) {
     recentPayments.className = 'empty';
@@ -380,7 +374,6 @@ function renderStudents() {
       <td><span class="pill ${s.status === 'active' ? 'paid' : 'absent'}">${s.status === 'active' ? 'Aktiv' : 'Passiv'}</span></td>
       <td>
         <div class="actions">
-          <button class="mini-btn" onclick="editStudent('${s.id}')">Redaktə</button>
           <button class="mini-btn" style="color:var(--red);" onclick="deleteStudent('${s.id}')">Sil</button>
         </div>
       </td>
@@ -403,7 +396,7 @@ function renderSchedule() {
           dayLessons.map(l => `
             <div class="lesson-card">
               <b>${l.studentName}</b>
-              <small>${l.time}</small>
+              <small>${l.time} (${l.lessonType || 'Fərdi'})</small>
               <button onclick="deleteLesson('${l.id}')">Sil</button>
             </div>
           `).join('')}
@@ -414,33 +407,22 @@ function renderSchedule() {
 
 function renderAttendance() {
   const tbody = document.getElementById('attendanceBody');
-  const activeStudents = data.students.filter(s => s.status === 'active');
 
-  if (activeStudents.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">Aktiv tələbə yoxdur.</td></tr>';
+  if (data.attendance.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">Davamiyyət qeydi yoxdur.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = activeStudents.map(s => {
-    const studentAtt = data.attendance.filter(a => a.studentId === s.id);
-    const attendedCount = studentAtt.length;
-    const totalPkg = Number(s.packageLessons || 8);
-    const remaining = Math.max(0, totalPkg - attendedCount);
-    const lastDate = studentAtt.length > 0 ? studentAtt[studentAtt.length - 1].date : '—';
-
-    return `
-      <tr>
-        <td><b>${s.name}</b></td>
-        <td>${totalPkg} dərs</td>
-        <td>${attendedCount} dərs</td>
-        <td><b>${remaining} dərs</b></td>
-        <td>${formatAzDate(lastDate)}</td>
-        <td>
-          <button class="mini-btn" onclick="markAttendance('${s.id}')">＋ Dərs keçildi</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
+  tbody.innerHTML = data.attendance.slice().reverse().map(a => `
+    <tr>
+      <td>${formatAzDate(a.date)}</td>
+      <td><b>${a.studentName}</b></td>
+      <td><span class="pill ${a.status === 'İştirak etdi' ? 'paid' : a.status === 'İştirak etmədi' ? 'absent' : 'group'}">${a.status}</span></td>
+      <td>
+        <button class="mini-btn" style="color:var(--red);" onclick="deleteAttendance('${a.id}')">Sil</button>
+      </td>
+    </tr>
+  `).join('');
 }
 
 function renderPayments() {
@@ -448,34 +430,41 @@ function renderPayments() {
   const search = (document.getElementById('paymentSearch').value || '').toLowerCase();
   const monthFilter = document.getElementById('paymentMonth').value || monthNow;
 
-  const filtered = data.payments.filter(p => {
-    const matchMonth = p.month === monthFilter;
-    const matchSearch = (p.studentName || '').toLowerCase().includes(search);
-    return matchMonth && matchSearch;
-  });
-
-  const monthPay = data.payments.filter(p => p.month === monthFilter);
+  const activeStudents = data.students.filter(s => s.status === 'active');
+  const monthPay = data.payments.filter(p => (p.month || '').startsWith(monthFilter));
   const totalIn = monthPay.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  
   document.getElementById('payMonth').textContent = totalIn + ' ₼';
-  document.getElementById('payExpected').textContent = data.students.filter(s => s.status === 'active').reduce((sum, s) => sum + Number(s.monthlyFee || 0), 0) + ' ₼';
-  document.getElementById('payOutstanding').textContent = Math.max(0, Number(document.getElementById('payExpected').textContent.replace(' ₼','')) - totalIn) + ' ₼';
+  const totalExpected = activeStudents.reduce((sum, s) => sum + Number(s.monthlyFee || 0), 0);
+  document.getElementById('payExpected').textContent = totalExpected + ' ₼';
+  document.getElementById('payOutstanding').textContent = Math.max(0, totalExpected - totalIn) + ' ₼';
 
-  if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Bu ay üçün ödəniş tapılmadı.</td></tr>';
+  if (activeStudents.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Aktiv tələbə yoxdur.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = filtered.map(p => `
-    <tr>
-      <td>${formatAzDate(p.date)}</td>
-      <td><b>${p.studentName}</b></td>
-      <td>${p.amount} ₼</td>
-      <td>${p.method || 'Nağd'}</td>
-      <td>${p.month}</td>
-      <td>${p.note || '—'}</td>
-      <td><button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${p.id}')">Sil</button></td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = activeStudents.map(s => {
+    const studentAtt = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak etdi');
+    const attendedCount = studentAtt.length;
+    const totalPkg = Number(s.packageLessons || 8);
+    const remaining = Math.max(0, totalPkg - attendedCount);
+    const studentPay = data.payments.find(p => p.studentId === s.id && (p.month || '').startsWith(monthFilter));
+
+    return `
+      <tr>
+        <td><b>${s.name}</b></td>
+        <td>${totalPkg} dərs</td>
+        <td>${attendedCount} dərs</td>
+        <td><b>${remaining} dərs</b></td>
+        <td>${studentPay ? formatAzDate(studentPay.date) : '—'}</td>
+        <td>${studentPay ? studentPay.amount + ' ₼' : '<span style="color:var(--red)">Ödənilməyib</span>'}</td>
+        <td>
+          <button class="mini-btn" onclick="addPaymentForStudent('${s.id}')">＋ Ödəniş qeyd et</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function renderStatistics() {
@@ -509,7 +498,7 @@ function openAddStudentModal() {
     </div>
   `;
   modalSave = () => {
-    const newStudent = {
+    data.students.push({
       id: 's_' + Date.now(),
       name: document.getElementById('mName').value,
       phone: document.getElementById('mPhone').value,
@@ -517,8 +506,7 @@ function openAddStudentModal() {
       packageLessons: Number(document.getElementById('mPackage').value),
       monthlyFee: Number(document.getElementById('mFee').value),
       status: document.getElementById('mStatus').value
-    };
-    data.students.push(newStudent);
+    });
     saveData();
     backdrop.classList.remove('open');
   };
@@ -537,10 +525,11 @@ document.getElementById('addLesson').onclick = () => {
     alert('Əvvəlcə tələbə əlavə etməlisiniz!');
     return;
   }
-  modalTitle.textContent = 'Yeni dərs əlavə et';
+  modalTitle.textContent = 'Yeni dərs əlavə et (Cədvəl)';
   modalFields.innerHTML = `
     <div class="form-grid">
       <div class="field full"><label>Tələbə</label><select id="mLStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Dərs növü</label><select id="mLLessonType"><option value="Fərdi">Fərdi</option><option value="Qrup">Qrup</option></select></div>
       <div class="field"><label>Həftənin günü</label><select id="mLDay">${days.map(d => `<option value="${d}">${d}</option>`).join('')}</select></div>
       <div class="field"><label>Saat</label><input type="time" id="mLTime" value="15:00"></div>
     </div>
@@ -548,15 +537,15 @@ document.getElementById('addLesson').onclick = () => {
   modalSave = () => {
     const sId = document.getElementById('mLStudent').value;
     const st = data.students.find(x => x.id === sId);
-    const newLesson = {
+    data.lessons.push({
       id: 'l_' + Date.now(),
       studentId: sId,
       studentName: st ? st.name : '',
+      lessonType: document.getElementById('mLLessonType').value,
       day: document.getElementById('mLDay').value,
       time: document.getElementById('mLTime').value,
       subject: 'Gitara dərsi'
-    };
-    data.lessons.push(newLesson);
+    });
     saveData();
     backdrop.classList.remove('open');
   };
@@ -577,7 +566,8 @@ document.getElementById('addAttendance').onclick = () => {
   modalFields.innerHTML = `
     <div class="form-grid">
       <div class="field full"><label>Tələbə</label><select id="mAStudent">${data.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
-      <div class="field full"><label>Tarix</label><input type="date" id="mADate" value="${isoToday(today)}"></div>
+      <div class="field"><label>Ayın Tarixi</label><input type="date" id="mADate" value="${isoToday(today)}"></div>
+      <div class="field"><label>İştirak vəziyyəti</label><select id="mAStatus"><option value="İştirak etdi">İştirak etdi</option><option value="İştirak etmədi">İştirak etmədi</option><option value="Üzrlü səbəb">Üzrlü səbəb</option></select></div>
     </div>
   `;
   modalSave = () => {
@@ -587,7 +577,8 @@ document.getElementById('addAttendance').onclick = () => {
       id: 'a_' + Date.now(),
       studentId: sId,
       studentName: st ? st.name : '',
-      date: document.getElementById('mADate').value
+      date: document.getElementById('mADate').value,
+      status: document.getElementById('mAStatus').value
     });
     saveData();
     backdrop.classList.remove('open');
@@ -595,18 +586,18 @@ document.getElementById('addAttendance').onclick = () => {
   backdrop.classList.add('open');
 };
 
-window.markAttendance = function(studentId) {
-  const st = data.students.find(x => x.id === studentId);
-  data.attendance.push({
-    id: 'a_' + Date.now(),
-    studentId: studentId,
-    studentName: st ? st.name : '',
-    date: isoToday(today)
-  });
+window.deleteAttendance = function(id) {
+  data.attendance = data.attendance.filter(a => a.id !== id);
   saveData();
 };
 
-document.getElementById('addPayment').onclick = () => {
+document.getElementById('addPayment').onclick = () => openPaymentModal();
+
+window.addPaymentForStudent = function(studentId) {
+  openPaymentModal(studentId);
+};
+
+function openPaymentModal(selectedStudentId = null) {
   if (data.students.length === 0) {
     alert('Tələbə yoxdur!');
     return;
@@ -614,9 +605,9 @@ document.getElementById('addPayment').onclick = () => {
   modalTitle.textContent = 'Ödəniş əlavə et';
   modalFields.innerHTML = `
     <div class="form-grid">
-      <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}">${s.name} (${s.monthlyFee || 0} ₼)</option>`).join('')}</select></div>
+      <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === selectedStudentId ? 'selected' : ''}>${s.name} (${s.monthlyFee || 0} ₼)</option>`).join('')}</select></div>
       <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="80"></div>
-      <div class="field"><label>Tarix</label><input type="date" id="mPDate" value="${isoToday(today)}"></div>
+      <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${isoToday(today)}"></div>
       <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${monthNow}"></div>
       <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd">Nağd</option><option value="Kart">Kart</option><option value="Köçürmə">Köçürmə</option></select></div>
     </div>
@@ -637,12 +628,7 @@ document.getElementById('addPayment').onclick = () => {
     backdrop.classList.remove('open');
   };
   backdrop.classList.add('open');
-};
-
-window.deletePayment = function(id) {
-  data.payments = data.payments.filter(p => p.id !== id);
-  saveData();
-};
+}
 
 modalForm.onsubmit = (e) => {
   e.preventDefault();
