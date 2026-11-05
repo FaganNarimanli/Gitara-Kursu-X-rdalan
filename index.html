@@ -242,7 +242,7 @@ let modalSave = null;
 const dbRef = ref(db, 'kursData');
 onValue(dbRef, (snapshot) => {
   const serverData = snapshot.val();
-  if (serverif (serverData) {
+  if (serverData) {
     data = {
       students: serverData.students || [],
       lessons: serverData.lessons || [],
@@ -454,7 +454,6 @@ function renderPayments() {
     return matchMonth && matchSearch;
   });
 
-  // Ümumi statistika kartları
   const monthPay = data.payments.filter(p => p.month === monthFilter);
   const totalIn = monthPay.reduce((sum, p) => sum + Number(p.amount || 0), 0);
   document.getElementById('payMonth').textContent = totalIn + ' ₼';
@@ -486,7 +485,6 @@ function renderStatistics() {
   document.getElementById('activeCount').textContent = data.students.filter(s => s.status === 'active').length;
 }
 
-// Modal və Əməliyyat Funksiyaları
 const backdrop = document.getElementById('modalBackdrop');
 const modalTitle = document.getElementById('modalTitle');
 const modalFields = document.getElementById('modalFields');
@@ -495,7 +493,6 @@ const modalForm = document.getElementById('modalForm');
 document.getElementById('closeModal').onclick = () => backdrop.classList.remove('open');
 document.getElementById('cancelModal').onclick = () => backdrop.classList.remove('open');
 
-// Yeni tələbə əlavə etmə düymələri
 document.getElementById('quickAdd').onclick = openAddStudentModal;
 document.getElementById('addStudent').onclick = openAddStudentModal;
 
@@ -535,7 +532,6 @@ window.deleteStudent = function(id) {
   }
 };
 
-// Dərs əlavə et
 document.getElementById('addLesson').onclick = () => {
   if (data.students.length === 0) {
     alert('Əvvəlcə tələbə əlavə etməlisiniz!');
@@ -572,7 +568,6 @@ window.deleteLesson = function(id) {
   saveData();
 };
 
-// Davamiyyət qeyd et
 document.getElementById('addAttendance').onclick = () => {
   if (data.students.length === 0) {
     alert('Tələbə yoxdur!');
@@ -611,7 +606,6 @@ window.markAttendance = function(studentId) {
   saveData();
 };
 
-// Ödəniş əlavə et
 document.getElementById('addPayment').onclick = () => {
   if (data.students.length === 0) {
     alert('Tələbə yoxdur!');
@@ -655,9 +649,11 @@ modalForm.onsubmit = (e) => {
   if (modalSave) modalSave();
 };
 
-// Axtarış və Filtr dəyişiklikləri
 document.getElementById('studentSearch').oninput = renderStudents;
 document.getElementById('studentFilter').onchange = renderStudents;
 document.getElementById('paymentSearch').oninput = renderPayments;
 document.getElementById('paymentMonth').onchange = renderPayments;
 document.getElementById('paymentMonth').value = monthNow;
+</script>
+</body>
+</html>
