@@ -404,7 +404,11 @@ function renderSchedule() {
   const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
 
   weekGrid.innerHTML = days.map((d, idx) => {
-    const dayLessons = data.lessons.filter(l => l.day === d);
+    // Saatlarına görə artan sırada (erkəndən gecəyə) sıralayırıq
+    const dayLessons = data.lessons
+      .filter(l => l.day === d)
+      .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
     const isToday = idx === dayIndex;
     return `
       <div class="day-col ${isToday ? 'today' : ''}">
@@ -467,7 +471,6 @@ function renderPayments() {
     tbody.innerHTML = '<tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr>';
   } else {
     tbody.innerHTML = data.payments.slice().reverse().map(p => {
-      // Həmin tələbənin bu ödəniş tarixindən sonra iştirak etdiyi dərsləri hesablayırıq
       const studentAtt = data.attendance.filter(a => a.studentId === p.studentId && a.status === 'İştirak etdi' && (!p.date || a.date >= p.date));
       const attendedCount = studentAtt.length;
       const totalPkg = Number(p.addedLessons || 8);
