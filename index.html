@@ -463,32 +463,28 @@ function renderPayments() {
   document.getElementById('payExpected').textContent = totalExpected + ' ₼';
   document.getElementById('payOutstanding').textContent = Math.max(0, totalExpected - totalIn) + ' ₼';
 
-  if (activeStudents.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Aktiv tələbə yoxdur.</td></tr>';
+  if (data.payments.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr>';
   } else {
-    tbody.innerHTML = activeStudents.map(s => {
-      const studentAtt = data.attendance.filter(a => a.studentId === s.id && a.status === 'İştirak etdi');
+    tbody.innerHTML = data.payments.slice().reverse().map(p => {
+      const st = data.students.find(s => s.id === p.studentId);
+      const totalPkg = st ? Number(st.packageLessons || 8) : 8;
+      const studentAtt = data.attendance.filter(a => a.studentId === p.studentId && a.status === 'İştirak etdi');
       const attendedCount = studentAtt.length;
-      const totalPkg = Number(s.packageLessons || 8);
       const remaining = Math.max(0, totalPkg - attendedCount);
-      const studentPay = data.payments.find(p => p.studentId === s.id && (p.month || '').startsWith(monthFilter));
 
       return `
         <tr>
-          <td><b>${s.name}</b></td>
+          <td><b>${p.studentName}</b></td>
           <td>${totalPkg} dərs</td>
           <td>${attendedCount} dərs</td>
           <td><b>${remaining} dərs</b></td>
-          <td>${studentPay ? formatAzDate(studentPay.date) : '—'}</td>
-          <td>${studentPay ? studentPay.amount + ' ₼' : '<span style="color:var(--red)">Ödənilməyib</span>'}</td>
+          <td>${formatAzDate(p.date)} (${p.month || '—'})</td>
+          <td>${p.amount} ₼</td>
           <td>
             <div class="actions">
-              ${studentPay ? `
-                <button class="mini-btn" style="color:var(--green);" onclick="editPayment('${studentPay.id}')">Redaktə</button>
-                <button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${studentPay.id}')">Sil</button>
-              ` : `
-                <button class="mini-btn" onclick="addPaymentForStudent('${s.id}')">＋ Ödəniş qeyd et</button>
-              `}
+              <button class="mini-btn" style="color:var(--green);" onclick="editPayment('${p.id}')">Redaktə</button>
+              <button class="mini-btn" style="color:var(--red);" onclick="deletePayment('${p.id}')">Sil</button>
             </div>
           </td>
         </tr>
@@ -746,10 +742,6 @@ window.deleteAttendance = function(id) {
 
 document.getElementById('addPayment').onclick = () => openPaymentModal();
 
-window.addPaymentForStudent = function(studentId) {
-  openPaymentModal(studentId);
-};
-
 window.editPayment = function(id) {
   const pay = data.payments.find(p => p.id === id);
   if (!pay) return;
@@ -759,9 +751,9 @@ window.editPayment = function(id) {
     <div class="form-grid">
       <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === pay.studentId ? 'selected' : ''}>${s.name}</option>`).join('')}</select></div>
       <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="${pay.amount || 80}"></div>
+      <div class="field"><label>Paket dərs sayı (+)</label><input type="number" id="mPPackage" value="${pay.addedLessons || 8}"></div>
       <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${pay.date || isoToday(today)}"></div>
       <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${pay.month || monthNow}"></div>
-      <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd" ${pay.method === 'Nağd' ? 'selected' : ''}>Nağd</option><option value="Kart" ${pay.method === 'Kart' ? 'selected' : ''}>Kart</option><option value="Köçürmə" ${pay.method === 'Köçürmə' ? 'selected' : ''}>Köçürmə</option></select></div>
     </div>
   `;
 
@@ -772,9 +764,9 @@ window.editPayment = function(id) {
     pay.studentId = sId;
     pay.studentName = st ? st.name : '';
     pay.amount = Number(document.getElementById('mPAmount').value);
+    pay.addedLessons = Number(document.getElementById('mPPackage').value);
     pay.date = document.getElementById('mPDate').value;
     pay.month = document.getElementById('mPMonth').value;
-    pay.method = document.getElementById('mPMethod').value;
 
     saveData();
     backdrop.classList.remove('open');
@@ -787,27 +779,34 @@ function openPaymentModal(selectedStudentId = null) {
     alert('Tələbə yoxdur!');
     return;
   }
-  modalTitle.textContent = 'Ödəniş əlavə et';
+  modalTitle.textContent = 'Ödəniş və Paket Əlavə Et';
   modalFields.innerHTML = `
     <div class="form-grid">
       <div class="field full"><label>Tələbə</label><select id="mPStudent">${data.students.map(s => `<option value="${s.id}" ${s.id === selectedStudentId ? 'selected' : ''}>${s.name} (${s.monthlyFee || 0} ₼)</option>`).join('')}</select></div>
       <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="80"></div>
+      <div class="field"><label>Yenidən alınan paket dərs</label><input type="number" id="mPPackage" value="8"></div>
       <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${isoToday(today)}"></div>
       <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${monthNow}"></div>
-      <div class="field"><label>Ödəniş üsulu</label><select id="mPMethod"><option value="Nağd">Nağd</option><option value="Kart">Kart</option><option value="Köçürmə">Köçürmə</option></select></div>
     </div>
   `;
   modalSave = () => {
     const sId = document.getElementById('mPStudent').value;
     const st = data.students.find(x => x.id === sId);
+    const addedCount = Number(document.getElementById('mPPackage').value);
+    
+    // Tələbənin paket dərs sayını artırırıq
+    if (st) {
+      st.packageLessons = Number(st.packageLessons || 0) + addedCount;
+    }
+
     data.payments.push({
       id: 'p_' + Date.now(),
       studentId: sId,
       studentName: st ? st.name : '',
       amount: Number(document.getElementById('mPAmount').value),
+      addedLessons: addedCount,
       date: document.getElementById('mPDate').value,
-      month: document.getElementById('mPMonth').value,
-      method: document.getElementById('mPMethod').value
+      month: document.getElementById('mPMonth').value
     });
     saveData();
     backdrop.classList.remove('open');
@@ -820,6 +819,13 @@ window.deletePayment = function(id) {
     const payIdx = data.payments.findIndex(p => p.id === id);
     if (payIdx !== -1) {
       const removed = data.payments.splice(payIdx, 1)[0];
+      
+      // Ödəniş silinəndə əlavə olunan paket dərsi də geri çıxarırıq
+      const st = data.students.find(s => s.id === removed.studentId);
+      if (st && removed.addedLessons) {
+        st.packageLessons = Math.max(0, Number(st.packageLessons || 0) - Number(removed.addedLessons));
+      }
+
       removed.deletedAt = isoToday(today);
       if (!data.deletedPayments) data.deletedPayments = [];
       data.deletedPayments.push(removed);
@@ -834,6 +840,13 @@ window.restorePayment = function(id) {
   if (payIdx !== -1) {
     const restored = data.deletedPayments.splice(payIdx, 1)[0];
     delete restored.deletedAt;
+    
+    // Bərpa edəndə paket dərsi yenidən əlavə edirik
+    const st = data.students.find(s => s.id === restored.studentId);
+    if (st && restored.addedLessons) {
+      st.packageLessons = Number(st.packageLessons || 0) + Number(restored.addedLessons);
+    }
+
     data.payments.push(restored);
     saveData();
   }
