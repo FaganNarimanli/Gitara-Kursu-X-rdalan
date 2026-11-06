@@ -452,7 +452,6 @@ function renderAttendance() {
 function renderPayments() {
   const tbody = document.getElementById('paymentsBody');
   const deletedTbody = document.getElementById('deletedPaymentsBody');
-  const search = (document.getElementById('paymentSearch').value || '').toLowerCase();
   const monthFilter = document.getElementById('paymentMonth').value || monthNow;
 
   const activeStudents = data.students.filter(s => s.status === 'active');
