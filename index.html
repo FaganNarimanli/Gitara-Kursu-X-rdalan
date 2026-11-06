@@ -454,11 +454,11 @@ function renderPayments() {
   const deletedTbody = document.getElementById('deletedPaymentsBody');
   const monthFilter = document.getElementById('paymentMonth').value || monthNow;
 
-  const activeStudents = data.students.filter(s => s.status === 'active');
   const monthPay = data.payments.filter(p => (p.month || '').startsWith(monthFilter));
   const totalIn = monthPay.reduce((sum, p) => sum + Number(p.amount || 0), 0);
   
   document.getElementById('payMonth').textContent = totalIn + ' ₼';
+  const activeStudents = data.students.filter(s => s.status === 'active');
   const totalExpected = activeStudents.reduce((sum, s) => sum + Number(s.monthlyFee || 0), 0);
   document.getElementById('payExpected').textContent = totalExpected + ' ₼';
   document.getElementById('payOutstanding').textContent = Math.max(0, totalExpected - totalIn) + ' ₼';
@@ -467,10 +467,10 @@ function renderPayments() {
     tbody.innerHTML = '<tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr>';
   } else {
     tbody.innerHTML = data.payments.slice().reverse().map(p => {
-      const st = data.students.find(s => s.id === p.studentId);
-      const totalPkg = st ? Number(st.packageLessons || 8) : 8;
-      const studentAtt = data.attendance.filter(a => a.studentId === p.studentId && a.status === 'İştirak etdi');
+      // Həmin tələbənin bu ödəniş tarixindən sonra iştirak etdiyi dərsləri hesablayırıq
+      const studentAtt = data.attendance.filter(a => a.studentId === p.studentId && a.status === 'İştirak etdi' && (!p.date || a.date >= p.date));
       const attendedCount = studentAtt.length;
+      const totalPkg = Number(p.addedLessons || 8);
       const remaining = Math.max(0, totalPkg - attendedCount);
 
       return `
@@ -793,11 +793,6 @@ function openPaymentModal(selectedStudentId = null) {
     const sId = document.getElementById('mPStudent').value;
     const st = data.students.find(x => x.id === sId);
     const addedCount = Number(document.getElementById('mPPackage').value);
-    
-    // Tələbənin paket dərs sayını artırırıq
-    if (st) {
-      st.packageLessons = Number(st.packageLessons || 0) + addedCount;
-    }
 
     data.payments.push({
       id: 'p_' + Date.now(),
@@ -819,13 +814,6 @@ window.deletePayment = function(id) {
     const payIdx = data.payments.findIndex(p => p.id === id);
     if (payIdx !== -1) {
       const removed = data.payments.splice(payIdx, 1)[0];
-      
-      // Ödəniş silinəndə əlavə olunan paket dərsi də geri çıxarırıq
-      const st = data.students.find(s => s.id === removed.studentId);
-      if (st && removed.addedLessons) {
-        st.packageLessons = Math.max(0, Number(st.packageLessons || 0) - Number(removed.addedLessons));
-      }
-
       removed.deletedAt = isoToday(today);
       if (!data.deletedPayments) data.deletedPayments = [];
       data.deletedPayments.push(removed);
@@ -840,13 +828,6 @@ window.restorePayment = function(id) {
   if (payIdx !== -1) {
     const restored = data.deletedPayments.splice(payIdx, 1)[0];
     delete restored.deletedAt;
-    
-    // Bərpa edəndə paket dərsi yenidən əlavə edirik
-    const st = data.students.find(s => s.id === restored.studentId);
-    if (st && restored.addedLessons) {
-      st.packageLessons = Number(st.packageLessons || 0) + Number(restored.addedLessons);
-    }
-
     data.payments.push(restored);
     saveData();
   }
