@@ -496,7 +496,6 @@ function renderPayments() {
     }).join('');
   }
 
-  // Silinmiş Ödənişlərin Render olunması
   if (!data.deletedPayments || data.deletedPayments.length === 0) {
     deletedTbody.innerHTML = '<tr><td colspan="5" class="empty">Silinmiş ödəniş yoxdur.</td></tr>';
   } else {
