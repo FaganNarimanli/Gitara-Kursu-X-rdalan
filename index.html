@@ -41,7 +41,10 @@ main { min-width:0; padding: 24px 32px 40px; }
 .eyebrow { color:var(--muted); font-size:12px; margin-bottom:4px; }
 h1 { font-size:clamp(22px, 4vw, 28px); letter-spacing:-.5px; margin:0; font-weight:750; color: #212529; }
 .top-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-.date-chip { color:var(--muted); font-size:12px; background:var(--surface); border:1px solid var(--line); padding:10px 14px; border-radius:10px; font-weight:500; }
+.date-chip { color:var(--muted); font-size:12px; background:var(--surface); border:1px solid var(--line); padding:10px 14px; border-radius:10px; font-weight:500; display:flex; align-items:center; gap:8px; }
+.eye-btn { background: none; border: none; cursor: pointer; font-size: 15px; padding: 0; color: var(--muted); display: inline-flex; align-items: center; }
+.eye-btn:hover { color: var(--site-on-background); }
+
 .primary-btn,.secondary-btn { border:0; border-radius:10px; padding:11px 16px; font-weight:650; font-size:13px; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
 .primary-btn { background:var(--site-primary); color:var(--site-on-primary); }
 .secondary-btn { background:var(--surface); color:#212529; border:1px solid var(--line); }
@@ -56,8 +59,12 @@ h1 { font-size:clamp(22px, 4vw, 28px); letter-spacing:-.5px; margin:0; font-weig
 .stat { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow:var(--shadow); }
 .stat-top { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:12px; }
 .stat-icon { width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:var(--surface-2);font-size:15px; }
-.stat-value { font-size:24px; font-weight:750; margin-top:10px; color: #212529; }
+.stat-value { font-size:24px; font-weight:750; margin-top:10px; color: #212529; transition: filter 0.2s; }
 .stat-foot { color:var(--muted); font-size:11px; margin-top:4px; }
+
+/* Blur (Gizlətmə) effekti */
+.blur-sensitive { filter: blur(6px); user-select: none; cursor: pointer; }
+.blur-sensitive:hover { filter: blur(3px); }
 
 .content-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
 .panel { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow); }
@@ -152,14 +159,23 @@ td b { font-size:12px; color: #212529; }
   <div class="side-note"><b>Bulud Sinxronizasiyası</b>Məlumatlar onlayn bazada saxlanılır.</div>
 </aside>
 <main>
-  <header class="topbar"><div><div class="eyebrow">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div><div class="top-actions"><div class="date-chip" id="dateChip"></div><button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button></div></header>
+  <header class="topbar">
+    <div><div class="eyebrow">Şəxsi idarəetmə paneli</div><h1 id="pageTitle">Xoş gəldin!</h1></div>
+    <div class="top-actions">
+      <div class="date-chip">
+        <span id="dateChipText"></span>
+        <button class="eye-btn" id="togglePrivacyBtn" title="Məbləğləri gizlə/göstər">👁️</button>
+      </div>
+      <button class="primary-btn" id="quickAdd">＋ Yeni tələbə</button>
+    </div>
+  </header>
 
   <section class="page active" id="dashboard">
     <div class="stats">
       <div class="stat"><div class="stat-top">Aktiv tələbələr <span class="stat-icon">♙</span></div><div class="stat-value" id="statStudents">0</div><div class="stat-foot">Qeydiyyatda olanlar</div></div>
-      <div class="stat"><div class="stat-top">Bu ay gəlir <span class="stat-icon">₼</span></div><div class="stat-value" id="statIncome">0 ₼</div><div class="stat-foot">Ödənişlər</div></div>
+      <div class="stat"><div class="stat-top">Bu ay gəlir <span class="stat-icon">₼</span></div><div class="stat-value sensitive-money" id="statIncome">0 ₼</div><div class="stat-foot">Ödənişlər</div></div>
       <div class="stat"><div class="stat-top">Bu gün dərslər <span class="stat-icon">♫</span></div><div class="stat-value" id="statLessons">0</div><div class="stat-foot">Cədvəldə</div></div>
-      <div class="stat"><div class="stat-top">Ödəniş gözləyənlər <span class="stat-icon">◷</span></div><div class="stat-value" id="statDue">0</div><div class="stat-foot">Cari ay</div></div>
+      <div class="stat"><div class="stat-top">Ödəniş gözləyənlər <span class="stat-icon">◷</span></div><div class="stat-value sensitive-money" id="statDue">0</div><div class="stat-foot">Cari ay</div></div>
     </div>
     <div class="content-grid">
       <div class="panel"><div class="panel-head"><h3>Yaxın dərslər</h3></div><div id="upcomingList" class="empty"><div class="empty-icon">♫</div>Bu gün üçün dərs yoxdur.</div></div>
@@ -185,7 +201,11 @@ td b { font-size:12px; color: #212529; }
 
   <section class="page" id="payments">
     <div class="section-head"><div><h2>Ödənişlər və Paket İzləmə</h2><p>Paketdə keçilən və qalan dərslər.</p></div><button class="primary-btn" id="addPayment">＋ Ödəniş əlavə et</button></div>
-    <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))"><div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value" id="payMonth">0 ₼</div></div><div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value" id="payExpected">0 ₼</div></div><div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value" id="payOutstanding">0 ₼</div></div></div>
+    <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))">
+      <div class="stat"><div class="stat-top">Daxil olub</div><div class="stat-value sensitive-money" id="payMonth">0 ₼</div></div>
+      <div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value sensitive-money" id="payExpected">0 ₼</div></div>
+      <div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value sensitive-money" id="payOutstanding">0 ₼</div></div>
+    </div>
     <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:170px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
     <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>ÖDƏNİŞ TARİXİ</th><th>MƏBLƏĞ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
     
@@ -207,7 +227,11 @@ td b { font-size:12px; color: #212529; }
 
   <section class="page" id="statistics">
     <div class="section-head"><div><h2>Statistika</h2><p>Gəlir xülasəsi.</p></div></div>
-    <div class="stats"><div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value" id="totalIncome">0 ₼</div></div><div class="stat"><div class="stat-top">Ödəniş sayı</div><div class="stat-value" id="paymentCount">0</div></div><div class="stat"><div class="stat-top">Aktiv tələbə</div><div class="stat-value" id="activeCount">0</div></div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-top">Ümumi gəlir</div><div class="stat-value sensitive-money" id="totalIncome">0 ₼</div></div>
+      <div class="stat"><div class="stat-top">Ödəniş sayı</div><div class="stat-value" id="paymentCount">0</div></div>
+      <div class="stat"><div class="stat-top">Aktiv tələbə</div><div class="stat-value" id="activeCount">0</div></div>
+    </div>
   </section>
 </main>
 </div>
@@ -254,6 +278,30 @@ function formatAzDate(dStr) {
 let data = {students:[], lessons:[], payments:[], attendance:[], deletedPayments:[]};
 let modalSave = null;
 
+// Göz (Privacy Blur) mexanizmi
+let isBlurred = localStorage.getItem('kurs_privacy_blur') === 'true';
+
+function updatePrivacyUI() {
+  const elements = document.querySelectorAll('.sensitive-money');
+  const btn = document.getElementById('togglePrivacyBtn');
+  elements.forEach(el => {
+    if (isBlurred) {
+      el.classList.add('blur-sensitive');
+    } else {
+      el.classList.remove('blur-sensitive');
+    }
+  });
+  if (btn) {
+    btn.textContent = isBlurred ? '🔒' : '👁️';
+  }
+}
+
+document.getElementById('togglePrivacyBtn').addEventListener('click', () => {
+  isBlurred = !isBlurred;
+  localStorage.setItem('kurs_privacy_blur', isBlurred);
+  updatePrivacyUI();
+});
+
 const dbRef = ref(db, 'kursData');
 onValue(dbRef, (snapshot) => {
   const serverData = snapshot.val();
@@ -276,7 +324,7 @@ function saveData() {
   });
 }
 
-document.getElementById('dateChip').textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}, ${days[today.getDay() === 0 ? 6 : today.getDay() - 1]}`;
+document.getElementById('dateChipText').textContent = `${today.getDate()} ${monthNamesAz[today.getMonth()]} ${today.getFullYear()}, ${days[today.getDay() === 0 ? 6 : today.getDay() - 1]}`;
 
 const navBtns = document.querySelectorAll('.nav-btn');
 const pages = document.querySelectorAll('.page');
@@ -308,6 +356,7 @@ function renderAll() {
   renderAttendance();
   renderPayments();
   renderStatistics();
+  updatePrivacyUI();
 }
 
 function renderDashboard() {
@@ -356,7 +405,7 @@ function renderDashboard() {
       <div class="list-row">
         <div class="avatar" style="background:#ebfbee; color:#2b8a3e;">₼</div>
         <div class="row-main">
-          <b>${p.studentName} — ${p.amount} ₼</b>
+          <b>${p.studentName} — <span class="sensitive-money">${p.amount} ₼</span></b>
           <small>${formatAzDate(p.date)} (${p.method || 'Nağd'})</small>
         </div>
       </div>
@@ -387,7 +436,7 @@ function renderStudents() {
       <td>${s.phone || '—'}</td>
       <td>${formatAzDate(s.regDate)}</td>
       <td>${s.packageLessons || 8} dərs</td>
-      <td>${s.monthlyFee || 0} ₼</td>
+      <td><span class="sensitive-money">${s.monthlyFee || 0} ₼</span></td>
       <td><span class="pill ${s.status === 'active' ? 'paid' : 'absent'}">${s.status === 'active' ? 'Aktiv' : 'Passiv'}</span></td>
       <td>
         <div class="actions">
@@ -404,7 +453,6 @@ function renderSchedule() {
   const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
 
   weekGrid.innerHTML = days.map((d, idx) => {
-    // Saatlarına görə artan sırada (erkəndən gecəyə) sıralayırıq
     const dayLessons = data.lessons
       .filter(l => l.day === d)
       .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
@@ -483,7 +531,7 @@ function renderPayments() {
           <td>${attendedCount} dərs</td>
           <td><b>${remaining} dərs</b></td>
           <td>${formatAzDate(p.date)} (${p.month || '—'})</td>
-          <td>${p.amount} ₼</td>
+          <td><span class="sensitive-money">${p.amount} ₼</span></td>
           <td>
             <div class="actions">
               <button class="mini-btn" style="color:var(--green);" onclick="editPayment('${p.id}')">Redaktə</button>
@@ -501,7 +549,7 @@ function renderPayments() {
     deletedTbody.innerHTML = data.deletedPayments.slice().reverse().map(p => `
       <tr>
         <td><b>${p.studentName}</b></td>
-        <td>${p.amount} ₼</td>
+        <td><span class="sensitive-money">${p.amount} ₼</span></td>
         <td>${formatAzDate(p.date)}</td>
         <td>${formatAzDate(p.deletedAt)}</td>
         <td>
