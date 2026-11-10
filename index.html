@@ -247,7 +247,12 @@ td b { font-size:12px; color: #212529; }
       <div class="stat"><div class="stat-top">Gözlənilir</div><div class="stat-value sensitive-money" id="payExpected">0 ₼</div></div>
       <div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value sensitive-money" id="payOutstanding">0 ₼</div></div>
     </div>
-    <div class="toolbar"><input type="month" id="paymentMonth" style="max-width:170px"><input class="search" id="paymentSearch" placeholder="Tələbə axtar..."></div>
+    <div class="toolbar">
+      <select id="paymentMonth" style="max-width:170px">
+        <!-- Javascript dinamik dolduracaq -->
+      </select>
+      <input class="search" id="paymentSearch" placeholder="Tələbə axtar...">
+    </div>
     <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>ÖDƏNİŞ TARİXİ</th><th>MƏBLƏĞ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
     
     <div style="margin-top: 35px;">
@@ -276,12 +281,14 @@ td b { font-size:12px; color: #212529; }
       <div class="stat"><div class="stat-top">Ümumi Xərc</div><div class="stat-value sensitive-money" id="expenseTotal">0 ₼</div></div>
     </div>
     <div class="toolbar">
-      <input type="month" id="expenseMonthFilter" style="max-width:170px">
-      <select id="expenseCategoryFilter" style="max-width:180px">
+      <select id="expenseMonthFilter" style="max-width:170px">
+        <!-- Javascript dinamik dolduracaq -->
+      </select>
+      <select id="expenseCategoryFilter" style="max-width:210px">
         <option value="all">Bütün Kateqoriyalar</option>
         <option value="Kommunal">Kommunal</option>
         <option value="Gitara Ləvazimatları">Gitara Ləvazimatları</option>
-        <option value="Təmir və Avaradanlıq">Təmir və Avaradanlıq</option>
+        <option value="Təmir və Avadanlıq">Təmir və Avadanlıq</option>
         <option value="İcarə">İcarə</option>
         <option value="Digər">Digər</option>
       </select>
@@ -386,6 +393,33 @@ const monthNamesAz = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyu
 const today = new Date();
 const isoToday = d => { const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
 const monthNow = isoToday(today).slice(0,7);
+
+// Ay seçici siyahılarını Azərbaycan dilində yaratmaq üçün funksiya
+function populateMonthSelects() {
+  const selects = [document.getElementById('paymentMonth'), document.getElementById('expenseMonthFilter')];
+  
+  // Son 2 ili və gələn ili əhatə edən ay seçimləri yaradaq
+  const currentYear = today.getFullYear();
+  let optionsHtml = '';
+  
+  for (let y = currentYear - 1; y <= currentYear + 1; y++) {
+    for (let m = 0; m < 12; m++) {
+      const monthNum = String(m + 1).padStart(2, '0');
+      const val = `${y}-${monthNum}`;
+      const label = `${monthNamesAz[m]} ${y}`;
+      optionsHtml += `<option value="${val}">${label}</option>`;
+    }
+  }
+
+  selects.forEach(sel => {
+    if (sel) {
+      const prevVal = sel.value || monthNow;
+      sel.innerHTML = optionsHtml;
+      sel.value = prevVal;
+    }
+  });
+}
+populateMonthSelects();
 
 function formatAzDate(dStr) {
   if (!dStr) return '—';
@@ -697,7 +731,6 @@ function renderExpenses() {
 
   let filtered = data.expenses || [];
   
-  // Calculate Totals
   const monthExp = filtered.filter(e => (e.date || '').startsWith(monthFilter));
   const monthTotal = monthExp.reduce((sum, e) => sum + Number(e.amount || 0), 0);
   const grandTotal = filtered.reduce((sum, e) => sum + Number(e.amount || 0), 0);
@@ -745,7 +778,7 @@ function openExpenseModal(expenseToEdit = null) {
         <select id="mExCategory">
           <option value="Kommunal" ${expenseToEdit && expenseToEdit.category==='Kommunal'?'selected':''}>Kommunal</option>
           <option value="Gitara Ləvazimatları" ${expenseToEdit && expenseToEdit.category==='Gitara Ləvazimatları'?'selected':''}>Gitara Ləvazimatları</option>
-          <option value="Təmir və Avaradanlıq" ${expenseToEdit && expenseToEdit.category==='Təmir və Avaradanlıq'?'selected':''}>Təmir və Avaradanlıq</option>
+          <option value="Təmir və Avadanlıq" ${expenseToEdit && expenseToEdit.category==='Təmir və Avadanlıq'?'selected':''}>Təmir və Avadanlıq</option>
           <option value="İcarə" ${expenseToEdit && expenseToEdit.category==='İcarə'?'selected':''}>İcarə</option>
           <option value="Digər" ${expenseToEdit && expenseToEdit.category==='Digər'?'selected':''}>Digər</option>
         </select>
@@ -1054,7 +1087,11 @@ window.editPayment = function(id) {
       <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="${pay.amount || 80}"></div>
       <div class="field"><label>Paket dərs sayı (+)</label><input type="number" id="mPPackage" value="${pay.addedLessons || 8}"></div>
       <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${pay.date || isoToday(today)}"></div>
-      <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${pay.month || monthNow}"></div>
+      <div class="field"><label>Ödəniş Ayı</label><select id="mPMonth">${monthNamesAz.map((m, idx) => {
+        const mNum = String(idx + 1).padStart(2, '0');
+        const val = `${today.getFullYear()}-${mNum}`;
+        return `<option value="${val}" ${pay.month === val ? 'selected' : ''}>${m} ${today.getFullYear()}</option>`;
+      }).join('')}</select></div>
     </div>
   `;
 
@@ -1087,7 +1124,11 @@ function openPaymentModal(selectedStudentId = null) {
       <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mPAmount" value="80"></div>
       <div class="field"><label>Yenidən alınan paket dərs</label><input type="number" id="mPPackage" value="8"></div>
       <div class="field"><label>Ödəniş tarixi</label><input type="date" id="mPDate" value="${isoToday(today)}"></div>
-      <div class="field"><label>Ödəniş Ayı</label><input type="month" id="mPMonth" value="${monthNow}"></div>
+      <div class="field"><label>Ödəniş Ayı</label><select id="mPMonth">${monthNamesAz.map((m, idx) => {
+        const mNum = String(idx + 1).padStart(2, '0');
+        const val = `${today.getFullYear()}-${mNum}`;
+        return `<option value="${val}" ${monthNow === val ? 'selected' : ''}>${m} ${today.getFullYear()}</option>`;
+      }).join('')}</select></div>
     </div>
   `;
   modalSave = () => {
