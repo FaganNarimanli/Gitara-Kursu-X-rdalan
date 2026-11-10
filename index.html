@@ -122,6 +122,8 @@ td b { font-size:12px; color: #212529; }
 .close { border:0; background:var(--surface-2); color:#212529; width:34px;height:34px;border-radius:10px;font-size:18px; display:grid; place-items:center; }
 .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
 
+.receipt-thumb { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); cursor: pointer; }
+
 .week-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; overflow-x:auto; }
 .day-col { background:var(--surface); border:1px solid var(--line); border-radius:12px; min-height:160px; padding:12px; }
 .day-col.today { border-color:var(--green); box-shadow:inset 0 3px var(--green); }
@@ -188,6 +190,7 @@ td b { font-size:12px; color: #212529; }
     <button class="nav-btn" data-page="schedule"><span class="nav-icon">▦</span><span>Cədvəl</span></button>
     <button class="nav-btn" data-page="attendance"><span class="nav-icon">✓</span><span>Davamiyyət</span></button>
     <button class="nav-btn" data-page="payments"><span class="nav-icon">₼</span><span>Ödənişlər</span></button>
+    <button class="nav-btn" data-page="expenses"><span class="nav-icon">🧾</span><span>Xərclər</span></button>
     <button class="nav-btn" data-page="statistics"><span class="nav-icon">▤</span><span>Statistika</span></button>
   </nav>
   <div class="side-note">
@@ -262,6 +265,39 @@ td b { font-size:12px; color: #212529; }
     </div>
   </section>
 
+  <!-- Xərclər Bölməsi -->
+  <section class="page" id="expenses">
+    <div class="section-head">
+      <div><h2>Xərclər və Çeklər</h2><p>Kommunal, ləvazimatlar və dükana aid xərclər.</p></div>
+      <button class="primary-btn" id="addExpense">＋ Xərc Əlavə Et</button>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px;">
+      <div class="stat"><div class="stat-top">Bu Ay Xərc</div><div class="stat-value sensitive-money" id="expenseMonth">0 ₼</div></div>
+      <div class="stat"><div class="stat-top">Ümumi Xərc</div><div class="stat-value sensitive-money" id="expenseTotal">0 ₼</div></div>
+    </div>
+    <div class="toolbar">
+      <input type="month" id="expenseMonthFilter" style="max-width:170px">
+      <select id="expenseCategoryFilter" style="max-width:180px">
+        <option value="all">Bütün Kateqoriyalar</option>
+        <option value="Kommunal">Kommunal</option>
+        <option value="Gitara Ləvazimatları">Gitara Ləvazimatları</option>
+        <option value="Təmir və Avaradanlıq">Təmir və Avaradanlıq</option>
+        <option value="İcarə">İcarə</option>
+        <option value="Digər">Digər</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>TARİX</th><th>KATEQORİYA</th><th>QEYD/AÇIQLAMA</th><th>MƏBLƏĞ</th><th>ÇEK / QƏBZ</th><th>ƏMƏLİYYAT</th></tr>
+        </thead>
+        <tbody id="expensesBody">
+          <tr><td colspan="6" class="empty">Xərc qeydi yoxdur.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section class="page" id="statistics">
     <div class="section-head"><div><h2>Statistika</h2><p>Gəlir xülasəsi.</p></div></div>
     <div class="stats">
@@ -275,6 +311,14 @@ td b { font-size:12px; color: #212529; }
 </div>
 
 <div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Qeyd</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"><div id="modalFields"></div><div class="modal-actions" id="modalActionsArea"><button type="button" class="secondary-btn" id="cancelModal">Ləğv et</button><button type="submit" class="primary-btn">Yadda saxla</button></div></form></div></div>
+
+<!-- Image View Modal -->
+<div class="modal-backdrop" id="imageModalBackdrop">
+  <div class="modal" style="max-width:600px; text-align:center;">
+    <div class="modal-head"><h3>Çek Şəkli</h3><button class="close" id="closeImageModal">×</button></div>
+    <img id="imageModalSrc" src="" style="max-width:100%; height:auto; border-radius:8px;">
+  </div>
+</div>
 
 <!-- Firebase SDK (Modular v10) -->
 <script type="module">
@@ -304,7 +348,6 @@ const loginError = document.getElementById('loginError');
 const userEmailDisplay = document.getElementById('userEmailDisplay');
 const logoutBtn = document.getElementById('logoutBtn');
 
-// Firebase Auth Listener
 onAuthStateChanged(auth, (user) => {
   if (user) {
     loginScreen.style.display = 'none';
@@ -317,7 +360,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Login Form Event
 loginForm.onsubmit = async (e) => {
   e.preventDefault();
   loginError.style.display = 'none';
@@ -332,7 +374,6 @@ loginForm.onsubmit = async (e) => {
   }
 };
 
-// Logout Event
 logoutBtn.onclick = () => {
   if(confirm("Hesabdan çıxmaq istədiyinizə əminsiniz?")) {
     signOut(auth);
@@ -356,7 +397,7 @@ function formatAzDate(dStr) {
   return `${day} ${month} ${year}`;
 }
 
-let data = {students:[], lessons:[], payments:[], attendance:[], deletedPayments:[]};
+let data = {students:[], lessons:[], payments:[], attendance:[], deletedPayments:[], expenses:[]};
 let modalSave = null;
 
 let isBlurred = localStorage.getItem('kurs_privacy_blur') === 'true';
@@ -392,7 +433,8 @@ function initDatabaseListener() {
         lessons: serverData.lessons || [],
         payments: serverData.payments || [],
         attendance: serverData.attendance || [],
-        deletedPayments: serverData.deletedPayments || []
+        deletedPayments: serverData.deletedPayments || [],
+        expenses: serverData.expenses || []
       };
     }
     renderAll();
@@ -425,6 +467,7 @@ navBtns.forEach(btn => {
       schedule: 'Dərs cədvəli',
       attendance: 'Davamiyyət',
       payments: 'Ödənişlər və Paketlər',
+      expenses: 'Xərclər və Çeklər',
       statistics: 'Statistika'
     };
     document.getElementById('pageTitle').textContent = titles[pageId] || 'İdarəetmə';
@@ -437,6 +480,7 @@ function renderAll() {
   renderSchedule();
   renderAttendance();
   renderPayments();
+  renderExpenses();
   renderStatistics();
   updatePrivacyUI();
 }
@@ -644,6 +688,130 @@ function renderPayments() {
     `).join('');
   }
 }
+
+// Render Expenses
+function renderExpenses() {
+  const tbody = document.getElementById('expensesBody');
+  const monthFilter = document.getElementById('expenseMonthFilter').value || monthNow;
+  const categoryFilter = document.getElementById('expenseCategoryFilter').value;
+
+  let filtered = data.expenses || [];
+  
+  // Calculate Totals
+  const monthExp = filtered.filter(e => (e.date || '').startsWith(monthFilter));
+  const monthTotal = monthExp.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+  const grandTotal = filtered.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+
+  document.getElementById('expenseMonth').textContent = monthTotal + ' ₼';
+  document.getElementById('expenseTotal').textContent = grandTotal + ' ₼';
+
+  if (monthFilter) {
+    filtered = filtered.filter(e => (e.date || '').startsWith(monthFilter));
+  }
+  if (categoryFilter !== 'all') {
+    filtered = filtered.filter(e => e.category === categoryFilter);
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Xərc tapılmadı.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.slice().reverse().map(e => `
+    <tr>
+      <td>${formatAzDate(e.date)}</td>
+      <td><span class="pill group">${e.category || 'Digər'}</span></td>
+      <td><b>${e.note || '—'}</b></td>
+      <td><span class="sensitive-money">${e.amount} ₼</span></td>
+      <td>${e.receiptImg ? `<img src="${e.receiptImg}" class="receipt-thumb" onclick="viewReceiptImage('${e.receiptImg}')" title="Çekə bax">` : '—'}</td>
+      <td>
+        <div class="actions">
+          <button class="mini-btn" style="color:var(--green);" onclick="editExpense('${e.id}')">Redaktə</button>
+          <button class="mini-btn" style="color:var(--red);" onclick="deleteExpense('${e.id}')">Sil</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('addExpense').onclick = () => openExpenseModal();
+
+function openExpenseModal(expenseToEdit = null) {
+  modalTitle.textContent = expenseToEdit ? 'Xərci Redaktə Et' : 'Yeni Xərc Əlavə Et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full">
+        <label>Kateqoriya</label>
+        <select id="mExCategory">
+          <option value="Kommunal" ${expenseToEdit && expenseToEdit.category==='Kommunal'?'selected':''}>Kommunal</option>
+          <option value="Gitara Ləvazimatları" ${expenseToEdit && expenseToEdit.category==='Gitara Ləvazimatları'?'selected':''}>Gitara Ləvazimatları</option>
+          <option value="Təmir və Avaradanlıq" ${expenseToEdit && expenseToEdit.category==='Təmir və Avaradanlıq'?'selected':''}>Təmir və Avaradanlıq</option>
+          <option value="İcarə" ${expenseToEdit && expenseToEdit.category==='İcarə'?'selected':''}>İcarə</option>
+          <option value="Digər" ${expenseToEdit && expenseToEdit.category==='Digər'?'selected':''}>Digər</option>
+        </select>
+      </div>
+      <div class="field"><label>Məbləğ (₼)</label><input type="number" id="mExAmount" value="${expenseToEdit ? expenseToEdit.amount : ''}" placeholder="0" required></div>
+      <div class="field"><label>Tarix</label><input type="date" id="mExDate" value="${expenseToEdit ? expenseToEdit.date : isoToday(today)}"></div>
+      <div class="field full"><label>Qeyd / Açıqlama</label><input type="text" id="mExNote" value="${expenseToEdit ? (expenseToEdit.note||'') : ''}" placeholder="Məs: İşıq pulu və ya simlər"></div>
+      <div class="field full"><label>Çek / Qəbz Şəkli (İstəyə bağlı)</label><input type="file" id="mExFile" accept="image/*"></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    const fileInput = document.getElementById('mExFile');
+    const saveObj = (imgUrl) => {
+      if (expenseToEdit) {
+        expenseToEdit.category = document.getElementById('mExCategory').value;
+        expenseToEdit.amount = Number(document.getElementById('mExAmount').value);
+        expenseToEdit.date = document.getElementById('mExDate').value;
+        expenseToEdit.note = document.getElementById('mExNote').value;
+        if (imgUrl) expenseToEdit.receiptImg = imgUrl;
+      } else {
+        data.expenses.push({
+          id: 'ex_' + Date.now(),
+          category: document.getElementById('mExCategory').value,
+          amount: Number(document.getElementById('mExAmount').value),
+          date: document.getElementById('mExDate').value,
+          note: document.getElementById('mExNote').value,
+          receiptImg: imgUrl || ''
+        });
+      }
+      saveData();
+      backdrop.classList.remove('open');
+    };
+
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        saveObj(e.target.result);
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      saveObj(expenseToEdit ? expenseToEdit.receiptImg : '');
+    }
+  };
+  backdrop.classList.add('open');
+}
+
+window.editExpense = function(id) {
+  const exp = data.expenses.find(e => e.id === id);
+  if (exp) openExpenseModal(exp);
+};
+
+window.deleteExpense = function(id) {
+  if (confirm('Bu xərc qeydini silmək istədiyinizə əminsiniz?')) {
+    data.expenses = data.expenses.filter(e => e.id !== id);
+    saveData();
+  }
+};
+
+window.viewReceiptImage = function(src) {
+  document.getElementById('imageModalSrc').src = src;
+  document.getElementById('imageModalBackdrop').classList.add('open');
+};
+document.getElementById('closeImageModal').onclick = () => {
+  document.getElementById('imageModalBackdrop').classList.remove('open');
+};
 
 function renderStatistics() {
   const totalInc = data.payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
@@ -985,6 +1153,9 @@ document.getElementById('studentFilter').onchange = renderStudents;
 document.getElementById('paymentSearch').oninput = renderPayments;
 document.getElementById('paymentMonth').onchange = renderPayments;
 document.getElementById('paymentMonth').value = monthNow;
+document.getElementById('expenseMonthFilter').onchange = renderExpenses;
+document.getElementById('expenseMonthFilter').value = monthNow;
+document.getElementById('expenseCategoryFilter').onchange = renderExpenses;
 </script>
 </body>
 </html>
