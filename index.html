@@ -94,6 +94,7 @@ h1 { font-size:clamp(22px, 4vw, 28px); letter-spacing:-.5px; margin:0; font-weig
 .pill.paid { background:#ebfbee; color:#2b8a3e; }
 .pill.absent { background:#fff3bf; color:#f08c00; }
 .pill.group { background:#e7f5ff; color:#1864ab; }
+.pill.cancelled { background:#ffe3e3; color:#c92a2a; }
 
 .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
 .search { flex:1; min-width:200px; }
@@ -186,6 +187,7 @@ td b { font-size:12px; color: #212529; }
   <div class="brand"><div class="brand-mark">♬</div><div class="brand-copy"><strong>Gitara Kursu</strong><small>Xırdalan · İdarəetmə</small></div></div>
   <nav>
     <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span><span>İcmal</span></button>
+    <button class="nav-btn" data-page="inquiries"><span class="nav-icon">✉</span><span>Müraciətlər</span></button>
     <button class="nav-btn" data-page="students"><span class="nav-icon">♙</span><span>Tələbələr</span></button>
     <button class="nav-btn" data-page="schedule"><span class="nav-icon">▦</span><span>Cədvəl</span></button>
     <button class="nav-btn" data-page="attendance"><span class="nav-icon">✓</span><span>Davamiyyət</span></button>
@@ -224,6 +226,35 @@ td b { font-size:12px; color: #212529; }
     </div>
   </section>
 
+  <!-- Müraciətlər Bölməsi -->
+  <section class="page" id="inquiries">
+    <div class="section-head">
+      <div><h2>Müraciətlər</h2><p>Kursa yazılmaq istəyənlər, sınaq dərsləri və əlaqə qeydləri.</p></div>
+      <button class="primary-btn" id="addInquiry">＋ Yeni müraciət</button>
+    </div>
+    <div class="toolbar">
+      <input class="search" id="inquirySearch" placeholder="Ad, telefon və ya qeyd üzrə axtar...">
+      <select id="inquiryStatusFilter" style="max-width:190px">
+        <option value="all">Bütün Statuslar</option>
+        <option value="Yeni">Yeni</option>
+        <option value="Əlaqə saxlanıldı">Əlaqə saxlanıldı</option>
+        <option value="Sınaq dərsi">Sınaq dərsi</option>
+        <option value="Qeydiyyata alındı">Qeydiyyata alındı</option>
+        <option value="Ləğv edildi">Ləğv edildi</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>TARİX</th><th>AD SOYAD</th><th>ƏLAQƏ</th><th>MƏNBƏ</th><th>QEYD</th><th>STATUS</th><th>ƏMƏLİYYAT</th></tr>
+        </thead>
+        <tbody id="inquiriesBody">
+          <tr><td colspan="7" class="empty">Müraciət qeydi yoxdur.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section class="page" id="students">
     <div class="section-head"><div><h2>Tələbələr</h2><p>Tələbə məlumatları və paket sayı.</p></div><button class="primary-btn" id="addStudent">＋ Tələbə əlavə et</button></div>
     <div class="toolbar"><input class="search" id="studentSearch" placeholder="Ad və ya telefon üzrə axtar..."><select id="studentFilter" style="max-width:140px"><option value="all">Hamısı</option><option value="active">Aktiv</option><option value="inactive">Passiv</option></select></div>
@@ -248,9 +279,7 @@ td b { font-size:12px; color: #212529; }
       <div class="stat"><div class="stat-top">Ödənilməyib</div><div class="stat-value sensitive-money" id="payOutstanding">0 ₼</div></div>
     </div>
     <div class="toolbar">
-      <select id="paymentMonth" style="max-width:170px">
-        <!-- Javascript dinamik dolduracaq -->
-      </select>
+      <select id="paymentMonth" style="max-width:170px"></select>
       <input class="search" id="paymentSearch" placeholder="Tələbə axtar...">
     </div>
     <div class="table-wrap"><table><thead><tr><th>TƏLƏBƏ</th><th>ÜMUMİ PAKET</th><th>KEÇİLƏN DƏRSLƏR</th><th>QALAN DƏRSLƏR</th><th>ÖDƏNİŞ TARİXİ</th><th>MƏBLƏĞ</th><th>ƏMƏLİYYAT</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="7" class="empty">Ödəniş yoxdur.</td></tr></tbody></table></div>
@@ -281,9 +310,7 @@ td b { font-size:12px; color: #212529; }
       <div class="stat"><div class="stat-top">Ümumi Xərc</div><div class="stat-value sensitive-money" id="expenseTotal">0 ₼</div></div>
     </div>
     <div class="toolbar">
-      <select id="expenseMonthFilter" style="max-width:170px">
-        <!-- Javascript dinamik dolduracaq -->
-      </select>
+      <select id="expenseMonthFilter" style="max-width:170px"></select>
       <select id="expenseCategoryFilter" style="max-width:210px">
         <option value="all">Bütün Kateqoriyalar</option>
         <option value="Kommunal">Kommunal</option>
@@ -394,11 +421,8 @@ const today = new Date();
 const isoToday = d => { const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
 const monthNow = isoToday(today).slice(0,7);
 
-// Ay seçici siyahılarını Azərbaycan dilində yaratmaq üçün funksiya
 function populateMonthSelects() {
   const selects = [document.getElementById('paymentMonth'), document.getElementById('expenseMonthFilter')];
-  
-  // Son 2 ili və gələn ili əhatə edən ay seçimləri yaradaq
   const currentYear = today.getFullYear();
   let optionsHtml = '';
   
@@ -431,7 +455,7 @@ function formatAzDate(dStr) {
   return `${day} ${month} ${year}`;
 }
 
-let data = {students:[], lessons:[], payments:[], attendance:[], deletedPayments:[], expenses:[]};
+let data = {students:[], lessons:[], payments:[], attendance:[], deletedPayments:[], expenses:[], inquiries:[]};
 let modalSave = null;
 
 let isBlurred = localStorage.getItem('kurs_privacy_blur') === 'true';
@@ -468,7 +492,8 @@ function initDatabaseListener() {
         payments: serverData.payments || [],
         attendance: serverData.attendance || [],
         deletedPayments: serverData.deletedPayments || [],
-        expenses: serverData.expenses || []
+        expenses: serverData.expenses || [],
+        inquiries: serverData.inquiries || []
       };
     }
     renderAll();
@@ -497,6 +522,7 @@ navBtns.forEach(btn => {
     
     const titles = {
       dashboard: 'İcmal',
+      inquiries: 'Müraciətlər',
       students: 'Tələbələr',
       schedule: 'Dərs cədvəli',
       attendance: 'Davamiyyət',
@@ -510,6 +536,7 @@ navBtns.forEach(btn => {
 
 function renderAll() {
   renderDashboard();
+  renderInquiries();
   renderStudents();
   renderSchedule();
   renderAttendance();
@@ -572,6 +599,139 @@ function renderDashboard() {
     `).join('');
   }
 }
+
+// Render Inquiries (Müraciətlər)
+function renderInquiries() {
+  const tbody = document.getElementById('inquiriesBody');
+  const search = (document.getElementById('inquirySearch').value || '').toLowerCase();
+  const statusFilter = document.getElementById('inquiryStatusFilter').value;
+
+  let filtered = (data.inquiries || []).filter(inq => {
+    const matchText = ((inq.name || '') + ' ' + (inq.phone || '') + ' ' + (inq.note || '')).toLowerCase().includes(search);
+    if (statusFilter !== 'all') return matchText && inq.status === statusFilter;
+    return matchText;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Müraciət tapılmadı.</td></tr>';
+    return;
+  }
+
+  const statusBadgeClass = (st) => {
+    if (st === 'Qeydiyyata alındı') return 'paid';
+    if (st === 'Sınaq dərsi' || st === 'Əlaqə saxlanıldı') return 'group';
+    if (st === 'Ləğv edildi') return 'cancelled';
+    return 'absent';
+  };
+
+  tbody.innerHTML = filtered.slice().reverse().map(inq => `
+    <tr>
+      <td>${formatAzDate(inq.date)}</td>
+      <td><b>${inq.name}</b></td>
+      <td>${inq.phone || '—'}</td>
+      <td>${inq.source || '—'}</td>
+      <td>${inq.note || '—'}</td>
+      <td><span class="pill ${statusBadgeClass(inq.status)}">${inq.status || 'Yeni'}</span></td>
+      <td>
+        <div class="actions">
+          ${inq.status !== 'Qeydiyyata alındı' ? `<button class="mini-btn" style="background:#ebfbee; color:#2b8a3e; border-color:#b2f2bb;" onclick="convertInquiryToStudent('${inq.id}')">Tələbə et</button>` : ''}
+          <button class="mini-btn" style="color:var(--green);" onclick="editInquiry('${inq.id}')">Redaktə</button>
+          <button class="mini-btn" style="color:var(--red);" onclick="deleteInquiry('${inq.id}')">Sil</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('addInquiry').onclick = () => openInquiryModal();
+
+function openInquiryModal(inqToEdit = null) {
+  modalTitle.textContent = inqToEdit ? 'Müraciəti redaktə et' : 'Yeni müraciət əlavə et';
+  modalFields.innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label>Ad və Soyad</label><input type="text" id="mInqName" required value="${inqToEdit ? inqToEdit.name : ''}" placeholder="Məsələn: Murad Həsənov"></div>
+      <div class="field"><label>Əlaqə nömrəsi</label><input type="text" id="mInqPhone" value="${inqToEdit ? (inqToEdit.phone || '') : ''}" placeholder="050-000-00-00"></div>
+      <div class="field"><label>Müraciət tarixi</label><input type="date" id="mInqDate" value="${inqToEdit ? inqToEdit.date : isoToday(today)}"></div>
+      <div class="field">
+        <label>Mənbə</label>
+        <select id="mInqSource">
+          <option value="Instagram" ${inqToEdit && inqToEdit.source==='Instagram'?'selected':''}>Instagram</option>
+          <option value="TikTok" ${inqToEdit && inqToEdit.source==='TikTok'?'selected':''}>TikTok</option>
+          <option value="WhatsApp / Zəng" ${inqToEdit && inqToEdit.source==='WhatsApp / Zəng'?'selected':''}>WhatsApp / Zəng</option>
+          <option value="Tanış vasitəsilə" ${inqToEdit && inqToEdit.source==='Tanış vasitəsilə'?'selected':''}>Tanış vasitəsilə</option>
+          <option value="Digər" ${inqToEdit && inqToEdit.source==='Digər'?'selected':''}>Digər</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="mInqStatus">
+          <option value="Yeni" ${inqToEdit && inqToEdit.status==='Yeni'?'selected':''}>Yeni</option>
+          <option value="Əlaqə saxlanıldı" ${inqToEdit && inqToEdit.status==='Əlaqə saxlanıldı'?'selected':''}>Əlaqə saxlanıldı</option>
+          <option value="Sınaq dərsi" ${inqToEdit && inqToEdit.status==='Sınaq dərsi'?'selected':''}>Sınaq dərsi</option>
+          <option value="Qeydiyyata alındı" ${inqToEdit && inqToEdit.status==='Qeydiyyata alındı'?'selected':''}>Qeydiyyata alındı</option>
+          <option value="Ləğv edildi" ${inqToEdit && inqToEdit.status==='Ləğv edildi'?'selected':''}>Ləğv edildi</option>
+        </select>
+      </div>
+      <div class="field full"><label>Qeyd</label><input type="text" id="mInqNote" value="${inqToEdit ? (inqToEdit.note || '') : ''}" placeholder="Məs: Sıfırdan başlayacaq, şənbə günü sınaq dərsi"></div>
+    </div>
+  `;
+
+  modalSave = () => {
+    if (inqToEdit) {
+      inqToEdit.name = document.getElementById('mInqName').value;
+      inqToEdit.phone = document.getElementById('mInqPhone').value;
+      inqToEdit.date = document.getElementById('mInqDate').value;
+      inqToEdit.source = document.getElementById('mInqSource').value;
+      inqToEdit.status = document.getElementById('mInqStatus').value;
+      inqToEdit.note = document.getElementById('mInqNote').value;
+    } else {
+      if (!data.inquiries) data.inquiries = [];
+      data.inquiries.push({
+        id: 'inq_' + Date.now(),
+        name: document.getElementById('mInqName').value,
+        phone: document.getElementById('mInqPhone').value,
+        date: document.getElementById('mInqDate').value,
+        source: document.getElementById('mInqSource').value,
+        status: document.getElementById('mInqStatus').value,
+        note: document.getElementById('mInqNote').value
+      });
+    }
+    saveData();
+    backdrop.classList.remove('open');
+  };
+  backdrop.classList.add('open');
+}
+
+window.editInquiry = function(id) {
+  const inq = (data.inquiries || []).find(i => i.id === id);
+  if (inq) openInquiryModal(inq);
+};
+
+window.deleteInquiry = function(id) {
+  if (confirm('Bu müraciəti silmək istədiyinizə əminsiniz?')) {
+    data.inquiries = (data.inquiries || []).filter(i => i.id !== id);
+    saveData();
+  }
+};
+
+window.convertInquiryToStudent = function(id) {
+  const inq = (data.inquiries || []).find(i => i.id === id);
+  if (!inq) return;
+
+  if (confirm(`"${inq.name}" adlı müraciətçini aktiv tələbə kimi qeydiyyata almaq istəyirsiniz?`)) {
+    data.students.push({
+      id: 's_' + Date.now(),
+      name: inq.name,
+      phone: inq.phone || '',
+      regDate: isoToday(today),
+      packageLessons: 8,
+      monthlyFee: 80,
+      status: 'active'
+    });
+    inq.status = 'Qeydiyyata alındı';
+    saveData();
+  }
+};
 
 function renderStudents() {
   const tbody = document.getElementById('studentsBody');
@@ -723,7 +883,6 @@ function renderPayments() {
   }
 }
 
-// Render Expenses
 function renderExpenses() {
   const tbody = document.getElementById('expensesBody');
   const monthFilter = document.getElementById('expenseMonthFilter').value || monthNow;
@@ -1189,6 +1348,8 @@ modalForm.onsubmit = (e) => {
   if (modalSave) modalSave();
 };
 
+document.getElementById('inquirySearch').oninput = renderInquiries;
+document.getElementById('inquiryStatusFilter').onchange = renderInquiries;
 document.getElementById('studentSearch').oninput = renderStudents;
 document.getElementById('studentFilter').onchange = renderStudents;
 document.getElementById('paymentSearch').oninput = renderPayments;
